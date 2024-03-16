@@ -2,10 +2,11 @@ let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
 
 let grid = [];
-let gridSize = 50;
-let widthHeight = 10;
+let gridSize = 100;
+let widthHeight = 5;
 
-let blockTimer = 10;
+let blockTimer = 100;
+let newWaterTimer = 50;
 
 window.onload = init;
 
@@ -76,14 +77,11 @@ function init(){
         index++;
     });
 
-    let rand;
 
-
-    for (let i=0; i < 5; i++) {
-        rand = getRandomInt(grid.length- 1);
-        grid[rand].whatAmI = "waterFill";
-        grid[rand].fadeIn = true;
+    for (let i=0; i < 1; i++) {
+        newRandomWaterFill();
     }  
+
     /*
     for (let i=0; i < 10; i++) {
         rand = getRandomInt(grid.length- 1);
@@ -201,6 +199,12 @@ class Rect {
     }
 }
 
+function newRandomWaterFill() {
+    let rand = getRandomInt(grid.length- 1);
+    grid[rand].whatAmI = "waterFill";
+    grid[rand].fadeIn = true;
+}
+
 function getRandomNeighborRect(r: Rect) {
     const n = 0;
     const ne = 1;
@@ -314,7 +318,7 @@ function update() {
                 if (next.whatAmI === "grass") {
                     next.whatAmI = "water";
                     next.fadeInOut = true;
-                    next.waitTimer = 100;
+                    next.waitTimer = 200;
                 }
 
                 next = grid[getRandomNeighborRect(r)];
@@ -322,19 +326,19 @@ function update() {
                 if (next.whatAmI === "grass") {
                     next.whatAmI = "water";
                     next.fadeInOut = true;
-                    next.waitTimer = 100;
+                    next.waitTimer = 200;
                 }
 
                 r.whatAmI = "water";
                 r.fadeInOut = true;
                 r.move = false;
-                r.waitTimer = 100;        
+                r.waitTimer = 200;        
                 
             } else  if (r.fadeIn) {
                 if (r.blue + 25 < 250) {
                     r.blue += 25;
 
-                    if (r.blue > 100) {
+                    if (r.blue > 50) {
                         r.move = true;
                     }
                 } else {
@@ -379,7 +383,9 @@ function update() {
             if (r.waitTimer > 0) {
                 r.waitTimer--;
             } else {
-                r.whatAmI = 'grass';
+                r.whatAmI = 'dirt';
+                r.fadeInOut = false;
+                r.waitTimer = 1000;
             } 
 
             if (r.fadeIn) {
@@ -397,6 +403,57 @@ function update() {
                     //r.whatAmI = 'grass';
                 }
             }
+        } else if (r.whatAmI === 'dirt') {
+
+            if (r.red > 78) {
+                r.red--;
+            } else if (r.red < 78) {
+                r.red++;
+            } else if (r.green > 53) {
+                r.green--;
+            } else if (r.green < 53) {
+                r.green++;
+            } else if (r.blue > 36) {
+                r.blue--;
+            } else if (r.blue < 36) {
+                r.blue++;
+            } else {
+                r.fadeInOut = true;
+                r.fadeIn = true;
+                r.fadeOut = false;
+            }
+
+            if (r.fadeInOut) {
+                if (r.fadeIn) {
+                    if (r.red < 100) {
+                        r.red++;
+                        console.log(r.red);
+                        //r.green++;
+                        //r.blue++;
+                    } else {
+                        r.fadeIn = false;
+                    }
+
+                    console.log(r.fadeIn);
+                } else {
+                    if (r.red > 78) {
+                        r.red--;
+                        console.log(r.red);
+                        //r.green--;
+                        //r.blue--;
+                    } else {
+                        r.fadeIn = true;
+                    }
+                }
+
+            }
+
+            r.waitTimer--;
+
+            if (r.waitTimer <= 0) {
+                r.whatAmI = 'grass';
+            }
+
         } else if (r.whatAmI === 'flower') {
 
             if (r.green < 155) {
@@ -449,14 +506,7 @@ function update() {
                 next.waitTimer = getRandomInt(25, 1);
             }
 
-            for (let i = 0; i < 4; i++) {
-                next = grid[getRandomNeighborRect(next)];
-                next.whatAmI = 'block';
-                next.fadeIn = true;
-                next.waitTimer = getRandomInt(25, 1);
-            }
-
-            for (let i = 0; i < 4; i++) {
+            for (let i = 0; i < 8; i++) {
                 next = grid[getRandomNeighborRect(next)];
                 next.whatAmI = 'block';
                 next.fadeIn = true;
@@ -465,7 +515,13 @@ function update() {
         }
 
         blockTimer = getRandomInt(100, 1);
-    
+    }
+
+    newWaterTimer--;
+
+    if (newWaterTimer <= 0) {
+        newRandomWaterFill();
+        newWaterTimer = getRandomInt(100, 50);
     }
 }
 
