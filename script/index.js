@@ -4,7 +4,7 @@ var grid = [];
 var gridSize = 100;
 var widthHeight = 5;
 var blockTimer = 100;
-var newWaterTimer = 50;
+var newWaterTimer = 10;
 window.onload = init;
 function init() {
     canvas = document.getElementById("foo");
@@ -258,23 +258,23 @@ function update() {
                 if (next.whatAmI === "grass") {
                     next.whatAmI = "water";
                     next.fadeInOut = true;
-                    next.waitTimer = 200;
+                    next.waitTimer = 300;
                 }
                 next = grid[getRandomNeighborRect(r)];
                 if (next.whatAmI === "grass") {
                     next.whatAmI = "water";
                     next.fadeInOut = true;
-                    next.waitTimer = 200;
+                    next.waitTimer = 300;
                 }
                 r.whatAmI = "water";
                 r.fadeInOut = true;
                 r.move = false;
-                r.waitTimer = 200;
+                r.waitTimer = 300;
             }
             else if (r.fadeIn) {
                 if (r.blue + 25 < 250) {
                     r.blue += 25;
-                    if (r.blue > 50) {
+                    if (r.blue >= 25) {
                         r.move = true;
                     }
                 }
@@ -323,7 +323,7 @@ function update() {
             else {
                 r.whatAmI = 'dirt';
                 r.fadeInOut = false;
-                r.waitTimer = 1000;
+                r.waitTimer = 250;
             }
             if (r.fadeIn) {
                 if (r.red + 5 < 250) {
@@ -345,48 +345,47 @@ function update() {
             }
         }
         else if (r.whatAmI === 'dirt') {
-            if (r.red > 78) {
-                r.red--;
-            }
-            else if (r.red < 78) {
-                r.red++;
-            }
-            else if (r.green > 53) {
-                r.green--;
-            }
-            else if (r.green < 53) {
-                r.green++;
-            }
-            else if (r.blue > 36) {
-                r.blue--;
-            }
-            else if (r.blue < 36) {
-                r.blue++;
-            }
-            else {
-                r.fadeInOut = true;
-                r.fadeIn = true;
-                r.fadeOut = false;
+            if (!r.fadeInOut) {
+                if (r.red > 200) {
+                    r.red--;
+                }
+                else if (r.red < 200) {
+                    r.red++;
+                }
+                else if (r.green > 77) {
+                    r.green--;
+                }
+                else if (r.green < 77) {
+                    r.green++;
+                }
+                else if (r.blue > 1) {
+                    r.blue--;
+                }
+                else if (r.blue < 1) {
+                    r.blue++;
+                }
+                else {
+                    r.fadeInOut = true;
+                    r.fadeIn = true;
+                    r.fadeOut = false;
+                }
             }
             if (r.fadeInOut) {
                 if (r.fadeIn) {
-                    if (r.red < 100) {
+                    if (r.green < 100) {
                         r.red++;
-                        console.log(r.red);
-                        //r.green++;
-                        //r.blue++;
+                        r.green++;
+                        r.blue++;
                     }
                     else {
                         r.fadeIn = false;
                     }
-                    console.log(r.fadeIn);
                 }
                 else {
-                    if (r.red > 78) {
+                    if (r.green > 77) {
                         r.red--;
-                        console.log(r.red);
-                        //r.green--;
-                        //r.blue--;
+                        r.green--;
+                        r.blue--;
                     }
                     else {
                         r.fadeIn = true;
