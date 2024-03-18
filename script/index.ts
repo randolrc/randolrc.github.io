@@ -8,6 +8,10 @@ let widthHeight = 5;
 let blockTimer = 100;
 let newWaterTimer = 10;
 
+let valley = 0;
+let valleyMoveRate = 1;
+let valleyTimer = 100;
+
 window.onload = init;
 
 function init(){
@@ -280,14 +284,27 @@ function gameLoop(timeStamp) {
 function update() {
     grid.forEach((r) => { 
         if (r.whatAmI === "grass") {
+            let minGreen = 125;
+            let maxGreen = 150;
+
+            if (r.x >= valley - (widthHeight * 4) && r.x <= valley + (widthHeight * 4) ) {
+                minGreen = 120;
+                maxGreen = 145;
+            }
+
+            if (r.x >= valley - (widthHeight * 2) && r.x <= valley + (widthHeight * 4) ) {
+                minGreen = 115;
+                maxGreen = 140;
+            }
+
             if (r.fadeInOut) {
-                if (r.green + 1 < 150) {
+                if (r.green + 1 < maxGreen) {
                     r.green++;
                 } else {
                     r.fadeInOut = false;
                 }
             } else {
-                if (r.green - 1 > 125) {
+                if (r.green - 1 > minGreen) {
                     r.green--;
                 } else {
                     r.fadeInOut = true;
@@ -522,6 +539,19 @@ function update() {
     if (newWaterTimer <= 0) {
         newRandomWaterFill();
         newWaterTimer = getRandomInt(100, 50);
+    }
+
+    valleyTimer--;
+
+    if (valleyTimer <= 0) {
+        valleyTimer = getRandomInt(500, 100);
+        valleyMoveRate = getRandomInt(10, 1);
+    }
+
+    valley += valleyMoveRate;
+
+    if (valley >= gridSize * widthHeight) {
+        valley = 0;
     }
 }
 
