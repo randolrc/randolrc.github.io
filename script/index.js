@@ -213,6 +213,14 @@ function getRandomInt(max, min) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function getClampedXValue(r, clamp, original, xMult) {
+    if (r.x >= valley - (widthHeight * xMult) && r.x <= valley + (widthHeight * xMult)) {
+        return clamp;
+    }
+    else {
+        return original;
+    }
+}
 function gameLoop(timeStamp) {
     update();
     draw();
@@ -225,14 +233,21 @@ function update() {
         if (r.whatAmI === "grass") {
             var minGreen = 125;
             var maxGreen = 150;
-            if (r.x >= valley - (widthHeight * 4) && r.x <= valley + (widthHeight * 4)) {
+            minGreen = getClampedXValue(r, 120, minGreen, 4);
+            maxGreen = getClampedXValue(r, 145, maxGreen, 4);
+            minGreen = getClampedXValue(r, 115, minGreen, 2);
+            maxGreen = getClampedXValue(r, 140, maxGreen, 2);
+            /*
+            if (r.x >= valley - (widthHeight * 4) && r.x <= valley + (widthHeight * 4) ) {
                 minGreen = 120;
                 maxGreen = 145;
             }
-            if (r.x >= valley - (widthHeight * 2) && r.x <= valley + (widthHeight * 4)) {
+
+            if (r.x >= valley - (widthHeight * 2) && r.x <= valley + (widthHeight * 2) ) {
                 minGreen = 115;
                 maxGreen = 140;
             }
+            */
             if (r.fadeInOut) {
                 if (r.green + 1 < maxGreen) {
                     r.green++;
@@ -250,10 +265,12 @@ function update() {
                 }
             }
             if (r.blue > 0) {
-                r.blue--;
+                var rate = getClampedXValue(r, 5, 1, 1);
+                r.blue -= rate;
             }
             if (r.red > 0) {
-                r.red--;
+                var rate = getClampedXValue(r, 5, 1, 1);
+                r.red -= rate;
             }
         }
         else if (r.whatAmI === "waterFill") {
@@ -298,8 +315,12 @@ function update() {
             }
         }
         else if (r.whatAmI === "water") {
+            var min = 150;
+            var max = 250;
+            min = getClampedXValue(r, 100, min, 2);
+            max = getClampedXValue(r, 200, max, 2);
             if (r.fadeInOut) {
-                if (r.blue + 25 < 250) {
+                if (r.blue + 25 < max) {
                     r.blue += 25;
                 }
                 else {
@@ -307,7 +328,7 @@ function update() {
                 }
             }
             else {
-                if (r.blue - 25 > 150) {
+                if (r.blue - 25 > min) {
                     r.blue -= 25;
                 }
                 else {
@@ -338,8 +359,12 @@ function update() {
                 r.fadeInOut = false;
                 r.waitTimer = 250;
             }
+            var min = 100;
+            var max = 250;
+            min = getClampedXValue(r, 50, min, 2);
+            max = getClampedXValue(r, 200, max, 2);
             if (r.fadeIn) {
-                if (r.red + 5 < 250) {
+                if (r.red + 5 < max) {
                     r.red += 5;
                 }
                 else {
@@ -347,7 +372,7 @@ function update() {
                 }
             }
             else {
-                if (r.red - 5 > 100) {
+                if (r.red - 5 > min) {
                     r.red -= 5;
                 }
                 else {
@@ -384,8 +409,12 @@ function update() {
                 }
             }
             if (r.fadeInOut) {
+                var min = 77;
+                var max = 100;
+                min = getClampedXValue(r, 25, min, 1);
+                max = getClampedXValue(r, 50, max, 1);
                 if (r.fadeIn) {
-                    if (r.green < 100) {
+                    if (r.green < max) {
                         r.red++;
                         r.green++;
                         r.blue++;
@@ -395,7 +424,7 @@ function update() {
                     }
                 }
                 else {
-                    if (r.green > 77) {
+                    if (r.green > min) {
                         r.red--;
                         r.green--;
                         r.blue--;
