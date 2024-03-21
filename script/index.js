@@ -75,34 +75,28 @@ function init() {
     for (var i = 0; i < 1; i++) {
         newRandomWaterFill();
     }
-    /*
-    for (let i=0; i < 10; i++) {
-        rand = getRandomInt(grid.length- 1);
+    for (var i = 0; i < 10; i++) {
+        var rand = getRandomInt(grid.length - 1);
         grid[rand].whatAmI = "flower";
         grid[rand].fadeIn = true;
-        let rect = grid[rand];
-
+        var rect = grid[rand];
         if (rect.ne != -1 && grid[rect.ne].whatAmI === 'grass') {
             grid[rect.ne].whatAmI = 'flower';
             grid[rect.ne].red = 50;
         }
-
         if (rect.se != -1 && grid[rect.se].whatAmI === 'grass') {
             grid[rect.se].whatAmI = 'flower';
             grid[rect.se].red = 50;
         }
-
         if (rect.sw != -1 && grid[rect.sw].whatAmI === 'grass') {
             grid[rect.sw].whatAmI = 'flower';
             grid[rect.sw].red = 50;
         }
-
         if (rect.nw != -1 && grid[rect.nw].whatAmI === 'grass') {
             grid[rect.nw].whatAmI = 'flower';
             grid[rect.nw].red = 50;
         }
     }
-    */
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
     setInterval(gameLoop, 1 * 100);
@@ -361,22 +355,24 @@ function update() {
             }
             var min = 100;
             var max = 250;
+            var fadeRate = 5;
             min = getClampedXValue(r, 50, min, 2);
             max = getClampedXValue(r, 200, max, 2);
             if (r.fadeIn) {
-                if (r.red + 5 < max) {
-                    r.red += 5;
+                if (r.red + fadeRate < max) {
+                    r.red += fadeRate;
                 }
                 else {
+                    //r.red = max;
                     r.fadeIn = false;
                 }
             }
             else {
-                if (r.red - 5 > min) {
-                    r.red -= 5;
+                if (r.red - fadeRate > min) {
+                    r.red -= fadeRate;
                 }
                 else {
-                    //r.red = 0;
+                    //r.red = min;
                     r.fadeIn = true;
                     //r.whatAmI = 'grass';
                 }
@@ -411,13 +407,17 @@ function update() {
             if (r.fadeInOut) {
                 var min = 77;
                 var max = 100;
-                min = getClampedXValue(r, 25, min, 1);
-                max = getClampedXValue(r, 50, max, 1);
+                var fadeRate = 1;
+                //if (getRandomInt(4) === 4) {
+                fadeRate = getClampedXValue(r, getRandomInt(10, 2), fadeRate, 1);
+                //}
+                min = getClampedXValue(r, 100, min, 1);
+                max = getClampedXValue(r, 255, max, 1);
                 if (r.fadeIn) {
                     if (r.green < max) {
-                        r.red++;
-                        r.green++;
-                        r.blue++;
+                        r.red += fadeRate;
+                        r.green += fadeRate;
+                        r.blue += fadeRate;
                     }
                     else {
                         r.fadeIn = false;
@@ -425,9 +425,9 @@ function update() {
                 }
                 else {
                     if (r.green > min) {
-                        r.red--;
-                        r.green--;
-                        r.blue--;
+                        r.red -= fadeRate;
+                        r.green -= fadeRate;
+                        r.blue -= fadeRate;
                     }
                     else {
                         r.fadeIn = true;
@@ -443,17 +443,23 @@ function update() {
             if (r.green < 155) {
                 r.green++;
             }
+            var max = 150;
+            var min = 100;
+            var fadeRate = 5;
+            min = getClampedXValue(r, 150, min, 1);
+            max = getClampedXValue(r, 200, max, 1);
+            fadeRate = getClampedXValue(r, 15, fadeRate, 2);
             if (r.fadeIn) {
-                if (r.red + 5 < 150) {
-                    r.red += 5;
+                if (r.red + fadeRate < max) {
+                    r.red += fadeRate;
                 }
                 else {
                     r.fadeIn = false;
                 }
             }
             else {
-                if (r.red - 5 > 100) {
-                    r.red -= 5;
+                if (r.red - fadeRate > min) {
+                    r.red -= fadeRate;
                 }
                 else {
                     //r.red = 0;

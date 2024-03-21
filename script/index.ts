@@ -86,9 +86,9 @@ function init(){
         newRandomWaterFill();
     }  
 
-    /*
+    
     for (let i=0; i < 10; i++) {
-        rand = getRandomInt(grid.length- 1);
+        let rand = getRandomInt(grid.length- 1);
         grid[rand].whatAmI = "flower";
         grid[rand].fadeIn = true;
         let rect = grid[rand];
@@ -113,7 +113,7 @@ function init(){
             grid[rect.nw].red = 50;
         }
     } 
-    */
+    
 
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
@@ -437,21 +437,24 @@ function update() {
 
             let min = 100;
             let max = 250;
+            let fadeRate = 5;
 
             min = getClampedXValue(r, 50, min, 2);
             max = getClampedXValue(r, 200, max, 2);
 
             if (r.fadeIn) {
-                if (r.red + 5 < max) {
-                    r.red += 5;
+                if (r.red + fadeRate < max) {
+                    r.red += fadeRate;
+
                 } else {
+                    //r.red = max;
                     r.fadeIn = false;
                 }
             } else {
-                if (r.red - 5 > min) {
-                    r.red -= 5;
+                if (r.red - fadeRate > min) {
+                    r.red -= fadeRate;
                 } else {
-                    //r.red = 0;
+                    //r.red = min;
                     r.fadeIn = true;
                     //r.whatAmI = 'grass';
                 }
@@ -482,24 +485,33 @@ function update() {
 
                 let min = 77;
                 let max = 100;
+
+                let fadeRate = 1;
+
+                //if (getRandomInt(4) === 4) {
+                    fadeRate = getClampedXValue(r, getRandomInt(10, 2), fadeRate, 1);
+                //}
     
-                min = getClampedXValue(r, 25, min, 1);
-                max = getClampedXValue(r, 50, max, 1);
+                min = getClampedXValue(r, 100, min, 1);
+                max = getClampedXValue(r, 255, max, 1);
 
                 if (r.fadeIn) {
                     if (r.green < max) {
-                        r.red++;
-                        r.green++;
-                        r.blue++;
+                        r.red += fadeRate;
+                        r.green += fadeRate;
+                        r.blue += fadeRate;
+
+
+                        
                     } else {
                         r.fadeIn = false;
                         
                     }
                 } else {
                     if (r.green > min) {
-                        r.red--;
-                        r.green--;
-                        r.blue--;
+                        r.red -= fadeRate;
+                        r.green -= fadeRate;
+                        r.blue -= fadeRate;
                     } else {
                         r.fadeIn = true;
                     }
@@ -519,15 +531,23 @@ function update() {
                 r.green++;
             }
 
+            let max = 150;
+            let min = 100;
+            let fadeRate = 5;
+
+            min = getClampedXValue(r, 150, min, 1);
+            max = getClampedXValue(r, 200, max, 1);
+            fadeRate = getClampedXValue(r, 15, fadeRate, 2);
+
             if (r.fadeIn) {
-                if (r.red + 5 < 150) {
-                    r.red += 5;
+                if (r.red + fadeRate < max) {
+                    r.red += fadeRate;
                 } else {
                     r.fadeIn = false;
                 }
             } else {
-                if (r.red - 5 > 100) {
-                    r.red -= 5;
+                if (r.red - fadeRate > min) {
+                    r.red -= fadeRate;
                 } else {
                     //r.red = 0;
                     r.fadeIn = true;
