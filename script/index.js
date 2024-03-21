@@ -8,6 +8,7 @@ var newWaterTimer = 10;
 var valley = 0;
 var valleyMoveRate = 1;
 var valleyTimer = 100;
+var flowerTimer = 100;
 window.onload = init;
 function init() {
     canvas = document.getElementById("foo");
@@ -75,27 +76,8 @@ function init() {
     for (var i = 0; i < 1; i++) {
         newRandomWaterFill();
     }
-    for (var i = 0; i < 10; i++) {
-        var rand = getRandomInt(grid.length - 1);
-        grid[rand].whatAmI = "flower";
-        grid[rand].fadeIn = true;
-        var rect = grid[rand];
-        if (rect.ne != -1 && grid[rect.ne].whatAmI === 'grass') {
-            grid[rect.ne].whatAmI = 'flower';
-            grid[rect.ne].red = 50;
-        }
-        if (rect.se != -1 && grid[rect.se].whatAmI === 'grass') {
-            grid[rect.se].whatAmI = 'flower';
-            grid[rect.se].red = 50;
-        }
-        if (rect.sw != -1 && grid[rect.sw].whatAmI === 'grass') {
-            grid[rect.sw].whatAmI = 'flower';
-            grid[rect.sw].red = 50;
-        }
-        if (rect.nw != -1 && grid[rect.nw].whatAmI === 'grass') {
-            grid[rect.nw].whatAmI = 'flower';
-            grid[rect.nw].red = 50;
-        }
+    for (var i = 0; i < 5; i++) {
+        newRandomFlower();
     }
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
@@ -114,7 +96,7 @@ var Rect = /** @class */ (function () {
         this.e = -1;
         this.w = -1;
         this.ne = -1;
-        this.nw - 1;
+        this.nw = -1;
         this.se = -1;
         this.sw = -1;
         this.fadeInOut = true;
@@ -125,6 +107,7 @@ var Rect = /** @class */ (function () {
         this.move = false;
         this.direction = "se";
         this.waitTimer = 0;
+        this.fadeRate = 1;
     }
     Rect.prototype.directionFromString = function (dir) {
         switch (dir) {
@@ -148,6 +131,70 @@ var Rect = /** @class */ (function () {
     };
     return Rect;
 }());
+function newRandomFlower() {
+    var rand = getRandomInt(grid.length - 1);
+    grid[rand].whatAmI = "flower";
+    grid[rand].fadeIn = true;
+    var rect = grid[rand];
+    rect.waitTimer = getRandomInt(50, 25);
+    rect.fadeRate = getRandomInt(15, 5);
+    switch (getRandomInt(2, 0)) {
+        case 0:
+            if (rect.ne != -1 && grid[rect.ne].whatAmI === 'grass') {
+                grid[rect.ne].whatAmI = 'flower';
+                grid[rect.ne].red = 50;
+                grid[rect.ne].waitTimer = getRandomInt(50, 25);
+                grid[rect.ne].fadeRate = getRandomInt(15, 5);
+            }
+            if (rect.se != -1 && grid[rect.se].whatAmI === 'grass') {
+                grid[rect.se].whatAmI = 'flower';
+                grid[rect.se].red = 50;
+                grid[rect.se].waitTimer = getRandomInt(50, 25);
+                grid[rect.se].fadeRate = getRandomInt(15, 5);
+            }
+            if (rect.sw != -1 && grid[rect.sw].whatAmI === 'grass') {
+                grid[rect.sw].whatAmI = 'flower';
+                grid[rect.sw].red = 50;
+                grid[rect.sw].waitTimer = getRandomInt(50, 25);
+                grid[rect.sw].fadeRate = getRandomInt(15, 5);
+            }
+            if (rect.nw != -1 && grid[rect.nw].whatAmI === 'grass') {
+                grid[rect.nw].whatAmI = 'flower';
+                grid[rect.nw].red = 50;
+                grid[rect.nw].waitTimer = getRandomInt(50, 25);
+                grid[rect.nw].fadeRate = getRandomInt(15, 5);
+            }
+            break;
+        case 1:
+            if (rect.ne != -1 && grid[rect.ne].whatAmI === 'grass') {
+                grid[rect.ne].whatAmI = 'flower';
+                grid[rect.ne].red = 50;
+                grid[rect.ne].waitTimer = getRandomInt(50, 25);
+                grid[rect.ne].fadeRate = getRandomInt(15, 5);
+            }
+            if (rect.sw != -1 && grid[rect.sw].whatAmI === 'grass') {
+                grid[rect.sw].whatAmI = 'flower';
+                grid[rect.sw].red = 50;
+                grid[rect.sw].waitTimer = getRandomInt(50, 25);
+                grid[rect.sw].fadeRate = getRandomInt(15, 5);
+            }
+            break;
+        case 2:
+            if (rect.nw != -1 && grid[rect.nw].whatAmI === 'grass') {
+                grid[rect.nw].whatAmI = 'flower';
+                grid[rect.nw].red = 50;
+                grid[rect.nw].waitTimer = getRandomInt(50, 25);
+                grid[rect.nw].fadeRate = getRandomInt(15, 5);
+            }
+            if (rect.se != -1 && grid[rect.se].whatAmI === 'grass') {
+                grid[rect.se].whatAmI = 'flower';
+                grid[rect.se].red = 50;
+                grid[rect.se].waitTimer = getRandomInt(50, 25);
+                grid[rect.se].fadeRate = getRandomInt(15, 5);
+            }
+            break;
+    }
+}
 function newRandomWaterFill() {
     var rand = getRandomInt(grid.length - 1);
     grid[rand].whatAmI = "waterFill";
@@ -445,7 +492,7 @@ function update() {
             }
             var max = 150;
             var min = 100;
-            var fadeRate = 5;
+            var fadeRate = r.fadeRate;
             min = getClampedXValue(r, 150, min, 1);
             max = getClampedXValue(r, 200, max, 1);
             fadeRate = getClampedXValue(r, 15, fadeRate, 2);
@@ -466,6 +513,10 @@ function update() {
                     r.fadeIn = true;
                     //r.whatAmI = 'grass';
                 }
+            }
+            r.waitTimer--;
+            if (r.waitTimer <= 0) {
+                r.whatAmI = 'grass';
             }
         }
     });
@@ -512,6 +563,13 @@ function update() {
     valley += valleyMoveRate;
     if (valley >= gridSize * widthHeight) {
         valley = 0;
+    }
+    flowerTimer--;
+    if (flowerTimer <= 0) {
+        for (var i = 0; i < 5; i++) {
+            newRandomFlower();
+        }
+        flowerTimer = getRandomInt(60, 30);
     }
 }
 function draw() {
