@@ -590,13 +590,13 @@ function update() {
                 r.green++;
             }
 
-            let max = 150;
-            let min = 100;
+            let max = 100;
+            let min = 50;
             let fadeRate = r.fadeRate;
 
-            min = getClampedXValue(r, 150, min, 1);
-            max = getClampedXValue(r, 200, max, 1);
-            fadeRate = getClampedXValue(r, 15, fadeRate, 2);
+            min = getClampedXValue(r, 100, min, 4);
+            max = getClampedXValue(r, 150, max, 4);
+            fadeRate = getClampedXValue(r, 15, fadeRate, 4);
 
             if (r.fadeIn) {
                 if (r.red + fadeRate < max) {
@@ -684,7 +684,7 @@ function update() {
     flowerTimer--;
 
     if (flowerTimer <= 0) {
-        for (let i=0; i < 5; i++) {
+        for (let i=0; i < 20; i++) {
             newRandomFlower();
         }
 

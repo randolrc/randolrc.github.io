@@ -490,12 +490,12 @@ function update() {
             if (r.green < 155) {
                 r.green++;
             }
-            var max = 150;
-            var min = 100;
+            var max = 100;
+            var min = 50;
             var fadeRate = r.fadeRate;
-            min = getClampedXValue(r, 150, min, 1);
-            max = getClampedXValue(r, 200, max, 1);
-            fadeRate = getClampedXValue(r, 15, fadeRate, 2);
+            min = getClampedXValue(r, 100, min, 4);
+            max = getClampedXValue(r, 150, max, 4);
+            fadeRate = getClampedXValue(r, 15, fadeRate, 4);
             if (r.fadeIn) {
                 if (r.red + fadeRate < max) {
                     r.red += fadeRate;
@@ -566,7 +566,7 @@ function update() {
     }
     flowerTimer--;
     if (flowerTimer <= 0) {
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 20; i++) {
             newRandomFlower();
         }
         flowerTimer = getRandomInt(60, 30);
