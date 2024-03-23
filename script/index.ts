@@ -2,7 +2,7 @@ let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
 
 let grid = [];
-let gridSize = 100;
+let gridSize = 150;
 let widthHeight = 5;
 
 let blockTimer = 100;
@@ -40,7 +40,6 @@ function init(){
             rG = getRandomInt(150, 100);
 
             grid[index] = new Rect(index, x * widthHeight, y * widthHeight, rR, rG, rB);
-            //grid[index] = new Rectangle(x * widthHeight, y * widthHeight, new Color(rR, rG, rB));
             index++;
         }  
     }
@@ -99,7 +98,7 @@ function init(){
 
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
-    setInterval(gameLoop, 1 * 100);
+    setInterval(gameLoop, 1 * 75);
 }
 
 class Rect {
@@ -418,6 +417,7 @@ function update() {
                 if (next.whatAmI === "grass") {
                     next.whatAmI = "waterFill";
                     next.fadeIn = true;
+                    next.move = true;
                 } else if (next.whatAmI === "water") {
                     next.whatAmI = "waterFill";
                     next.move = true;
@@ -534,19 +534,22 @@ function update() {
                 if (r.red > 200) {
                     r.red--;
                 } else if (r.red < 200) {
-                    r.red++;
+                    r.red += 5;
                 } else if (r.green > 77) {
-                    r.green--;
+                    r.green -= 5;
                 } else if (r.green < 77) {
                     r.green++;
                 } else if (r.blue > 1) {
-                    r.blue--;
-                } else if (r.blue < 1) {
-                    r.blue++;
+                    r.blue -= 5;
+
+                    if (r.blue < 1) {
+                        r.blue = 1;
+                    } 
+                    
                 } else {
                     r.fadeInOut = true;
                     r.fadeIn = true;
-                    r.fadeOut = false;
+                    r.fadeOut = false; 
                 }
             }
 

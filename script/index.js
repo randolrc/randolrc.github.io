@@ -1,7 +1,7 @@
 var canvas;
 var ctx;
 var grid = [];
-var gridSize = 100;
+var gridSize = 150;
 var widthHeight = 5;
 var blockTimer = 100;
 var newWaterTimer = 10;
@@ -29,7 +29,6 @@ function init() {
             rB = 0;
             rG = getRandomInt(150, 100);
             grid[index] = new Rect(index, x * widthHeight, y * widthHeight, rR, rG, rB);
-            //grid[index] = new Rectangle(x * widthHeight, y * widthHeight, new Color(rR, rG, rB));
             index++;
         }
     }
@@ -85,7 +84,7 @@ function init() {
     }
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
-    setInterval(gameLoop, 1 * 100);
+    setInterval(gameLoop, 1 * 75);
 }
 var Rect = /** @class */ (function () {
     function Rect(index, x, y, r, g, b) {
@@ -329,6 +328,7 @@ function update() {
                 if (next.whatAmI === "grass") {
                     next.whatAmI = "waterFill";
                     next.fadeIn = true;
+                    next.move = true;
                 }
                 else if (next.whatAmI === "water") {
                     next.whatAmI = "waterFill";
@@ -440,19 +440,19 @@ function update() {
                     r.red--;
                 }
                 else if (r.red < 200) {
-                    r.red++;
+                    r.red += 5;
                 }
                 else if (r.green > 77) {
-                    r.green--;
+                    r.green -= 5;
                 }
                 else if (r.green < 77) {
                     r.green++;
                 }
                 else if (r.blue > 1) {
-                    r.blue--;
-                }
-                else if (r.blue < 1) {
-                    r.blue++;
+                    r.blue -= 5;
+                    if (r.blue < 1) {
+                        r.blue = 1;
+                    }
                 }
                 else {
                     r.fadeInOut = true;
