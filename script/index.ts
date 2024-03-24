@@ -98,7 +98,7 @@ function init(){
 
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
-    setInterval(gameLoop, 1 * 75);
+    setInterval(gameLoop, 1 * 100);
 }
 
 class Rect {
@@ -271,7 +271,7 @@ function newRandomWaterFill() {
     grid[rand].fadeIn = true;
 }
 
-function getRandomNeighborRect(r: Rect) {
+function getRandomNeighborRect(r: Rect, whatAmI = ['any']) {
     const n = 0;
     const ne = 1;
     const e = 2;
@@ -303,23 +303,39 @@ function getRandomNeighborRect(r: Rect) {
         num = n;
     }
 
+    let neighborIndex = -1;
+
     switch (num) {
         case n:
-            return r.n;
+            neighborIndex = r.n;
+            break;
         case ne:
-            return r.ne;
+            neighborIndex = r.ne;
+            break;
         case e:
-            return r.e;
+            neighborIndex = r.e;
+            break;
         case se:
-            return r.se;
+            neighborIndex = r.se;
+            break;
         case s:
-            return r.s;
+            neighborIndex = r.s;
+            break;
         case sw:
-            return r.sw; 
+            neighborIndex = r.sw; 
+            break;
         case w:
-            return r.w; 
+            neighborIndex = r.w; 
+            break;
         case nw:
-            return r.nw; 
+            neighborIndex = r.nw; 
+            break;
+    }
+
+    if (whatAmI.includes('any') || whatAmI.includes(grid[neighborIndex].whatAmI)) {
+        return neighborIndex;
+    } else {
+        return r.index;
     }
 }
 
@@ -724,8 +740,17 @@ function update() {
 }
 
 function draw(){
-    grid.forEach((rectangle) => {       
-        ctx.fillStyle = `rgb(${rectangle.red} ${rectangle.green} ${rectangle.blue})`;
+    
+    grid.forEach((rectangle) => {   
+        
+        //if (rectangle.index % 1 === 0) {
+            let r = getRandomNeighborRect(rectangle, ['block','dirt','water']);
+
+            ctx.fillStyle = `rgb(${grid[r].red} ${grid[r].green} ${grid[r].blue})`;
+        //} else {
+          //  ctx.fillStyle = `rgb(${rectangle.red} ${rectangle.green} ${rectangle.blue})`;
+        //}
+        
         ctx.fillRect(rectangle.x, rectangle.y, widthHeight, widthHeight);
     });
 }

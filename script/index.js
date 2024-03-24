@@ -84,7 +84,7 @@ function init() {
     }
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
-    setInterval(gameLoop, 1 * 75);
+    setInterval(gameLoop, 1 * 100);
 }
 var Rect = /** @class */ (function () {
     function Rect(index, x, y, r, g, b) {
@@ -203,7 +203,8 @@ function newRandomWaterFill() {
     grid[rand].whatAmI = "waterFill";
     grid[rand].fadeIn = true;
 }
-function getRandomNeighborRect(r) {
+function getRandomNeighborRect(r, whatAmI) {
+    if (whatAmI === void 0) { whatAmI = ['any']; }
     var n = 0;
     var ne = 1;
     var e = 2;
@@ -229,23 +230,38 @@ function getRandomNeighborRect(r) {
     if (r.y === (widthHeight * gridSize) - widthHeight && southern.includes(num)) {
         num = n;
     }
+    var neighborIndex = -1;
     switch (num) {
         case n:
-            return r.n;
+            neighborIndex = r.n;
+            break;
         case ne:
-            return r.ne;
+            neighborIndex = r.ne;
+            break;
         case e:
-            return r.e;
+            neighborIndex = r.e;
+            break;
         case se:
-            return r.se;
+            neighborIndex = r.se;
+            break;
         case s:
-            return r.s;
+            neighborIndex = r.s;
+            break;
         case sw:
-            return r.sw;
+            neighborIndex = r.sw;
+            break;
         case w:
-            return r.w;
+            neighborIndex = r.w;
+            break;
         case nw:
-            return r.nw;
+            neighborIndex = r.nw;
+            break;
+    }
+    if (whatAmI.includes('any') || whatAmI.includes(grid[neighborIndex].whatAmI)) {
+        return neighborIndex;
+    }
+    else {
+        return r.index;
     }
 }
 function randomChooser(array) {
@@ -593,7 +609,12 @@ function update() {
 }
 function draw() {
     grid.forEach(function (rectangle) {
-        ctx.fillStyle = "rgb(".concat(rectangle.red, " ").concat(rectangle.green, " ").concat(rectangle.blue, ")");
+        //if (rectangle.index % 1 === 0) {
+        var r = getRandomNeighborRect(rectangle, ['block', 'dirt', 'water']);
+        ctx.fillStyle = "rgb(".concat(grid[r].red, " ").concat(grid[r].green, " ").concat(grid[r].blue, ")");
+        //} else {
+        //  ctx.fillStyle = `rgb(${rectangle.red} ${rectangle.green} ${rectangle.blue})`;
+        //}
         ctx.fillRect(rectangle.x, rectangle.y, widthHeight, widthHeight);
     });
 }
