@@ -13,6 +13,8 @@ var valleyBiasTimer = 250;
 var valleyOn = true;
 var valleyOnTimer = 100;
 var flowerTimer = 100;
+var dirBias = 'none';
+var biasTimer = 100;
 window.onload = init;
 function init() {
     canvas = document.getElementById("foo");
@@ -213,11 +215,25 @@ function getRandomNeighborRect(r, whatAmI) {
     var sw = 5;
     var w = 6;
     var nw = 7;
-    var num = getRandomInt(7);
     var northern = [n, ne, nw];
     var western = [nw, w, sw];
     var southern = [se, s, sw];
     var eastern = [se, e, ne];
+    var num = getRandomInt(7);
+    switch (dirBias) {
+        case ('s'):
+            num = getRandomInt(5, 3);
+            break;
+        case ('e'):
+            num = getRandomInt(5, 1);
+            break;
+        case ('n'):
+            num = getRandomInt(1);
+            break;
+        case ('w'):
+            num = getRandomInt(7, 5);
+            break;
+    }
     if (r.y === 0 && northern.includes(num)) {
         num = s;
     }
@@ -483,8 +499,9 @@ function update() {
                 //if (getRandomInt(4) === 4) {
                 fadeRate = getClampedXValue(r, getRandomInt(10, 2), fadeRate, 1);
                 //}
-                min = getClampedXValue(r, 100, min, 1);
-                max = getClampedXValue(r, 255, max, 1);
+                min = getClampedXValue(r, 100, min, 2);
+                max = getClampedXValue(r, 255, max, 2);
+                fadeRate = getClampedXValue(r, 10, fadeRate, 2);
                 if (r.fadeIn) {
                     if (r.green < max) {
                         r.red += fadeRate;
@@ -605,6 +622,28 @@ function update() {
     if (valleyOnTimer <= 0) {
         valleyOn = valleyOn ? false : true;
         valleyOnTimer = getRandomInt(100, 50);
+    }
+    biasTimer--;
+    if (biasTimer <= 0) {
+        switch (getRandomInt(10)) {
+            case (0):
+                dirBias = 'n';
+                break;
+            case (1):
+                dirBias = 'e';
+                break;
+            case (2):
+                dirBias = 's';
+                break;
+            case (3):
+                dirBias = 'w';
+                break;
+            default:
+                dirBias = 'none';
+                break;
+        }
+        biasTimer = getRandomInt(300, 100);
+        console.log(dirBias);
     }
 }
 function draw() {
