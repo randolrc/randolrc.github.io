@@ -15,6 +15,7 @@ var valleyOnTimer = 100;
 var flowerTimer = 100;
 var dirBias = 'none';
 var biasTimer = 100;
+var bugCount = 0;
 window.onload = init;
 function init() {
     canvas = document.getElementById("foo");
@@ -84,6 +85,9 @@ function init() {
     for (var i = 0; i < 5; i++) {
         newRandomFlower();
     }
+    for (var i = 0; i < 10; i++) {
+        newRandomBug();
+    }
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
     setInterval(gameLoop, 1 * 100);
@@ -136,6 +140,13 @@ var Rect = /** @class */ (function () {
     };
     return Rect;
 }());
+function newRandomBug() {
+    var ranIndex = getRandomInt(grid.length - 1);
+    grid[ranIndex].whatAmI = 'bug';
+    grid[ranIndex].fadeIn = true;
+    grid[ranIndex].waitTimer = 100;
+    bugCount++;
+}
 function newRandomFlower() {
     var rand = getRandomInt(grid.length - 1);
     grid[rand].whatAmI = "flower";
@@ -310,6 +321,7 @@ function gameLoop(timeStamp) {
     //window.requestAnimationFrame(gameLoop);
 }
 function update() {
+    var bCount = 0;
     grid.forEach(function (r) {
         if (r.whatAmI === "grass") {
             var minGreen = 125;
@@ -561,7 +573,41 @@ function update() {
                 r.whatAmI = 'grass';
             }
         }
+        else if (r.whatAmI === 'bug') {
+            bCount++;
+            if (r.green > 10) {
+                r.green -= 10;
+            }
+            if (r.fadeIn) {
+                if (r.red + 25 < 255) {
+                    r.red += 25;
+                }
+                else {
+                    r.fadeIn = false;
+                }
+            }
+            else {
+                if (r.red - 5 > 100) {
+                    r.red -= 5;
+                }
+                else {
+                    r.fadeIn = true;
+                }
+            }
+            r.waitTimer--;
+            if (r.waitTimer <= 0) {
+                var nextBug = grid[getRandomNeighborRect(r)];
+                nextBug.whatAmI = 'bug';
+                nextBug.waitTimer = getRandomInt(10, 1);
+                r.whatAmI = 'grass';
+            }
+        }
     });
+    if (bCount < 5) {
+        for (var i = 0; i < 5; i++) {
+            newRandomBug();
+        }
+    }
     //blockTimer--;
     if (blockTimer <= 0) {
         var rand = getRandomInt(grid.length - 1);
@@ -623,36 +669,42 @@ function update() {
         valleyOn = valleyOn ? false : true;
         valleyOnTimer = getRandomInt(100, 50);
     }
-    biasTimer--;
-    if (biasTimer <= 0) {
-        switch (getRandomInt(10)) {
-            case (0):
-                dirBias = 'n';
-                break;
-            case (1):
-                dirBias = 'e';
-                break;
-            case (2):
-                dirBias = 's';
-                break;
-            case (3):
-                dirBias = 'w';
-                break;
-            default:
-                dirBias = 'none';
-                break;
+    /*
+        biasTimer--
+    
+        if (biasTimer <= 0) {
+    
+            switch(getRandomInt(10)) {
+                case (0):
+                    dirBias = 'n';
+                    break;
+                case (1):
+                    dirBias = 'e';
+                    break;
+                case (2):
+                    dirBias = 's';
+                    break;
+                case (3):
+                    dirBias = 'w';
+                    break;
+                default:
+                    dirBias = 'none';
+                    break;
+            }
+    
+            biasTimer = getRandomInt(300, 100);
+            
+            console.log(dirBias);
         }
-        biasTimer = getRandomInt(300, 100);
-        console.log(dirBias);
-    }
+        */
 }
 function draw() {
     grid.forEach(function (rectangle) {
         //if (rectangle.index % 1 === 0) {
-        var r = getRandomNeighborRect(rectangle, ['block', 'dirt', 'water']);
+        var r = getRandomNeighborRect(rectangle, ['block', 'dirt']);
         ctx.fillStyle = "rgb(".concat(grid[r].red, " ").concat(grid[r].green, " ").concat(grid[r].blue, ")");
         //} else {
-        //  ctx.fillStyle = `rgb(${rectangle.red} ${rectangle.green} ${rectangle.blue})`;
+        //ctx.fillStyle = `rgb(${rectangle.red} ${rectangle.green} ${rectangle.blue})`;
         //}
         ctx.fillRect(rectangle.x, rectangle.y, widthHeight, widthHeight);
     });
