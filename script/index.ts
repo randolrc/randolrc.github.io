@@ -2,16 +2,17 @@ let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
 
 let grid = [];
-let gridSize = 150;
-let widthHeight = 5;
+let gridSize = 160;
+let widthHeight = 3;
 
 let blockTimer = 100;
-let newWaterTimer = 10;
+let newWaterTimer = 1000;
+let waterDieTime = 1000;
 
 let valley = 0;
 let valleyMoveRate = 1;
 let valleyTimer = 100;
-let valleyBias = 0.5
+let valleyBias = 0.5;
 let valleyBiasTimer = 250;
 let valleyOn = true;
 let valleyOnTimer = 100;
@@ -26,7 +27,7 @@ let bugCount = 0;
 window.onload = init;
 
 function init(){
-    canvas = document.getElementById("foo") as HTMLCanvasElement;
+    canvas = document.getElementById("canvas") as HTMLCanvasElement;
     ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
     ctx.canvas.width  = gridSize * widthHeight; // window.innerWidth;
@@ -91,18 +92,25 @@ function init(){
         index++;
     });
 
-    for (let i=0; i < 1; i++) {
-        newRandomWaterFill();
+    /*
+    let r = newRandomWaterFill();
+
+    for (let i=0; i < 10; i++) {
+        let index = getRandomNeighborRect(r);
+
+        grid[index].whatAmI = "waterFill";
+        grid[index].fadeIn = true;
     }  
-    
+    */
+
     for (let i=0; i < 5; i++) {
         newRandomFlower();
     } 
-
+/*
     for (let i=0; i < 10; i++) {
         newRandomBug();
     }
-
+*/
     // Start the first frame request
     //window.requestAnimationFrame(gameLoop);
     setInterval(gameLoop, 1 * 100);
@@ -282,10 +290,11 @@ function newRandomFlower() {
     }
 }
 
-function newRandomWaterFill() {
+function newRandomWaterFill(): Rect {
     let rand = getRandomInt(grid.length- 1);
     grid[rand].whatAmI = "waterFill";
     grid[rand].fadeIn = true;
+    return grid[rand];
 }
 
 function getRandomNeighborRect(r: Rect, whatAmI = ['any']) {
@@ -424,6 +433,14 @@ function update() {
             minGreen = getClampedXValue(r, 115, minGreen, 2);
             maxGreen = getClampedXValue(r, 140, maxGreen, 2);
 
+            let n = getRandomNeighborRect(r, ['water']);
+
+            
+            if (n !== r.index) {
+                //r.red = 50;
+            
+            }
+
             /*
             if (r.x >= valley - (widthHeight * 4) && r.x <= valley + (widthHeight * 4) ) {
                 minGreen = 120;
@@ -476,27 +493,21 @@ function update() {
                     next.move = true;
                 }
 
-                next = grid[getRandomNeighborRect(r)];
+                for (let i = 0; i < 3; i++) {
+                    next = grid[getRandomNeighborRect(r)];
 
-                if (next.whatAmI === "grass") {
-                    next.whatAmI = "water";
-                    next.fadeInOut = true;
-                    next.waitTimer = 300;
+                    if (next.whatAmI === "grass") {
+                        next.whatAmI = "water";
+                        next.fadeInOut = true;
+                        next.waitTimer = waterDieTime;
+                    }
                 }
-
-                next = grid[getRandomNeighborRect(r)];
-
-                if (next.whatAmI === "grass") {
-                    next.whatAmI = "water";
-                    next.fadeInOut = true;
-                    next.waitTimer = 300;
-                }
-
+                
+                
                 r.whatAmI = "water";
                 r.fadeInOut = true;
                 r.move = false;
-                r.waitTimer = 300;        
-                
+                r.waitTimer = waterDieTime;        
             } else  if (r.fadeIn) {
                 if (r.blue + 25 < 250) {
                     r.blue += 25;
@@ -508,7 +519,7 @@ function update() {
                     //r.fadeIn = false;
                     //r.move = true;
                 }  
-            }
+            } 
         } else if (r.whatAmI === "water") {
 
             let min = 150;
@@ -535,8 +546,8 @@ function update() {
                 r.waitTimer--;
             } else {
                 r.fadeInOut = false;
-                r.whatAmI = "block";
-                r.waitTimer = 100;
+                r.whatAmI = "grass";
+                //r.waitTimer = 50;
             }
             
         } else if (r.whatAmI === "block") {
@@ -554,7 +565,7 @@ function update() {
             } else {
                 r.whatAmI = 'dirt';
                 r.fadeInOut = false;
-                r.waitTimer = 250;
+                r.waitTimer = 100;
             } 
 
             let min = 100;
@@ -717,13 +728,13 @@ function update() {
             }
         }
     });
-
+/*
     if (bCount < 5) {
         for (let i=0; i < 5; i++) {
             newRandomBug();
         }
     }
-
+*/
     //blockTimer--;
 
     if (blockTimer <= 0) {
@@ -763,11 +774,11 @@ function update() {
         blockTimer = getRandomInt(100, 1);
     }
 
-    newWaterTimer--;
+    //newWaterTimer--;
 
     if (newWaterTimer <= 0) {
         newRandomWaterFill();
-        newWaterTimer = getRandomInt(100, 50);
+        newWaterTimer = getRandomInt(2000, 1000);
     }
 
     valleyTimer--;
@@ -845,7 +856,7 @@ function draw(){
     grid.forEach((rectangle) => {   
         
         //if (rectangle.index % 1 === 0) {
-            let r = getRandomNeighborRect(rectangle, ['block','dirt']);
+            let r = getRandomNeighborRect(rectangle, ['block']);
 
             ctx.fillStyle = `rgb(${grid[r].red} ${grid[r].green} ${grid[r].blue})`;
         //} else {
