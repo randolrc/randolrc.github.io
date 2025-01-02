@@ -193,7 +193,7 @@ function showPage(pageNum, result) {
         const computedStyle = window.getComputedStyle($display[0]);
         context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
 
-        return context.measureText(word).width + 10;
+        return context.measureText(word).width + 2;
     }
 
     /**
