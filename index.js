@@ -15,16 +15,26 @@ let $fullscreenButton;
 let $playPauseButton;
 let $header;
 
+let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
+
 
 document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     setEvents();
 
-    let story = localStorage.getItem("story");
+    const cUrlStory = getQueryParams(window.location.href).story;
 
-    if (story) {
+    if (cUrlStory) {
+        localStorage.setItem("story", cUrlStory);
+        window.location.href = window.location.href.split('?')[0];
+    }
+
+    cStory = localStorage.getItem("story");
+
+    if (cStory) {
+        let story = decodeAndDecompress(cStory);
         $storyInput.val(story);
         ignoreClicksOnce = false;
         setupStory();
@@ -33,6 +43,18 @@ document.addEventListener("DOMContentLoaded", () => {
         $storyInput.css("visibility","visible");
     }
 });
+
+function getQueryParams(url) {
+    const params = {};
+    const queryString = url.split('?')[1]; // Get the part after '?'
+    if (queryString) {
+        queryString.split('&').forEach(pair => {
+            const [key, value] = pair.split('=');
+            params[decodeURIComponent(key)] = decodeURIComponent(value || '');
+        });
+    }
+    return params;
+}
 
 function loadElements() {
     $display = $("#display");
@@ -141,7 +163,9 @@ function setupStory() {
 
     let story = $storyInput.val();
 
-    localStorage.setItem("story", story);
+    cStory = compressAndEncode(story);
+
+    localStorage.setItem("story", cStory);
 
     let result = {storyText: story};
 
@@ -150,11 +174,31 @@ function setupStory() {
 
     showPage(0, result);
 }
+
+function uint8ArrayToBase64(uint8Array) {
+    return btoa(String.fromCharCode(...uint8Array));
+}
+
+function base64ToUint8Array(base64) {
+    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+}
+
+function compressAndEncode(input) {
+    const compressed = pako.deflate(input); // Compress to Uint8Array
+    const base64 = uint8ArrayToBase64(compressed); // Convert to Base64
+    const encodedBlob = encodeURIComponent(base64);
+    return encodedBlob;
+}
+
+function decodeAndDecompress(encodedBlob) {
+    const base64 = decodeURIComponent(encodedBlob);
+    const compressed = base64ToUint8Array(base64); // Convert Base64 back to Uint8Array
+    const decompressed = pako.inflate(compressed, { to: 'string' }); // Decompress to string
+    return decompressed;
+}
     
 function showPage(pageNum, result) {
     const text = result.storyText || 'No text data found.';
-    //const maxLineLength = 75;
-    const url = result.url || 'none';
 
     const classQuoteFormat = "quoteFormat";
 
@@ -166,7 +210,6 @@ function showPage(pageNum, result) {
     let printText = true;
     let currentPage = pageNum;
     let paragraphs = getParagraphs(text);
-    let index = 0;
 
     $totalPages.text(paragraphs.length);
 
