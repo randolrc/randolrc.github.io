@@ -18,7 +18,7 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #000000;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: flex-start;
     z-index: 1000;
@@ -29,7 +29,7 @@ body {
     font-size: 4rem;
     color: #ecf0f1;
     font-family: "Henny Penny", serif;
-    animation: fade-out 1.5s forwards 0s;
+    animation: fade-out 2.0s forwards 0.5s;
 }
 
 @keyframes fade-out {
