@@ -34,6 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     setEvents();
 
+    $splash.css("display","flex");
+    $("#product-name").text("Tale Teller");
+
     setTimeout(() => {
         $splash.css("display","none");
         loadMain();
