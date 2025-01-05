@@ -37,11 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
     $splash.css("display","flex");
     
     setTimeout(() => {
-        // Remove splash screen
         $splash.css("display","none");
         loadMain();
-        // Show main content
-        //document.body.classList.add("show-content");
       }, 1000);
 });
 
