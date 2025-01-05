@@ -14,6 +14,8 @@ let $reloadButton;
 let $fullscreenButton;
 let $playPauseButton;
 let $header;
+let $splash;
+let $splashTitle;
 
 let cStory;
 const timeoutIds = [];
@@ -23,7 +25,19 @@ let invisCursorTimer;
 document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     setEvents();
+    
+    setTimeout(() => {
+        // Remove splash screen
+        $splash.css("display","none");
+        loadMain();
+        // Show main content
+        //document.body.classList.add("show-content");
+      }, 1000);
 
+
+});
+
+function loadMain() {
     const cUrlStory = getQueryParams(window.location.href).story;
 
     if (cUrlStory) {
@@ -42,7 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
         $storySubmit.css("visibility","visible");
         $storyInput.css("visibility","visible");
     }
-});
+}
 
 function getQueryParams(url) {
     const params = {};
@@ -68,6 +82,8 @@ function loadElements() {
     $fullscreenButton = $("#fullscreenButton");
     $playPauseButton = $("#playPauseButton");
     $header = $("header");
+    $splash = $("#splash-screen");
+    $splashTitle = $("#product-name");
 }
 
 function setEvents() {
@@ -138,6 +154,8 @@ function setEvents() {
               });
           }
     });
+
+
 }
 
 function setTrackedTimeout(callback, delay) {

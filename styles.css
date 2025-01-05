@@ -11,6 +11,34 @@ body {
     font-family: 'Libre Baskerville', serif;
 }
 
+#splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 1000;
+}
+
+#product-name {
+    margin-top: 10%;
+    font-size: 4rem;
+    color: #ecf0f1;
+    font-family: "Henny Penny", serif;
+    animation: fade-out 1.5s forwards 0s;
+}
+
+@keyframes fade-out {
+    to {
+        opacity: 0;
+        transform: scale(1.1);
+    }
+}
+
 .cursor-invisible {
     cursor: none; /* hife the cursor when needed */
 }
