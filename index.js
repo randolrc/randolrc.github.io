@@ -34,12 +34,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     setEvents();
 
-    $splash.css("display","flex");
+    setTimeout(() => {$splash.css("display","flex")}, 500);
     
     setTimeout(() => {
         $splash.css("display","none");
         loadMain();
-      }, 1000);
+      }, 1500);
 });
 
 function loadMain() {
