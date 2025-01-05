@@ -34,13 +34,16 @@ document.addEventListener("DOMContentLoaded", () => {
     loadElements();
     setEvents();
 
-    $splash.css("display","flex");
-    $("#product-name").text("Tale Teller");
+    setTimeout(() => {
+        $splash.css("display","flex");
+        $("#product-name").text("Tale Teller");
+    }, 500);
+    
 
     setTimeout(() => {
         $splash.css("display","none");
         loadMain();
-      }, 2000);
+      }, 2500);
 });
 
 function loadMain() {
