@@ -23,8 +23,18 @@ let invisCursorTimer;
 
 
 document.addEventListener("DOMContentLoaded", () => {
+    const cUrlStory = getQueryParams(window.location.href).story;
+
+    if (cUrlStory) {
+        localStorage.setItem("story", cUrlStory);
+        window.location.href = window.location.href.split('?')[0];
+        return;
+    }
+
     loadElements();
     setEvents();
+
+    $splash.css("display","flex");
     
     setTimeout(() => {
         // Remove splash screen
@@ -33,18 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // Show main content
         //document.body.classList.add("show-content");
       }, 1000);
-
-
 });
 
 function loadMain() {
-    const cUrlStory = getQueryParams(window.location.href).story;
-
-    if (cUrlStory) {
-        localStorage.setItem("story", cUrlStory);
-        window.location.href = window.location.href.split('?')[0];
-    }
-
     cStory = localStorage.getItem("story");
 
     if (cStory) {

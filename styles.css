@@ -18,7 +18,7 @@ body {
     width: 100vw;
     height: 100vh;
     background-color: #000000;
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: flex-start;
     z-index: 1000;
