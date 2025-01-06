@@ -12,11 +12,12 @@ let $storyInput;
 let $arrowButtons;
 let $reloadButton;
 let $shareButton;
-let $modal;
-let $closeModal;
+let $modalShare;
+let $closeModalShare;
 let $urlInput;
 let $copyUrlButton;
 let $copySuccessText;
+let $modalOptions;
 let $fullscreenButton;
 let $playPauseButton;
 let $header;
@@ -93,11 +94,12 @@ function loadElements() {
     $header = $("header");
     $splash = $("#splash-screen");
     $splashTitle = $("#product-name");
-    $modal = $("#modal");
-    $closeModal = $("#closeModal");
+    $modalShare = $("#modalShare");
+    $closeModalShare = $("#closeModal");
     $copyUrlButton = $("#copyButton");
     $urlInput = $("#urlInput");
     $copySuccessText = $("#copySuccessText");
+    $modalOptions = $("#optionButton");
 }
 
 function setEvents() {
@@ -110,18 +112,14 @@ function setEvents() {
         location.reload();
     });
 
-    $shareButton.click(() => {
-        $modal.removeClass("hidden-display");
-    });
-
-    $closeModal.click(() => {
-        $modal.addClass("hidden-display");
+    $closeModalShare.click(() => {
+        $modalShare.addClass("hidden-display");
     });
 
     // Close modal on outside click
     $(window).on("click", function (event) {
-        if ($(event.target).is($modal)) {
-            $modal.addClass("hidden-display");
+        if ($(event.target).is($modalShare)) {
+            $modalShare.addClass("hidden-display");
         }
     });
 
@@ -478,15 +476,27 @@ function showPage(pageNum, result) {
     }
 
     //EVENTS
+    $shareButton.click(() => {
+        $modalShare.removeClass("hidden-display");
+
+        if (playbackMode) {
+            stopPlayBackAndViewFull();
+        }
+    });
+
     $indicator.click(function () {
         if (playbackMode) {
-            printText = false;
-            stopAutoPlay();
-            displayFullText(paragraphs[currentPage]);
+            stopPlayBackAndViewFull();
             const valueLength = $(this).val().length;
             this.setSelectionRange(valueLength, valueLength);
         }
     });
+
+    function stopPlayBackAndViewFull() {
+        printText = false;
+        stopAutoPlay();
+        displayFullText(paragraphs[currentPage]);
+    }
 
     $indicator.on("focus", (event) => {
         if (playbackMode) $("#totalPageContainer").css("visibility","visible");

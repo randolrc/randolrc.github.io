@@ -156,6 +156,10 @@ header.hidden {
     left: 75px;
 }
 
+#optionButton {
+    left: 150px;
+}
+
 #fullscreenButton {
     left: unset;
     right: 0px;
