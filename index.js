@@ -324,26 +324,6 @@ function showPage(pageNum, result) {
         wrappedText += line.trim(); // Add the last line
         return wrappedText;
     }
-/*
-    function wrapText(text, maxLength) {
-        let words = text.split(' ');
-        let line = '';
-        let wrappedText = '';
-
-        words.forEach(word => {
-            // Check if adding the word would exceed the line length
-            if ((line + word).length > maxLength) {
-                wrappedText += line.trim() + '\n';
-                line = '';
-            }
-            line += word + ' ';
-        });
-
-        // Add the last line
-        wrappedText += line.trim();
-        return wrappedText;
-    }
-*/
 
     function preWordExists(text, wordList, index) {
         for (const word of wordList) {
@@ -362,7 +342,7 @@ function showPage(pageNum, result) {
     function quoteComesNext(text, index) {
         if (index >= text.length) return false;
 
-        return (text[index] === '\"' || text[index] === "\'");
+        return (text[index] === '\"' || text[index] === "\'" || text[index] === "*");
     }
 
     function displayText(text) {
@@ -526,10 +506,6 @@ function showPage(pageNum, result) {
             if (!printText) checkAutoPlay(true);
         } else {
             stopAutoPlay();
-            /*
-            $playPauseButton.find("img").attr("src","img/play.svg");
-            clearAllTimeouts();
-            */
         }
     });
 
@@ -585,7 +561,6 @@ function showPage(pageNum, result) {
                 currentPage += pageMod;
                 displayText(paragraphs[currentPage]);
                 updateIndicator();
-                //clearAllTimeouts();
             }
         }
     }
