@@ -11,6 +11,11 @@ let $storySubmit;
 let $storyInput;
 let $arrowButtons;
 let $reloadButton;
+let $shareButton;
+let $modal;
+let $closeModal;
+let $urlInput;
+let $copyUrlButton;
 let $fullscreenButton;
 let $playPauseButton;
 let $header;
@@ -81,11 +86,16 @@ function loadElements() {
     $storyInput = $("#storyInput");
     $arrowButtons = $("#arrows");
     $reloadButton = $("#reloadButton");
+    $shareButton = $("#shareButton");
     $fullscreenButton = $("#fullscreenButton");
     $playPauseButton = $("#playPauseButton");
     $header = $("header");
     $splash = $("#splash-screen");
     $splashTitle = $("#product-name");
+    $modal = $("#modal");
+    $closeModal = $("#closeModal");
+    $copyUrlButton = $("#copyButton");
+    $urlInput = $("#urlInput");
 }
 
 function setEvents() {
@@ -96,6 +106,29 @@ function setEvents() {
     $reloadButton.click(() => {
         localStorage.clear();
         location.reload();
+    });
+
+    $shareButton.click(() => {
+        $modal.removeClass("hidden-display");
+    });
+
+    $closeModal.click(() => {
+        $modal.addClass("hidden-display");
+    });
+
+    // Close modal on outside click
+    $(window).on("click", function (event) {
+        if ($(event.target).is($modal)) {
+            $modal.addClass("hidden-display");
+        }
+    });
+
+    $copyUrlButton.on("click", async function () {
+        try {
+            await navigator.clipboard.writeText($urlInput.val());
+        } catch (err) {
+            alert("Failed to copy URL: " + err);
+        }
     });
 
     $header.on('mouseenter', () => {
@@ -156,8 +189,6 @@ function setEvents() {
               });
           }
     });
-
-
 }
 
 function setTrackedTimeout(callback, delay) {
@@ -186,6 +217,9 @@ function setupStory() {
     cStory = compressAndEncode(story);
 
     localStorage.setItem("story", cStory);
+
+    let shareLink = `${window.location.href}?story=${cStory}`;
+    $urlInput.val(shareLink);
 
     let result = {storyText: story};
 

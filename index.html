@@ -15,11 +15,24 @@
   <div id="splash-screen">
     <h1 id="product-name">&nbsp;</h1>
   </div>
+
+  <div id="modal" class="modal hidden-display">
+    <div class="modal-content">
+        <span id="closeModal" class="close-btn">&times;</span>
+        <input type="text" id="urlInput" readonly>
+        <button id="copyButton">Copy</button>
+    </div>
+  </div>
+
   <header>
     <button id="reloadButton" class="svgHeaderButton">
       <img src="img/reload.svg" alt="Reload Button Image" />
     </button>
     
+    <button id="shareButton" class="svgHeaderButton">
+      <img src="img/share.svg" alt="Share Button Image" />
+    </button>
+
     <div id="arrows" class="centeredButtons">
       <button id="prev">&lt;</button>
       <input type="text" id="indicator" value="1" maxlength="3">
