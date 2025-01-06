@@ -16,6 +16,7 @@ let $modal;
 let $closeModal;
 let $urlInput;
 let $copyUrlButton;
+let $copySuccessText;
 let $fullscreenButton;
 let $playPauseButton;
 let $header;
@@ -96,6 +97,7 @@ function loadElements() {
     $closeModal = $("#closeModal");
     $copyUrlButton = $("#copyButton");
     $urlInput = $("#urlInput");
+    $copySuccessText = $("#copySuccessText");
 }
 
 function setEvents() {
@@ -126,6 +128,11 @@ function setEvents() {
     $copyUrlButton.on("click", async function () {
         try {
             await navigator.clipboard.writeText($urlInput.val());
+            $copySuccessText.css("display", "block");
+            setTimeout(() => {
+                $copySuccessText.css("display", "none");
+            }, 2000);
+
         } catch (err) {
             alert("Failed to copy URL: " + err);
         }

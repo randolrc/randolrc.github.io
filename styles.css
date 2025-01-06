@@ -74,17 +74,25 @@ body {
 }
 
 .modal-content button {
+    margin-top: 5px;
     padding: 8px 10px;
     font-size: 14px;
     border: none;
     border-radius: 5px;
-    background-color: #28a745;
+    background-color: #000000;
     color: white;
     cursor: pointer;
 }
 
 .modal-content button:hover {
-    background-color: #218838;
+    background-color: #828282;
+}
+
+#copySuccessText {
+    display: none;
+    margin-top: 5px;
+    font-family: 'Libre Baskerville', serif;
+    color: #000;
 }
 
 .close-btn {
