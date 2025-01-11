@@ -14,6 +14,7 @@ let $reloadButton;
 let $shareButton;
 let $modalShare;
 let $closeModalShare;
+let $closeModalOptions;
 let $urlInput;
 let $copyUrlButton;
 let $copySuccessText;
@@ -89,17 +90,19 @@ function loadElements() {
     $arrowButtons = $("#arrows");
     $reloadButton = $("#reloadButton");
     $shareButton = $("#shareButton");
+    $optionsButton = $("#optionsButton");
     $fullscreenButton = $("#fullscreenButton");
     $playPauseButton = $("#playPauseButton");
     $header = $("header");
     $splash = $("#splash-screen");
     $splashTitle = $("#product-name");
     $modalShare = $("#modalShare");
-    $closeModalShare = $("#closeModal");
+    $closeModalShare = $("#closeModalShare");
     $copyUrlButton = $("#copyButton");
     $urlInput = $("#urlInput");
     $copySuccessText = $("#copySuccessText");
-    $modalOptions = $("#optionButton");
+    $modalOptions = $("#modalOptions");
+    $closeModalOptions = $("#closeModalOptions");
 }
 
 function setEvents() {
@@ -116,11 +119,21 @@ function setEvents() {
         $modalShare.addClass("hidden-display");
     });
 
+    $closeModalOptions.click(() => {
+        $modalOptions.addClass("hidden-display");
+    });
+
     // Close modal on outside click
     $(window).on("click", function (event) {
-        if ($(event.target).is($modalShare)) {
+
+        let eventTarget = $(event.target);
+
+        if (eventTarget.is($modalShare)) {
             $modalShare.addClass("hidden-display");
+        } else if (eventTarget.is($modalOptions)) {
+            $modalOptions.addClass("hidden-display");
         }
+
     });
 
     $copyUrlButton.on("click", async function () {
@@ -342,7 +355,7 @@ function showPage(pageNum, result) {
     function quoteComesNext(text, index) {
         if (index >= text.length) return false;
 
-        return (text[index] === '\"' || text[index] === "\'" || text[index] === "*");
+        return (text[index] === '\"' || text[index] === "\'" || text[index] === "*" || text[index] === "”");
     }
 
     function displayText(text) {
@@ -458,6 +471,14 @@ function showPage(pageNum, result) {
     //EVENTS
     $shareButton.click(() => {
         $modalShare.removeClass("hidden-display");
+
+        if (playbackMode) {
+            stopPlayBackAndViewFull();
+        }
+    });
+
+    $optionsButton.click(() => {
+        $modalOptions.removeClass("hidden-display");
 
         if (playbackMode) {
             stopPlayBackAndViewFull();
