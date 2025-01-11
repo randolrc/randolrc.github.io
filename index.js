@@ -29,7 +29,6 @@ let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const cUrlStory = getQueryParams(window.location.href).story;
 
@@ -275,7 +274,7 @@ function showPage(pageNum, result) {
     const classQuoteFormat = "quoteFormat";
 
     let delay = 40;
-    let delayFullStop = 500;
+    let delayFullStop = 750;
     let delayComma = 40;
     const autoPageTimer = 3 * 1000;
 
@@ -283,6 +282,7 @@ function showPage(pageNum, result) {
     let currentPage = pageNum;
     let paragraphs = getParagraphs(text);
 
+    updateIndicator();
     $totalPages.text(paragraphs.length);
 
     // Start the animation
@@ -325,8 +325,9 @@ function showPage(pageNum, result) {
         words.forEach(word => {
             const wordWidth = measureWordWidth(word);
             const lineWidth = measureWordWidth(line);
+            const fudge = 1;
 
-            if (lineWidth + wordWidth > containerWidth) {
+            if (lineWidth + wordWidth + fudge > containerWidth) {
                 wrappedText += line.trim() + "\n"; // Add the current line and start a new one
                 line = "";
             }
