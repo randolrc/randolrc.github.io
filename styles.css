@@ -114,7 +114,6 @@ body {
 }
 
 .modal-content button {
-    margin-top: 5px;
     padding: 8px 10px;
     font-size: 14px;
     border: none;
@@ -126,13 +125,6 @@ body {
 
 .modal-content button:hover {
     background-color: #828282;
-}
-
-#copySuccessText {
-    display: none;
-    margin-top: 5px;
-    font-family: 'Libre Baskerville', serif;
-    color: #000;
 }
 
 .close-btn {

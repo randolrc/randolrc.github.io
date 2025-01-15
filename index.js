@@ -138,9 +138,13 @@ function setEvents() {
     $copyUrlButton.on("click", async function () {
         try {
             await navigator.clipboard.writeText($urlInput.val());
-            $copySuccessText.css("display", "block");
+            $copyUrlButton.text("Copied!");
+            $copyUrlButton.css("background-color", "#828282");
+            $copyUrlButton.css("cursor", "unset");
             setTimeout(() => {
-                $copySuccessText.css("display", "none");
+                $copyUrlButton.text("Copy");
+                $copyUrlButton.css("background-color", "");
+                $copyUrlButton.css("cursor", "");
             }, 2000);
 
         } catch (err) {
