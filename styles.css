@@ -62,7 +62,6 @@ body {
     border-radius: 15px;
     width: 500px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    display: flex;
 }
 
 .modal-content input {
@@ -125,6 +124,13 @@ body {
 
 .modal-content button:hover {
     background-color: #828282;
+}
+
+#shortenerMsg {
+    color: black;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.75em;
 }
 
 .close-btn {
