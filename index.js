@@ -239,7 +239,14 @@ function setupStory() {
 
     localStorage.setItem("story", cStory);
 
-    let shareLink = `${window.location.href}?story=${cStory}`;
+    let shareLink = "";
+
+    if (window.location.href === "https://taleteller.io/")
+        shareLink = window.location.href;
+    else
+        shareLink = "http://127.0.0.1:3000/";
+
+    shareLink += `?story=${cStory}`;
     $urlInput.val(shareLink);
 
     let result = {storyText: story};
