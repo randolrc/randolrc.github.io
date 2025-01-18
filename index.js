@@ -122,6 +122,17 @@ function setEvents() {
         $modalOptions.addClass("hidden-display");
     });
 
+    // Handle tab switching
+    $(".tab-button").on("click", function () {
+        $(".tab-button").removeClass("active");
+        $(this).addClass("active");
+
+        const target = $(this).data("target");
+        console.log(target);
+        $(".tab").removeClass("active");
+        $(target).addClass("active");
+    });
+
     // Close modal on outside click
     $(window).on("click", function (event) {
 
@@ -284,9 +295,9 @@ function showPage(pageNum, result) {
 
     const classQuoteFormat = "quoteFormat";
 
-    let delay = 40;
-    let delayFullStop = 750;
-    let delayComma = 40;
+    const delay = 40;
+    const delayFullStop = 750;
+    const delayComma = 40;
     const autoPageTimer = 3 * 1000;
 
     let printText = true;

@@ -30,14 +30,14 @@
         <span id="closeModalOptions" class="close-btn">&times;</span>
         <div class="modal-body">
             <div class="tab-column">
-                <button class="tab-button active" data-target="#copyUrl">Copy URL</button>
-                <button class="tab-button" data-target="#changeFontColor">Change Font Color</button>
+                <button class="tab-button active" data-target="#settings">Speed settings</button>
+                <button class="tab-button" data-target="#changeFontColor">Stylings</button>
             </div>
             <div class="tab-content">
-                <div id="copyUrl" class="tab active">
-                    <h3>Copy URL</h3>
-                    <input type="text" id="urlInput" readonly>
-                    <button id="copyButton">Copy</button>
+                <div id="settings" class="tab active">
+                  <div class="settingsText">Text scroll delay<input type="number" min="0" id="scrollSpead"><span class="unit">ms</span></div>
+                  <div class="settingsText">Full stop delay<input type="number" min="0" id="scrollSpead"><span class="unit">ms</span></div>
+                  <div class="settingsText">Next page delay<input type="number" min="0" id="nextPageDelay"><span class="unit">ms</span></div>
                 </div>
                 <div id="changeFontColor" class="tab">
                     <h3>Change Font Color</h3>

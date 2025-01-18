@@ -62,6 +62,7 @@ body {
     border-radius: 15px;
     width: 500px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    height: 200px;
 }
 
 .modal-content input {
@@ -79,7 +80,7 @@ body {
 
 .tab-column {
     flex: 1;
-    background: #f8f9fa;
+    background: #ffffff;
     padding: 10px;
     border-right: 1px solid #ddd;
 }
@@ -92,16 +93,22 @@ body {
     background: transparent;
     border: none;
     cursor: pointer;
+    color: #000;
 }
 
 .tab-column .tab-button.active {
-    background-color: #007bff;
+    background-color: #000000;
     color: white;
 }
 
 .tab-content {
     flex: 3;
     padding: 20px;
+    color: #000;
+}
+
+.settingsText {
+    display: flex;
 }
 
 .tab {
@@ -123,7 +130,7 @@ body {
 }
 
 .modal-content button:hover {
-    background-color: #828282;
+    background-color: #A9A9A9;
 }
 
 #shortenerMsg {
