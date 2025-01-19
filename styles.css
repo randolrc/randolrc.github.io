@@ -60,7 +60,7 @@ body {
     background: white;
     padding: 20px;
     border-radius: 15px;
-    width: 500px;
+    width: 400px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     height: 200px;
 }
@@ -107,8 +107,47 @@ body {
     color: #000;
 }
 
-.settingsText {
+.settingsRow {
     display: flex;
+    justify-content: flex-end;
+    padding-bottom: 10px;
+    font-family: "Basic", serif;
+}
+
+.settingsRow#settingsAutoParse {
+    justify-content: flex-start;
+}
+
+.settingsRow label.text {
+    margin-right: 10px;
+    align-self: center;
+}
+
+
+.unit {
+    align-self: flex-end;
+    color:#A9A9A9;
+    font-size: 0.75em;
+}
+
+.settingsRow input[type~="number"] {
+    width: 50px;
+}
+
+.settingsRow input[type~="color"] {
+    height: 50px;
+    width: 75px;
+    margin-right: 25px;
+}
+
+.settingsRow input[type~="checkbox"] {
+    width:auto;
+}
+
+label.settingsDesc {
+    /* font-family: "Basic", serif; */
+    font-size: 0.75em;
+    color:#8c8c8c;
 }
 
 .tab {
