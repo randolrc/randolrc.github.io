@@ -25,6 +25,18 @@ let $header;
 let $splash;
 let $splashTitle;
 
+let $inputScrollDelay;
+let $inputFullStopDelay;
+let $inputNextPageDelay;
+
+const delayScroll_default = 40;
+const delayFullStop_default = 750;
+const autoPageTimer_default = 3 * 1000;
+
+let delayScroll = delayScroll_default;
+let delayFullStop = delayFullStop_default;
+let autoPageTimer = autoPageTimer_default;
+
 let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
@@ -36,6 +48,14 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("story", cUrlStory);
         window.location.href = window.location.href.split('?')[0];
         return;
+    }
+
+    const savedSettings = JSON.parse(localStorage.getItem("settings"));
+
+    if (savedSettings) {
+        delayScroll = savedSettings.delayScroll;
+        delayFullStop = savedSettings.delayFullStop;
+        autoPageTimer = savedSettings.autoPageTimer;
     }
 
     loadElements();
@@ -102,6 +122,14 @@ function loadElements() {
     $copySuccessText = $("#copySuccessText");
     $modalOptions = $("#modalOptions");
     $closeModalOptions = $("#closeModalOptions");
+
+    $inputScrollDelay = $("#scrollDelay");
+    $inputFullStopDelay = $("#fullStopDelay");
+    $inputNextPageDelay = $("#nextPageDelay");
+
+    $inputScrollDelay.val(delayScroll);
+    $inputFullStopDelay.val(delayFullStop);
+    $inputNextPageDelay.val(autoPageTimer);
 }
 
 function setEvents() {
@@ -120,6 +148,7 @@ function setEvents() {
 
     $closeModalOptions.click(() => {
         $modalOptions.addClass("hidden-display");
+        saveSettings();
     });
 
     // Handle tab switching
@@ -128,7 +157,6 @@ function setEvents() {
         $(this).addClass("active");
 
         const target = $(this).data("target");
-        console.log(target);
         $(".tab").removeClass("active");
         $(target).addClass("active");
     });
@@ -142,6 +170,7 @@ function setEvents() {
             $modalShare.addClass("hidden-display");
         } else if (eventTarget.is($modalOptions)) {
             $modalOptions.addClass("hidden-display");
+            saveSettings();
         }
 
     });
@@ -223,6 +252,17 @@ function setEvents() {
     });
 }
 
+function saveSettings() {
+    delayScroll = $inputScrollDelay.val();
+    delayFullStop = $inputFullStopDelay.val();
+    autoPageTimer = $inputNextPageDelay.val();
+
+    settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer };
+
+    localStorage.setItem("settings", JSON.stringify(settingsObj));
+    //localStorage.setItem("delayScroll", cUrlStory);
+}
+
 function setTrackedTimeout(callback, delay) {
     const id = setTimeout(callback, delay);
     timeoutIds.push(id);
@@ -294,11 +334,6 @@ function showPage(pageNum, result) {
     const text = result.storyText || 'No text data found.';
 
     const classQuoteFormat = "quoteFormat";
-
-    const delay = 40;
-    const delayFullStop = 750;
-    const delayComma = 40;
-    const autoPageTimer = 3 * 1000;
 
     let printText = true;
     let currentPage = pageNum;
@@ -415,7 +450,7 @@ function showPage(pageNum, result) {
                 $display.append(letter);
                 index++;
 
-                let d = delay;
+                let d = delayScroll;
 
                 if (doDelayedPause) {
                     doDelayedPause = false;
@@ -429,9 +464,6 @@ function showPage(pageNum, result) {
                         if (preWordExists(wrappedText, titles, index)) break;
                         doDelayedPause = quoteComesNext(wrappedText, index);
                         if (!doDelayedPause) d = delayFullStop;
-                        break;
-                    case ',' :
-                        d = delayComma;
                         break;
                 }
 

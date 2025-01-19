@@ -62,7 +62,7 @@ body {
     border-radius: 15px;
     width: 400px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    height: 200px;
+    height: 300px;
 }
 
 .modal-content input {
@@ -112,6 +112,11 @@ body {
     justify-content: flex-end;
     padding-bottom: 10px;
     font-family: "Basic", serif;
+}
+
+.settingsRow.settingsButtons {
+    justify-content:center;
+    padding-top: 10px;
 }
 
 .settingsRow#settingsAutoParse {
