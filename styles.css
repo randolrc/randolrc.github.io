@@ -65,6 +65,11 @@ body {
     height: 300px;
 }
 
+.modal-content.share {
+    width: 500px;
+    height: 60px;
+}
+
 .modal-content input {
     width: 80%;
     padding: 8px;

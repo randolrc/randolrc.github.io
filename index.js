@@ -45,12 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const cUrlStory = getQueryParams(window.location.href).story;
 
     if (cUrlStory) {
-        localStorage.setItem("story", cUrlStory);
+        localStorage.setItem("TaleTeller_story", cUrlStory);
         window.location.href = window.location.href.split('?')[0];
         return;
     }
 
-    const savedSettings = JSON.parse(localStorage.getItem("settings"));
+    const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll;
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadMain() {
-    cStory = localStorage.getItem("story");
+    cStory = localStorage.getItem("TaleTeller_story");
 
     if (cStory) {
         let story = decodeAndDecompress(cStory);
@@ -138,7 +138,7 @@ function setEvents() {
     });
 
     $reloadButton.click(() => {
-        localStorage.clear();
+        localStorage.removeItem("TaleTeller_story");
         location.reload();
     });
 
@@ -259,7 +259,7 @@ function saveSettings() {
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer };
 
-    localStorage.setItem("settings", JSON.stringify(settingsObj));
+    localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
 }
 
@@ -288,7 +288,7 @@ function setupStory() {
 
     cStory = compressAndEncode(story);
 
-    localStorage.setItem("story", cStory);
+    localStorage.setItem("TaleTeller_story", cStory);
 
     let shareLink = "";
 
