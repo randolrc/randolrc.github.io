@@ -5,7 +5,8 @@ let displayedFullText = false;
 
 let $display;
 let $indicator;
-let $container;
+let $main;
+let $footerAbout;
 let $totalPages;
 let $storySubmit;
 let $storyInput;
@@ -102,7 +103,8 @@ function getQueryParams(url) {
 function loadElements() {
     $display = $("#display");
     $indicator = $("#indicator");
-    $container = $("#container");
+    $main = $("main");
+    $footerAbout = $('#footerAbout');
     $totalPages = $("#totalPages");
     $storySubmit = $("#storySubmit");
     $storyInput = $("#storyInput");
@@ -250,6 +252,10 @@ function setEvents() {
               });
           }
     });
+
+    $footerAbout.click(() => {
+        showSettingsTab();
+    });
 }
 
 function saveSettings() {
@@ -272,6 +278,16 @@ function setTrackedTimeout(callback, delay) {
 function clearAllTimeouts() {
     timeoutIds.forEach(clearTimeout); // Clear each timeout
     timeoutIds.length = 0;           // Reset the array
+}
+
+function showSettingsTab() {
+    $modalOptions.removeClass("hidden-display");
+
+    $(".tab").removeClass("active");
+    $("#changeAbout").addClass('active');
+
+    $(".tab-button").removeClass("active");
+    $('.tab-button[data-target="#changeAbout"]').addClass('active');
 }
 
 function setupStory() {
@@ -331,7 +347,7 @@ function decodeAndDecompress(encodedBlob) {
 }
     
 function showPage(pageNum, result) {
-    const text = result.storyText || 'No text data found.';
+    const text = result.storyText || 'There once was a man from Bel Air, who sat in his old rocking chair. He yawned with a sigh, and stared at the sky, wishing something exciting was there!';
 
     const classQuoteFormat = "quoteFormat";
 
@@ -540,6 +556,12 @@ function showPage(pageNum, result) {
         }
     });
 
+    $footerAbout.click(() => {
+        if (playbackMode) {
+            stopPlayBackAndViewFull();
+        }
+    });
+
     $indicator.click(function () {
         if (playbackMode) {
             stopPlayBackAndViewFull();
@@ -562,7 +584,7 @@ function showPage(pageNum, result) {
         if (playbackMode) $("#totalPageContainer").css("visibility","hidden");
     });
 
-    $container.click(function () {
+    $main.click(function () {
         if (playbackMode) changePage(1);
     });
 
