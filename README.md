@@ -16,7 +16,7 @@ Here are some ideas to get you started:
 -->
 ---TaleTeller v1.0---
     
-Paste your story and hit the button! It'll auto-create pages and scroll the words on each page, making it a bit more fun to read than a wall of text.
+Paste your story and hit the button! It'll auto-create pages and scroll the words on each page, making it a bit more immersive to read than a wall of text.
 
  - Use the buttons at the top to change pages, or click on the text to go to the next page.
 
