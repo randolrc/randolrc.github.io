@@ -166,7 +166,10 @@ footer {
 }
 
 label.settingsDesc {
-    font-family: "Basic", serif;
+    font-family: "Source Code Pro", serif;
+    font-optical-sizing: auto;
+    /*font-weight: 200;*/
+    font-style: normal;
     font-size: 0.75em;
     color:#8c8c8c;
 }
