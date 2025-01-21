@@ -27,21 +27,30 @@ let $splash;
 let $splashTitle;
 
 let $setDelayDefaults;
+let $setColorDefaults;
 
 let $inputScrollDelay;
 let $inputFullStopDelay;
 let $inputNextPageDelay;
 let $fontBaseColor;
 let $fontQuoteColor;
+let $BGColor;
 
 const delayScroll_default = 40;
 const delayFullStop_default = 750;
 const autoPageTimer_default = 3 * 1000;
+const baseColor_default = "#e4e4e4";
+const quoteColor_default = "#FFFFFF";
+const BGColor_default = "#000";
 
 let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
-let quoteColor = "#FFFFFF";
+let baseColor = baseColor_default;
+let quoteColor = quoteColor_default;
+let BGColor = BGColor_default;
+
+let styleElement;
 
 let cStory;
 const timeoutIds = [];
@@ -59,19 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
     if (savedSettings) {
-        delayScroll = savedSettings.delayScroll;
-        delayFullStop = savedSettings.delayFullStop;
-        autoPageTimer = savedSettings.autoPageTimer; 
-        quoteColor = savedSettings.quoteColor; 
+        delayScroll = savedSettings.delayScroll || delayScroll;
+        delayFullStop = savedSettings.delayFullStop || delayFullStop;
+        autoPageTimer = savedSettings.autoPageTimer || autoPageTimer; 
+        quoteColor = savedSettings.quoteColor || quoteColor; 
+        baseColor = savedSettings.baseColor || baseColor; 
+        BGColor = savedSettings.BGColor || BGColor; 
     }
 
     loadElements();
     setEvents();
-
-    if (savedSettings) {
-        $display.css("color", savedSettings.displayColor);
-        $fontBaseColor.val(savedSettings.displayColor);
-    }
 
     setTimeout(() => {
         $splash.css("display","flex");
@@ -137,6 +143,7 @@ function loadElements() {
     $closeModalOptions = $("#closeModalOptions");
 
     $setDelayDefaults = $("#setDelayDefaults");
+    $setColorDefaults = $("#setColorDefaults");
 
     $inputScrollDelay = $("#scrollDelay");
     $inputFullStopDelay = $("#fullStopDelay");
@@ -147,25 +154,25 @@ function loadElements() {
     $inputNextPageDelay.val(autoPageTimer);
 
     $fontBaseColor = $("#fontBaseColor");
-    $fontBaseColor.val(rgbToHex($display.css("color")));
+    $display.css("color", baseColor);
+    $fontBaseColor.val(baseColor);
+
     $fontQuoteColor = $("#fontQuoteColor");
+    $fontQuoteColor.val(quoteColor);
 
-    let styleElement = document.querySelector("#dynamic-style");
+    styleElement = document.createElement("style");
+    styleElement.id = "dynamic-style"; // Assign an ID for easy reference
+    document.head.appendChild(styleElement);
 
-    if (!styleElement) {
-        // Create a new <style> element if it doesn't exist
-        styleElement = document.createElement("style");
-        styleElement.id = "dynamic-style"; // Assign an ID for easy reference
-        document.head.appendChild(styleElement);
-    }
-
-    // Update the rules
     styleElement.textContent = `
         .quoteFormat {
             color: ${quoteColor};
         }
     `;
 
+    $BGColor = $("#BGColor");
+    $("body").css("background-color", BGColor);
+    $BGColor.val(BGColor);
 }
 
 function setEvents() {
@@ -295,15 +302,39 @@ function setEvents() {
         saveSettings();
     });
 
+    $setColorDefaults.click(() => {
+        $fontBaseColor.val(baseColor_default);
+        $fontQuoteColor.val(quoteColor_default);
+        $BGColor.val(BGColor_default);
+        $fontBaseColor.change();
+        $fontQuoteColor.change();
+        $BGColor.change();
+        saveSettings();
+    });
+
     $fontBaseColor.on("change", () => {
         $display.css("color", $fontBaseColor.val());
+    });
+
+    $fontQuoteColor.on("change", () => {
+        quoteColor = $fontQuoteColor.val();
+
+        styleElement.textContent = `
+        .quoteFormat {
+            color: ${quoteColor};
+        }
+    `;
+    });
+
+    $BGColor.on("change", () => {
+        $("body").css("background-color", $BGColor.val());
     });
 
     $footerAbout.click(() => {
         showSettingsTab();
     });
 }
-
+/*
 function rgbToHex(rgb) {
     // Extract the RGB values using a regular expression
     const match = rgb.match(/\d+/g);
@@ -313,6 +344,7 @@ function rgbToHex(rgb) {
     const [r, g, b] = match.map(num => parseInt(num, 10));
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
 }
+*/
 
 function saveSettings() {
     delayScroll = $inputScrollDelay.val();
@@ -320,7 +352,7 @@ function saveSettings() {
     autoPageTimer = $inputNextPageDelay.val();
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
-    displayColor: rgbToHex($display.css("color")), quoteColor: quoteColor };
+    baseColor: $fontBaseColor.val(), quoteColor: quoteColor, BGColor: $BGColor.val() };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
