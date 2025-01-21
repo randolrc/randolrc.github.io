@@ -4,7 +4,7 @@ let autoPageMode = false;
 let displayedFullText = false;
 
 let $display;
-let $indicator;
+let $pageInput;
 let $main;
 let $footerAbout;
 let $totalPages;
@@ -26,9 +26,13 @@ let $header;
 let $splash;
 let $splashTitle;
 
+let $setDelayDefaults;
+
 let $inputScrollDelay;
 let $inputFullStopDelay;
 let $inputNextPageDelay;
+let $fontBaseColor;
+let $fontQuoteColor;
 
 const delayScroll_default = 40;
 const delayFullStop_default = 750;
@@ -37,6 +41,7 @@ const autoPageTimer_default = 3 * 1000;
 let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
+let quoteColor = "#FFFFFF";
 
 let cStory;
 const timeoutIds = [];
@@ -56,11 +61,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll;
         delayFullStop = savedSettings.delayFullStop;
-        autoPageTimer = savedSettings.autoPageTimer;
+        autoPageTimer = savedSettings.autoPageTimer; 
+        quoteColor = savedSettings.quoteColor; 
     }
 
     loadElements();
     setEvents();
+
+    if (savedSettings) {
+        $display.css("color", savedSettings.displayColor);
+        $fontBaseColor.val(savedSettings.displayColor);
+    }
 
     setTimeout(() => {
         $splash.css("display","flex");
@@ -102,7 +113,7 @@ function getQueryParams(url) {
 
 function loadElements() {
     $display = $("#display");
-    $indicator = $("#indicator");
+    $pageInput = $("#indicator");
     $main = $("main");
     $footerAbout = $('#footerAbout');
     $totalPages = $("#totalPages");
@@ -125,6 +136,8 @@ function loadElements() {
     $modalOptions = $("#modalOptions");
     $closeModalOptions = $("#closeModalOptions");
 
+    $setDelayDefaults = $("#setDelayDefaults");
+
     $inputScrollDelay = $("#scrollDelay");
     $inputFullStopDelay = $("#fullStopDelay");
     $inputNextPageDelay = $("#nextPageDelay");
@@ -132,6 +145,27 @@ function loadElements() {
     $inputScrollDelay.val(delayScroll);
     $inputFullStopDelay.val(delayFullStop);
     $inputNextPageDelay.val(autoPageTimer);
+
+    $fontBaseColor = $("#fontBaseColor");
+    $fontBaseColor.val(rgbToHex($display.css("color")));
+    $fontQuoteColor = $("#fontQuoteColor");
+
+    let styleElement = document.querySelector("#dynamic-style");
+
+    if (!styleElement) {
+        // Create a new <style> element if it doesn't exist
+        styleElement = document.createElement("style");
+        styleElement.id = "dynamic-style"; // Assign an ID for easy reference
+        document.head.appendChild(styleElement);
+    }
+
+    // Update the rules
+    styleElement.textContent = `
+        .quoteFormat {
+            color: ${quoteColor};
+        }
+    `;
+
 }
 
 function setEvents() {
@@ -206,12 +240,13 @@ function setEvents() {
 
     function fullscreenchangeHandler(event) {
         if (!document.fullscreenElement) {
-            disableInvisCursor();
+            disableFullscreen();
         }
     }
     document.addEventListener("fullscreenchange", fullscreenchangeHandler);
 
-    function disableInvisCursor() {
+    function disableFullscreen() {
+        $footerAbout.css("display","");
         $('body').removeClass('cursor-invisible');
         $(document).off('mousemove');
         clearTimeout(invisCursorTimer);
@@ -222,15 +257,15 @@ function setEvents() {
             // Enter fullscreen mode
             document.documentElement.requestFullscreen()
               .then(() => {
-                //let timer;
-                const timeout = 2000; // Time in milliseconds (2 seconds)
+                
+                $footerAbout.css("display","none");
 
                 const resetCursor = () => {
                     $('body').removeClass('cursor-invisible'); // Show the cursor
                     clearTimeout(invisCursorTimer);
                     invisCursorTimer = setTimeout(() => {
                         $('body').addClass('cursor-invisible'); // Hide the cursor after timeout
-                    }, timeout);
+                    }, 2000);
                 };
 
                 $(document).on('mousemove', function () {
@@ -245,7 +280,7 @@ function setEvents() {
             // Exit fullscreen mode
             document.exitFullscreen()
               .then(() => {
-                disableInvisCursor();
+                disableFullscreen();
               })
               .catch(err => {
                 console.error(`Failed to exit fullscreen mode: ${err.message}`);
@@ -253,9 +288,30 @@ function setEvents() {
           }
     });
 
+    $setDelayDefaults.click(() => {
+        $inputScrollDelay.val(delayScroll_default);
+        $inputFullStopDelay.val(delayFullStop_default);
+        $inputNextPageDelay.val(autoPageTimer_default);
+        saveSettings();
+    });
+
+    $fontBaseColor.on("change", () => {
+        $display.css("color", $fontBaseColor.val());
+    });
+
     $footerAbout.click(() => {
         showSettingsTab();
     });
+}
+
+function rgbToHex(rgb) {
+    // Extract the RGB values using a regular expression
+    const match = rgb.match(/\d+/g);
+    if (!match) return null;
+
+    // Convert each value to hexadecimal and pad with zeros if necessary
+    const [r, g, b] = match.map(num => parseInt(num, 10));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
 }
 
 function saveSettings() {
@@ -263,11 +319,32 @@ function saveSettings() {
     delayFullStop = $inputFullStopDelay.val();
     autoPageTimer = $inputNextPageDelay.val();
 
-    settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer };
+    settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
+    displayColor: rgbToHex($display.css("color")), quoteColor: quoteColor };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
 }
+/*
+function getCurrentQuoteColor() {
+    for (let sheet of document.styleSheets) {
+        try {
+            // Iterate through rules within the stylesheet
+            for (let rule of sheet.cssRules) {
+            // Look for the specific class selector
+            if (rule.selectorText === ".quoteFormat") {
+                // Modify the properties
+                console.log(rule.style.color);
+                return rule.style.color;
+            }
+            }
+        } catch (error) {
+            // Some stylesheets may be restricted due to CORS; handle gracefully
+            console.warn("Cannot access stylesheet:", error);
+        }
+    }
+}
+*/
 
 function setTrackedTimeout(callback, delay) {
     const id = setTimeout(callback, delay);
@@ -527,7 +604,7 @@ function showPage(pageNum, result) {
     }
 
     function updateIndicator() {
-        $indicator.val(currentPage + 1); // Display 1-based index
+        $pageInput.val(currentPage + 1); // Display 1-based index
     }
 
     function goToParagraph(index) {
@@ -562,11 +639,14 @@ function showPage(pageNum, result) {
         }
     });
 
-    $indicator.click(function () {
+    $pageInput.click(function () {
         if (playbackMode) {
             stopPlayBackAndViewFull();
+            $pageInput.val("");
+            /*
             const valueLength = $(this).val().length;
             this.setSelectionRange(valueLength, valueLength);
+            */
         }
     });
 
@@ -576,12 +656,15 @@ function showPage(pageNum, result) {
         displayFullText(paragraphs[currentPage]);
     }
 
-    $indicator.on("focus", (event) => {
+    $pageInput.on("focus", (event) => {
         if (playbackMode) $("#totalPageContainer").css("visibility","visible");
     });
 
-    $indicator.blur(() => {
-        if (playbackMode) $("#totalPageContainer").css("visibility","hidden");
+    $pageInput.blur(() => {
+        if (playbackMode) {
+            $("#totalPageContainer").css("visibility","hidden");
+            $pageInput.val(currentPage+1);
+        }
     });
 
     $main.click(function () {
@@ -614,14 +697,14 @@ function showPage(pageNum, result) {
     }
 
     // Handle Enter key for indicator input
-    $indicator.on("keypress", function (event) {
+    $pageInput.on("keypress", function (event) {
         if (event.key === "Enter") {
-            const inputValue = parseInt($indicator.val(), 10) - 1; // Convert to 0-based index
+            const inputValue = parseInt($pageInput.val(), 10) - 1; // Convert to 0-based index
             if (!isNaN(inputValue)) {
                 goToParagraph(inputValue);
             }
 
-            $indicator.blur();
+            $pageInput.blur();
             updateIndicator();
         }
     });

@@ -322,10 +322,6 @@ main {
     animation: fadeIn 0.25s forwards;
 }
 
-.quoteFormat {
-    color: #ffffff;
-}
-
 /* Fade-in animation */
 @keyframes fadeIn {
     to {
