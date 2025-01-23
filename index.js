@@ -475,7 +475,13 @@ function decodeAndDecompress(encodedBlob) {
 }
     
 function showPage(pageNum, result) {
-    const text = result.storyText || 'There once was a man from Bel Air, who sat in his old rocking chair. He yawned with a sigh, and stared at the sky, wishing something exciting was there!';
+
+    let text = result.storyText || 'There once was a man from Bel Air, who sat in his old rocking chair. He yawned with a sigh, and stared at the sky, wishing something exciting was there!';
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/html');
+    text = doc.body.textContent || '';
+    text = DOMPurify.sanitize(text);
 
     const classQuoteFormat = "quoteFormat";
 

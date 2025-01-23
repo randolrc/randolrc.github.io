@@ -82,6 +82,7 @@
                 </div>
                 <div id="changeFontStyle" class="tab">
                   <div class="settingsRow"><label class="text" for="fontSize">Size :</label><input type="number" min="0.5" max="2.0" step="0.1" id="fontSize"><label class="unit">(em)</label></div>
+                  <div class="settingsRow settingsButtons"><button id="setFontDefaults">Set Defaults</button></div>
                 </div>
                 <div id="changeAutoParse" class="tab">
                   <div class="settingsRow" id="settingsAutoParse"><label class="text" for="autoParse">Auto-parse :<input type="checkbox" id="autoParse" /></div>
@@ -90,7 +91,9 @@
                   </label>
                 </div>
                 <div id="changeExtras" class="tab">
+                  <div class="settingsRow" id="settingsSanitize"><label class="text" for="sanitize">Sanitize text (remove html) :<input type="checkbox" id="sanitize" /></div>
                   <div class="settingsRow settingsButtons"><button id="clearAllCache">Purge local storage</button></div>
+                  
                 </div>
                 <div id="changeAbout" class="tab">
                   <label class="settingsDesc">Made with ❤️ by Carter.<br><a href="mailto:carter@taleteller.io">carter@taleteller.io</a><br><br>
@@ -105,7 +108,7 @@
   <main>
     <textarea id="storyInput" placeholder="---TaleTeller v1.0---
     
-Paste your story here and hit the button below! It'll auto-create pages and scroll the words on each page, making it a bit more immersive to read than a wall of text.
+Paste your story here and hit the button below! It'll auto-create pages out of each paragraph and scroll the words on each page, making it a bit more immersive to read than a wall of text.
 
  - Use the buttons at the top to change pages, or click on the text to go to the next page.
 
@@ -127,6 +130,7 @@ Paste your story here and hit the button below! It'll auto-create pages and scro
   </footer>
 
   <script src="libs/jquery.min.js"></script>
+  <script type="text/javascript" src="libs/purify.min.js"></script>
   <script>
     let rawFonts = $('link[rel="preload"]').attr("href").split("family");
 
