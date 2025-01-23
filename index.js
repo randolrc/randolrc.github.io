@@ -36,19 +36,23 @@ let $fontBaseColor;
 let $fontQuoteColor;
 let $BGColor;
 
+let $fontSize;
+
 const delayScroll_default = 40;
 const delayFullStop_default = 750;
 const autoPageTimer_default = 3 * 1000;
 const baseColor_default = "#e4e4e4";
 const quoteColor_default = "#FFFFFF";
 const BGColor_default = "#000";
+const fontSize_default = 1.1;
 
-let delayScroll = delayScroll_default;
-let delayFullStop = delayFullStop_default;
-let autoPageTimer = autoPageTimer_default;
-let baseColor = baseColor_default;
-let quoteColor = quoteColor_default;
-let BGColor = BGColor_default;
+let delayScroll;
+let delayFullStop;
+let autoPageTimer;
+let baseColor;
+let quoteColor;
+let BGColor;
+let fontSize;
 
 let styleElement;
 
@@ -68,12 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
     if (savedSettings) {
-        delayScroll = savedSettings.delayScroll || delayScroll;
-        delayFullStop = savedSettings.delayFullStop || delayFullStop;
-        autoPageTimer = savedSettings.autoPageTimer || autoPageTimer; 
-        quoteColor = savedSettings.quoteColor || quoteColor; 
-        baseColor = savedSettings.baseColor || baseColor; 
-        BGColor = savedSettings.BGColor || BGColor; 
+        delayScroll = savedSettings.delayScroll || delayScroll_default;
+        delayFullStop = savedSettings.delayFullStop || delayFullStop_default;
+        autoPageTimer = savedSettings.autoPageTimer || autoPageTimer_default; 
+        quoteColor = savedSettings.quoteColor || baseColor_default; 
+        baseColor = savedSettings.baseColor || quoteColor_default; 
+        BGColor = savedSettings.BGColor || BGColor_default;
+        fontSize =  savedSettings.fontSize || fontSize_default;
     }
 
     loadElements();
@@ -173,6 +178,10 @@ function loadElements() {
     $BGColor = $("#BGColor");
     $("body").css("background-color", BGColor);
     $BGColor.val(BGColor);
+
+    $fontSize = $("#fontSize");
+    $display.css("font-size", `${fontSize}em`);
+    $fontSize.val(fontSize);
 }
 
 function setEvents() {
@@ -352,7 +361,7 @@ function saveSettings() {
     autoPageTimer = $inputNextPageDelay.val();
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
-    baseColor: $fontBaseColor.val(), quoteColor: quoteColor, BGColor: $BGColor.val() };
+    baseColor: $fontBaseColor.val(), quoteColor: quoteColor, BGColor: $BGColor.val(), fontSize: fontSize };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
@@ -377,6 +386,16 @@ function getCurrentQuoteColor() {
     }
 }
 */
+
+function resizeMainContainer() {
+    if (Number(fontSize) >= 1.5) {
+        $('main').css("width", "80%");
+    } else if (Number(fontSize) <= 0.8) {
+        $('main').css("width", "40%");
+    } else {
+        $('main').css("width", "60%");
+    }
+}
 
 function setTrackedTimeout(callback, delay) {
     const id = setTimeout(callback, delay);
@@ -463,6 +482,8 @@ function showPage(pageNum, result) {
     let printText = true;
     let currentPage = pageNum;
     let paragraphs = getParagraphs(text);
+
+    resizeMainContainer();
 
     updateIndicator();
     $totalPages.text(paragraphs.length);
@@ -722,6 +743,15 @@ function showPage(pageNum, result) {
         }
     });
 
+    $fontSize.on("change", () => {
+        fontSize = $fontSize.val();
+        $display.css("font-size", `${fontSize}em`);
+
+        resizeMainContainer();
+
+        displayFullText(paragraphs[currentPage]);
+    });
+
     function stopAutoPlay() {
         autoPageMode = false;
         $playPauseButton.find("img").attr("src","img/play.svg");
@@ -766,7 +796,8 @@ function showPage(pageNum, result) {
             displayFullText(paragraphs[currentPage]);
         } else {
             
-            let allowPageChange = (pageMod > 0 && currentPage < paragraphs.length - 1) || (pageMod < 0 && currentPage > 0)
+            let allowPageChange = (pageMod === 0 || pageMod > 0 && currentPage < paragraphs.length - 1) || 
+                (pageMod < 0 && currentPage > 0)
 
             if (allowPageChange) {
                 displayedFullText = false;

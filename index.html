@@ -81,6 +81,7 @@
                   <div class="settingsRow settingsButtons"><button id="setColorDefaults">Set Defaults</button></div>
                 </div>
                 <div id="changeFontStyle" class="tab">
+                  <div class="settingsRow"><label class="text" for="fontSize">Size :</label><input type="number" min="0.5" max="2.0" step="0.1" id="fontSize"><label class="unit">(em)</label></div>
                 </div>
                 <div id="changeAutoParse" class="tab">
                   <div class="settingsRow" id="settingsAutoParse"><label class="text" for="autoParse">Auto-parse :<input type="checkbox" id="autoParse" /></div>
@@ -93,7 +94,7 @@
                 </div>
                 <div id="changeAbout" class="tab">
                   <label class="settingsDesc">Made with ❤️ by Carter.<br><a href="mailto:carter@taleteller.io">carter@taleteller.io</a><br><br>
-                  Privacy Policy:<br>All submitted user content is stored locally, only on your machine, and is not uploaded anywhere. TaleTeller.io does not collect, store, or share any personal data and does not use cookies or other tracking technologies.
+                  Privacy Policy:<br>All submitted user content is stored locally, only on your machine (and is not uploaded anywhere). TaleTeller.io does not collect, store, or share any personal data and does not use cookies or other tracking technologies.
                 </label>
                 </div>
             </div>
@@ -126,7 +127,7 @@ Paste your story here and hit the button below! It'll auto-create pages and scro
   </footer>
 
   <script>
-    const cssFonts = ['"Henny Penny", serif', '"Eater", serif', '"Rubik Gemstones", serif', '"Mystery Quest", serif', '"Kablammo", serif'];
+    const cssFonts = ['"Henny Penny", serif', '"Eater", serif', '"Rubik Gemstones", serif', '"Mystery Quest", serif', '"Kablammo", serif' ];
 
     function getRandomInt(max) {
         return Math.floor(Math.random() * max);
