@@ -6,8 +6,8 @@
   <title>TaleTeller</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Basic&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Basic&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
   <link rel="stylesheet" href="styles.css">
 
 </head>
@@ -126,8 +126,21 @@ Paste your story here and hit the button below! It'll auto-create pages and scro
     <div id="footerAbout">About / Privacy Policy</div>
   </footer>
 
+  <script src="libs/jquery.min.js"></script>
   <script>
-    const cssFonts = ['"Henny Penny", serif', '"Eater", serif', '"Rubik Gemstones", serif', '"Mystery Quest", serif', '"Kablammo", serif' ];
+    let rawFonts = $('link[rel="preload"]').attr("href").split("family");
+
+    let loadedFonts = [];
+
+    rawFonts.forEach((font, index) => {
+      if (index > 0) {
+        let t = font.replaceAll('=','').replaceAll('&','').replaceAll('+',' ').split(':')[0];
+        let r = `"${t}", serif`;
+        loadedFonts.push(r);
+      }
+    })
+
+    const cssFonts = loadedFonts;
 
     function getRandomInt(max) {
         return Math.floor(Math.random() * max);
@@ -138,7 +151,6 @@ Paste your story here and hit the button below! It'll auto-create pages and scro
 
   </script>
 
-  <script src="libs/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pako@2.1.0/dist/pako.min.js"></script>
   <script src="index.js"></script>
 </body>
