@@ -46,13 +46,13 @@ const quoteColor_default = "#FFFFFF";
 const BGColor_default = "#000";
 const fontSize_default = 1.1;
 
-let delayScroll;
-let delayFullStop;
-let autoPageTimer;
-let baseColor;
-let quoteColor;
-let BGColor;
-let fontSize;
+let delayScroll = delayScroll_default;
+let delayFullStop = delayFullStop_default;
+let autoPageTimer = autoPageTimer_default;
+let baseColor = baseColor_default;
+let quoteColor = quoteColor_default;
+let BGColor = BGColor_default;
+let fontSize = fontSize_default;
 
 let styleElement;
 
