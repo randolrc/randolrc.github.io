@@ -145,11 +145,14 @@ footer {
     align-self: center;
 }
 
-
 .unit {
     align-self: flex-end;
     color:#A9A9A9;
     font-size: 0.75em;
+}
+
+.settingsRow select {
+    margin-right: 10px;
 }
 
 .settingsRow input[type~="number"] {
