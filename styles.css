@@ -28,7 +28,7 @@ footer {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #000000;
+    background-color: auto;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -38,7 +38,7 @@ footer {
 #product-name {
     margin-top: 10%;
     font-size: 4rem;
-    color: #ecf0f1;
+    color: auto;
     font-family: "Henny Penny", serif;
     animation: fade-out 2.0s forwards 0.5s;
     cursor: default;

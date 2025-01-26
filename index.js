@@ -51,8 +51,10 @@ let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
 
 let colorSettings = [];
-const defaultColorObj = {name: "default", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
+const darkColorObj = {name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
+const lightColorObj = {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"};
 const sepiaColorObj = {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"};
+const customColorObj = {name: "custom", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
@@ -74,11 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
-    colorSettings.push(structuredClone(defaultColorObj));
+    colorSettings.push(structuredClone(darkColorObj));
+    colorSettings.push(structuredClone(lightColorObj));
     colorSettings.push(structuredClone(sepiaColorObj));
-    colorSettings.push(structuredClone(defaultColorObj));
-    colorSettings.push(structuredClone(defaultColorObj));
-    colorSettings.push(structuredClone(defaultColorObj));
+    colorSettings.push(structuredClone(customColorObj));
+    colorSettings.push(structuredClone(customColorObj));
+    colorSettings.push(structuredClone(customColorObj));
 
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll || delayScroll_default;
@@ -190,6 +193,7 @@ function setColors(colorObj) {
     $display.css("color", colorObj.baseColor);
     $fontBaseColor.val(colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
+    $("body").css("color", colorObj.baseColor);
     $BGColor.val(colorObj.BGColor);
     $fontQuoteColor.val(colorObj.quoteColor);
     styleElement.textContent = `
@@ -197,6 +201,9 @@ function setColors(colorObj) {
             color: ${colorObj.quoteColor};
         }
     `;
+    $('.svgHeaderButton').css('border-color', colorObj.BGColor);
+    $('.centeredButtons button').css('border-color', colorObj.BGColor);
+    $('.centeredButtons input').css('border-color', colorObj.BGColor);
 }
 
 function setEvents() {
@@ -326,7 +333,7 @@ function setEvents() {
     });
 
     $setColorDefaults.click(() => {
-        colorSettings[0] = structuredClone(defaultColorObj);
+        colorSettings[0] = structuredClone(darkColorObj);
         colorSettings[1] = structuredClone(sepiaColorObj);
 
         colorSelectIndex = 0;

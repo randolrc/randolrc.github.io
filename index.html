@@ -77,7 +77,8 @@
                 <div id="changeFontColor" class="tab">
                   <div class="settingsRow"><label class="text" for="colorThemes-select">Theme :</label>
                     <select name="colorThemes" id="colorThemes-select">
-                      <option value="default">Default</option>
+                      <option value="dark">Dark</option>
+                      <option value="light">Light</option>
                       <option value="sepia">Sepia</option>
                       <option value="custom1">-- custom 1 --</option>
                       <option value="custom2">-- custom 2 --</option>
@@ -100,10 +101,11 @@
                   </label>
                 </div>
                 <div id="changeExtras" class="tab">
-                  <div class="settingsRow" id="settingsSanitize"><label class="text" for="sanitize">Sanitize text (remove html) :<input type="checkbox" id="sanitize" /></div>
+                  <div class="settingsRow" id="settingsSanitize"><label class="text" for="sanitizeToggle">Sanitize text (remove html) :<input type="checkbox" id="sanitizeToggle" /></div>
+                    <div class="settingsRow" id="settingsSanitize"><label class="text" for="splashToggle">Enable splash screen :<input type="checkbox" id="splashToggle" /></div>
                   <div class="settingsRow settingsButtons"><button id="clearAllCache">Purge local storage</button></div>
                   <label class="settingsDesc">
-                    delete all story data, reset all settings to default
+                    Delete all story data, reset all settings to default
                   </label>
                 </div>
                 <div id="changeAbout" class="tab">
