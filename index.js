@@ -46,27 +46,16 @@ const delayFullStop_default = 750;
 const autoPageTimer_default = 3 * 1000;
 const fontSize_default = 1.1;
 
-const base_default = "#e4e4e4";
-const quote_default = "#FFFFFF";
-const bg_default = "#000000";
-const base_sepia = "#5F4B32";
-const quote_sepia = "#7B6142";
-const bg_sepia = "#FBF0D9"; 
-
 let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
 
 let colorSettings = [];
-const defaultColorObj = {name: "default", baseColor: base_default, quoteColor: quote_default, BGColor: bg_default};
-const sepiaColorObj = {name: "sepia", baseColor: base_sepia, quoteColor: quote_sepia, BGColor: bg_sepia};
+const defaultColorObj = {name: "default", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
+const sepiaColorObj = {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"};
 
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
-
-let colorBase_custom = base_default;
-let colorQuote_custom = quote_default;
-let colorBG_custom = bg_default;
 
 let styleElement;
 
@@ -87,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     colorSettings.push(structuredClone(defaultColorObj));
     colorSettings.push(structuredClone(sepiaColorObj));
+    colorSettings.push(structuredClone(defaultColorObj));
+    colorSettings.push(structuredClone(defaultColorObj));
     colorSettings.push(structuredClone(defaultColorObj));
 
     if (savedSettings) {
