@@ -85,6 +85,7 @@
                   <div class="settingsRow"><label class="text" for="fontBaseColor">Base text :</label><input type="color" id="fontBaseColor"></div>
                   <div class="settingsRow"><label class="text" for="fontQuoteColor">Quoted text :</label><input type="color" id="fontQuoteColor"></div>
                   <div class="settingsRow"><label class="text" for="BGColor">Background :</label><input type="color" id="BGColor"></div>
+                  <div class="settingsRow settingsButtons"><button id="setColorDefaults">Reset Defaults</button></div>
                 </div>
                 <div id="changeFontStyle" class="tab">
                   <div class="settingsRow"><label class="text" for="fontSize">Size :</label><input type="number" min="0.5" max="2.0" step="0.1" id="fontSize"><label class="unit">(em)</label></div>
@@ -99,7 +100,9 @@
                 <div id="changeExtras" class="tab">
                   <div class="settingsRow" id="settingsSanitize"><label class="text" for="sanitize">Sanitize text (remove html) :<input type="checkbox" id="sanitize" /></div>
                   <div class="settingsRow settingsButtons"><button id="clearAllCache">Purge local storage</button></div>
-                  
+                  <label class="settingsDesc">
+                    (delete all story data, reset all settings to default)
+                  </label>
                 </div>
                 <div id="changeAbout" class="tab">
                   <label class="settingsDesc">Made with ❤️ by Carter.<br><a href="mailto:carter@taleteller.io">carter@taleteller.io</a><br><br>

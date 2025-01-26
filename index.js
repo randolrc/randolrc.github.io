@@ -27,6 +27,7 @@ let $splash;
 let $splashTitle;
 
 let $setDelayDefaults;
+let $setColorDefaults;
 
 let $inputScrollDelay;
 let $inputFullStopDelay;
@@ -38,26 +39,37 @@ let $BGColor;
 
 let $fontSize;
 
+let $clearAllCache;
+
 const delayScroll_default = 40;
 const delayFullStop_default = 750;
 const autoPageTimer_default = 3 * 1000;
-const baseColor_default = "#e4e4e4";
-const quoteColor_default = "#FFFFFF";
-const BGColor_default = "#000000";
 const fontSize_default = 1.1;
+
+const base_default = "#e4e4e4";
+const quote_default = "#FFFFFF";
+const bg_default = "#000000";
+const base_sepia = "#5F4B32";
+const quote_sepia = "#7B6142";
+const bg_sepia = "#FBF0D9"; 
 
 let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
-let baseColor = baseColor_default;
-let quoteColor = quoteColor_default;
-let BGColor = BGColor_default;
-let colorSelect = "default";
+
+let colorSettings = [];
+const defaultColorObj = {name: "default", baseColor: base_default, quoteColor: quote_default, BGColor: bg_default};
+const sepiaColorObj = {name: "sepia", baseColor: base_sepia, quoteColor: quote_sepia, BGColor: bg_sepia};
+
+//let baseColor = base_default;
+//let quoteColor = quote_default;
+//let BGColor = bg_default;
+let colorSelectIndex = 0;
 let fontSize = fontSize_default;
 
-let colorBase_custom = baseColor_default;
-let colorQuote_custom = quoteColor_default;
-let colorBG_custom = BGColor_default;
+let colorBase_custom = base_default;
+let colorQuote_custom = quote_default;
+let colorBG_custom = bg_default;
 
 let styleElement;
 
@@ -76,15 +88,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
+    colorSettings.push(defaultColorObj);
+    colorSettings.push(sepiaColorObj);
+    colorSettings.push(defaultColorObj);
+
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll || delayScroll_default;
         delayFullStop = savedSettings.delayFullStop || delayFullStop_default;
         autoPageTimer = savedSettings.autoPageTimer || autoPageTimer_default; 
-        quoteColor = savedSettings.quoteColor || baseColor_default; 
-        baseColor = savedSettings.baseColor || quoteColor_default; 
-        BGColor = savedSettings.BGColor || BGColor_default;
+        //quoteColor = savedSettings.quoteColor || base_default; 
+        //baseColor = savedSettings.baseColor || quote_default; 
+        //BGColor = savedSettings.BGColor || bg_default;
         fontSize =  savedSettings.fontSize || fontSize_default;
-        colorSelect = savedSettings.colorSelect || "default";
+        colorSelectIndex = savedSettings.colorSelectIndex || 0;
+        colorSettings = savedSettings.colorSettings || colorSettings;
     }
 
     loadElements();
@@ -118,7 +135,7 @@ function loadMain() {
 
 function getQueryParams(url) {
     const params = {};
-    const queryString = url.split('?')[1]; // Get the part after '?'
+    const queryString = url.split('?')[1];
     if (queryString) {
         queryString.split('&').forEach(pair => {
             const [key, value] = pair.split('=');
@@ -154,6 +171,7 @@ function loadElements() {
     $closeModalOptions = $("#closeModalOptions");
 
     $setDelayDefaults = $("#setDelayDefaults");
+    $setColorDefaults = $("#setColorDefaults");
 
     $inputScrollDelay = $("#scrollDelay");
     $inputFullStopDelay = $("#fullStopDelay");
@@ -164,31 +182,36 @@ function loadElements() {
     $inputNextPageDelay.val(autoPageTimer);
 
     $colorThemes = $("#colorThemes-select");
-    $colorThemes.val(colorSelect);
-    $fontBaseColor = $("#fontBaseColor");
-    $display.css("color", baseColor);
-    $fontBaseColor.val(baseColor);
+    $colorThemes.prop('selectedIndex', colorSelectIndex);
 
+    $fontBaseColor = $("#fontBaseColor");
     $fontQuoteColor = $("#fontQuoteColor");
-    $fontQuoteColor.val(quoteColor);
+    $BGColor = $("#BGColor");
 
     styleElement = document.createElement("style");
-    styleElement.id = "dynamic-style"; // Assign an ID for easy reference
+    styleElement.id = "dynamic-style";
     document.head.appendChild(styleElement);
-
-    styleElement.textContent = `
-        .quoteFormat {
-            color: ${quoteColor};
-        }
-    `;
-
-    $BGColor = $("#BGColor");
-    $("body").css("background-color", BGColor);
-    $BGColor.val(BGColor);
+    
+    setColors(colorSettings[colorSelectIndex]);
 
     $fontSize = $("#fontSize");
     $display.css("font-size", `${fontSize}em`);
     $fontSize.val(fontSize);
+
+    $clearAllCache = $('#clearAllCache');
+}
+
+function setColors(colorObj) {
+    $display.css("color", colorObj.baseColor);
+    $fontBaseColor.val(colorObj.baseColor);
+    $("body").css("background-color", colorObj.BGColor);
+    $BGColor.val(colorObj.BGColor);
+    $fontQuoteColor.val(colorObj.quoteColor);
+    styleElement.textContent = `
+        .quoteFormat {
+            color: ${colorObj.quoteColor};
+        }
+    `;
 }
 
 function setEvents() {
@@ -315,72 +338,46 @@ function setEvents() {
         $inputScrollDelay.val(delayScroll_default);
         $inputFullStopDelay.val(delayFullStop_default);
         $inputNextPageDelay.val(autoPageTimer_default);
-        saveSettings();
     });
 
-    $colorThemes.on("change", (event, clickChange = true) => {
+    $setColorDefaults.click(() => {
+        colorSettings[0] = defaultColorObj;
+        colorSettings[1] = sepiaColorObj;
 
-        const base_sepia = "#5F4B32";
-        const quote_sepia = "#7B6142";
-        const bg_sepia = "#FBF0D9"; 
+        colorSelectIndex = 0;
+        $colorThemes.prop('selectedIndex', colorSelectIndex);
 
-        if (clickChange) {  
-
-            let newBaseColor = baseColor_default;
-            let newQuoteColor = quoteColor_default;
-            let newBGColor = BGColor_default;
-            let newColorSelection = "default";
-
-            switch ($colorThemes.val()) {
-                case 'sepia':
-                    newBaseColor = base_sepia;
-                    newQuoteColor = quote_sepia;
-                    newBGColor = bg_sepia;
-                    newColorSelection = "sepia";
-                    break;
-            }
-
-            $fontBaseColor.val(newBaseColor);
-            $fontQuoteColor.val(newQuoteColor);
-            $BGColor.val(newBGColor);
-            $colorThemes.val(newColorSelection);
-        }
-
-        if (clickChange) {
-            $fontBaseColor.trigger('change',[false]);
-            $fontQuoteColor.trigger('change',[false]);
-            $BGColor.trigger('change',[false]);
-        } else {
-            $colorThemes.val("custom");
-        }
-
-        saveSettings();
+        setColors(colorSettings[colorSelectIndex]);
     });
 
-    $fontBaseColor.on("change", (event, clickChange = true) => {
+    $colorThemes.on("change", (event) => {
+        colorSelectIndex = $colorThemes.prop('selectedIndex');
+        setColors(colorSettings[colorSelectIndex]);
+    });
+
+    $fontBaseColor.on("change", (event) => {
         $display.css("color", $fontBaseColor.val());
-
-        if (clickChange)
-            $colorThemes.trigger('change',[false]);
+        colorSettings[colorSelectIndex].baseColor = $fontBaseColor.val();
     });
 
-    $fontQuoteColor.on("change", (event, clickChange = true) => {
-        quoteColor = $fontQuoteColor.val();
+    $fontQuoteColor.on("change", (event) => {
+        let quoteColor = $fontQuoteColor.val();
+        colorSettings[colorSelectIndex].quoteColor = quoteColor;
 
         styleElement.textContent =
             `.quoteFormat {
                 color: ${quoteColor};
             }`;
-        
-        if (clickChange)
-            $colorThemes.trigger('change',[false]);
     });
 
-    $BGColor.on("change", (event, clickChange = true) => {
+    $BGColor.on("change", (event) => {
         $("body").css("background-color", $BGColor.val());
+        colorSettings[colorSelectIndex].BGColor = $BGColor.val();
+    });
 
-        if (clickChange)
-            $colorThemes.trigger('change',[false]);
+    $clearAllCache.click(() => {
+        localStorage.clear();
+        window.location.reload();
     });
 
     $footerAbout.click(() => {
@@ -405,32 +402,11 @@ function saveSettings() {
     autoPageTimer = $inputNextPageDelay.val();
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
-    baseColor: $fontBaseColor.val(), quoteColor: quoteColor, BGColor: $BGColor.val(), fontSize: fontSize,
-    colorSelect: $colorThemes.val() };
+    colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
 }
-/*
-function getCurrentQuoteColor() {
-    for (let sheet of document.styleSheets) {
-        try {
-            // Iterate through rules within the stylesheet
-            for (let rule of sheet.cssRules) {
-            // Look for the specific class selector
-            if (rule.selectorText === ".quoteFormat") {
-                // Modify the properties
-                console.log(rule.style.color);
-                return rule.style.color;
-            }
-            }
-        } catch (error) {
-            // Some stylesheets may be restricted due to CORS; handle gracefully
-            console.warn("Cannot access stylesheet:", error);
-        }
-    }
-}
-*/
 
 function resizeMainContainer() {
     if (Number(fontSize) >= 1.5) {
@@ -562,7 +538,7 @@ function showPage(pageNum, result) {
         const computedStyle = window.getComputedStyle($display[0]);
         context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
 
-        return context.measureText(word).width + 2;
+        return context.measureText(word).width + 2; // + fudge factor
     }
 
     /**
@@ -747,10 +723,6 @@ function showPage(pageNum, result) {
         if (playbackMode) {
             stopPlayBackAndViewFull();
             $pageInput.val("");
-            /*
-            const valueLength = $(this).val().length;
-            this.setSelectionRange(valueLength, valueLength);
-            */
         }
     });
 
