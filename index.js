@@ -54,6 +54,7 @@ let colorSettings = [];
 const darkColorObj = {name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 const lightColorObj = {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"};
 const sepiaColorObj = {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"};
+const oliveColorObj = {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"};
 const customColorObj = {name: "custom", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 
 let colorSelectIndex = 0;
@@ -79,6 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     colorSettings.push(structuredClone(darkColorObj));
     colorSettings.push(structuredClone(lightColorObj));
     colorSettings.push(structuredClone(sepiaColorObj));
+    colorSettings.push(structuredClone(oliveColorObj));
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
@@ -204,6 +206,8 @@ function setColors(colorObj) {
     $('.svgHeaderButton').css('border-color', colorObj.BGColor);
     $('.centeredButtons button').css('border-color', colorObj.BGColor);
     $('.centeredButtons input').css('border-color', colorObj.BGColor);
+    //$('.svgHeaderButton').css('color', colorObj.baseColor);
+    //$('.svgHeaderButton').css('background-color', colorObj.baseColor);
 }
 
 function setEvents() {
