@@ -61,9 +61,6 @@ let colorSettings = [];
 const defaultColorObj = {name: "default", baseColor: base_default, quoteColor: quote_default, BGColor: bg_default};
 const sepiaColorObj = {name: "sepia", baseColor: base_sepia, quoteColor: quote_sepia, BGColor: bg_sepia};
 
-//let baseColor = base_default;
-//let quoteColor = quote_default;
-//let BGColor = bg_default;
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
 
@@ -88,17 +85,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
-    colorSettings.push(defaultColorObj);
-    colorSettings.push(sepiaColorObj);
-    colorSettings.push(defaultColorObj);
+    colorSettings.push(structuredClone(defaultColorObj));
+    colorSettings.push(structuredClone(sepiaColorObj));
+    colorSettings.push(structuredClone(defaultColorObj));
 
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll || delayScroll_default;
         delayFullStop = savedSettings.delayFullStop || delayFullStop_default;
         autoPageTimer = savedSettings.autoPageTimer || autoPageTimer_default; 
-        //quoteColor = savedSettings.quoteColor || base_default; 
-        //baseColor = savedSettings.baseColor || quote_default; 
-        //BGColor = savedSettings.BGColor || bg_default;
         fontSize =  savedSettings.fontSize || fontSize_default;
         colorSelectIndex = savedSettings.colorSelectIndex || 0;
         colorSettings = savedSettings.colorSettings || colorSettings;
@@ -341,8 +335,8 @@ function setEvents() {
     });
 
     $setColorDefaults.click(() => {
-        colorSettings[0] = defaultColorObj;
-        colorSettings[1] = sepiaColorObj;
+        colorSettings[0] = structuredClone(defaultColorObj);
+        colorSettings[1] = structuredClone(sepiaColorObj);
 
         colorSelectIndex = 0;
         $colorThemes.prop('selectedIndex', colorSelectIndex);
