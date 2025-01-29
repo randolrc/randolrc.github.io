@@ -56,6 +56,7 @@ const lightColorObj = {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E
 const sepiaColorObj = {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"};
 const oliveColorObj = {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"};
 const customColorObj = {name: "custom", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
+const plasticColorObj = {name: "plastic", baseColor: "#218AE0", quoteColor: "#299FFF", BGColor: "#F3A7D1"};
 
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
@@ -81,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     colorSettings.push(structuredClone(lightColorObj));
     colorSettings.push(structuredClone(sepiaColorObj));
     colorSettings.push(structuredClone(oliveColorObj));
+    colorSettings.push(structuredClone(plasticColorObj));
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
@@ -192,6 +194,7 @@ function loadElements() {
 
 function setColors(colorObj) {
     $display.css("color", colorObj.baseColor);
+    $display.css("text-shadow", `${colorObj.baseColor} 1px 1px 2px`);
     $fontBaseColor.val(colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
     $("body").css("color", colorObj.baseColor);
@@ -214,10 +217,31 @@ function setColors(colorObj) {
         .svgHeaderButton:hover div {
             color: ${colorObj.BGColor};
         }
+
+        .centeredButtons button {
+            background-color: transparent;
+            color: ${colorObj.baseColor};
+        }
+
+        .centeredButtons button:hover {
+            background-color: ${colorObj.baseColor};
+            color: ${colorObj.BGColor};
+        }
+
+        #indicator {
+            background-color: transparent;
+            color: ${colorObj.baseColor};
+        }
+
+        #indicator:hover {
+            background-color: ${colorObj.baseColor};
+            color: ${colorObj.BGColor};
+        }
     `;
     $('.svgHeaderButton').css('border-color', colorObj.BGColor);
     $('.centeredButtons button').css('border-color', colorObj.BGColor);
     $('.centeredButtons input').css('border-color', colorObj.BGColor);
+    $('#totalPageContainer').css('color', colorObj.baseColor);
 }
 
 function setEvents() {
