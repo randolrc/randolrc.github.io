@@ -102,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
         $("#product-name").text("Tale Teller");
     }, 500);
     
-
     setTimeout(() => {
         $splash.css("display","none");
         loadMain();
@@ -202,12 +201,23 @@ function setColors(colorObj) {
         .quoteFormat {
             color: ${colorObj.quoteColor};
         }
+
+        .svgHeaderButton:hover {
+            background-color: ${colorObj.baseColor}
+        }
+
+        .svgHeaderButton div {
+            color: ${colorObj.baseColor};
+            transition: color 0.3s, color 0.3s;
+        }
+
+        .svgHeaderButton:hover div {
+            color: ${colorObj.BGColor};
+        }
     `;
     $('.svgHeaderButton').css('border-color', colorObj.BGColor);
     $('.centeredButtons button').css('border-color', colorObj.BGColor);
     $('.centeredButtons input').css('border-color', colorObj.BGColor);
-    //$('.svgHeaderButton').css('color', colorObj.baseColor);
-    //$('.svgHeaderButton').css('background-color', colorObj.baseColor);
 }
 
 function setEvents() {
@@ -354,6 +364,7 @@ function setEvents() {
     $fontBaseColor.on("change", (event) => {
         $display.css("color", $fontBaseColor.val());
         colorSettings[colorSelectIndex].baseColor = $fontBaseColor.val();
+        setColors(colorSettings[colorSelectIndex]);
     });
 
     $fontQuoteColor.on("change", (event) => {
@@ -369,6 +380,7 @@ function setEvents() {
     $BGColor.on("change", (event) => {
         $("body").css("background-color", $BGColor.val());
         colorSettings[colorSelectIndex].BGColor = $BGColor.val();
+        setColors(colorSettings[colorSelectIndex]);
     });
 
     $clearAllCache.click(() => {

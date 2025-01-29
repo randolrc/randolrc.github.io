@@ -244,24 +244,10 @@ header.hidden {
     
     background-color: transparent;
     border: 2px solid #000000;
-    color: #A9A9A9;
+    /*color: #A9A9A9;*/
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s, color 0.3s;
-}
-
-.svgHeaderButton:hover {
-    background-color: #A9A9A9;
-    color: #000;
-}
-
-.svgHeaderButton img {
-    width: 20px;
-    height: 20px;
-}
-
-.svgHeaderButton:hover > img {
-    filter: invert(0%) sepia(100%) saturate(100%) hue-rotate(127deg) brightness(0%) contrast(100%);
 }
 
 #shareButton {
