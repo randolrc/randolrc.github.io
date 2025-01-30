@@ -48,9 +48,18 @@
     </button>
 
     <button id="playPauseButton" class="svgHeaderButton">
-      <div><svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="fill: currentColor;">
-        <path d="M5.92 24.096q0 1.088 0.928 1.728 0.512 0.288 1.088 0.288 0.448 0 0.896-0.224l16.16-8.064q0.48-0.256 0.8-0.736t0.288-1.088-0.288-1.056-0.8-0.736l-16.16-8.064q-0.448-0.224-0.896-0.224-0.544 0-1.088 0.288-0.928 0.608-0.928 1.728v16.16z"></path>
-      </svg></div> 
+      <div id="playIcon">        
+        <svg width="24" height="30" viewBox="0 0 24 30" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path d="M4 7c0-2 2.2-3.2 3.9-2.1l14 9.5c1.5 1 1.5 3.2 0 4.2l-14 9.5C6.2 29.2 4 28 4 26V7z" />
+        </svg>        
+
+        </div> 
+        <div id="pauseIcon">
+          <svg width="24" height="34" viewBox="0 0 24 34" xmlns="http://www.w3.org/2000/svg" style="fill: currentColor;">
+            <rect x="4" y="4" width="6" height="26" rx="2" />
+            <rect x="14" y="4" width="6" height="26" rx="2" />
+          </svg>
+        </div>
     </button>
   </header>
 
@@ -71,7 +80,9 @@
                 <button class="tab-button active" data-target="#changeSpeed">Speeds</button>
                 <button class="tab-button" data-target="#changeFontColor">Colors</button>
                 <button class="tab-button" data-target="#changeFontStyle">Fonts</button>
+                <button class="tab-button" data-target="#changeEffects">Effects</button>
                 <button class="tab-button" data-target="#changeAutoParse">Parsing</button>
+                <button class="tab-button" data-target="#changeData">Data</button>
                 <button class="tab-button" data-target="#changeExtras">Extras</button>
                 <button class="tab-button" data-target="#changeAbout">About</button>
             </div>
@@ -89,6 +100,7 @@
                       <option value="light">Light</option>
                       <option value="sepia">Sepia</option>
                       <option value="olive">Green</option>
+                      <option value="plastic">Plastic Beach</option>
                       <option value="custom1">-- custom 1 --</option>
                       <option value="custom2">-- custom 2 --</option>
                       <option value="custom3">-- custom 3 --</option>
@@ -100,18 +112,55 @@
                   <div class="settingsRow settingsButtons"><button id="setColorDefaults">Reset Defaults</button></div>
                 </div>
                 <div id="changeFontStyle" class="tab">
+                  <div class="settingsRow"><label class="text" for="font-select">Font :</label>
+                    <select name="font" id="font-select">
+                      <option value="baskerville">Libre Baskerville - Serif</option>
+                      <option value="merriweather">Merriweather</option>
+                      <option value="georgia">Georgia</option>
+                      <option value="times">Times New Roman</option>
+                      <option value="ibm">IBM Plex - Serif</option>
+                      <option value="source">Source Code Pro</option>
+                      <option value="custom2">-- custom 2 --</option>
+                      <option value="custom3">-- custom 3 --</option>
+                    </select>
+                  </div>
                   <div class="settingsRow"><label class="text" for="fontSize">Size :</label><input type="number" min="0.5" max="2.0" step="0.1" id="fontSize"><label class="unit">(em)</label></div>
+                  <div class="settingsRow" id="settingsItalics"><label class="text" for="italicsToggle">Italicize quoted text :<input type="checkbox" id="italicsToggle" /></div>
+                    
                   <div class="settingsRow settingsButtons"><button id="setFontDefaults">Set Defaults</button></div>
+                </div>
+                <div id="changeEffects" class="tab">
+                  <div class="settingsRow" id="settingsDropShadow"><label class="text" for="dropshadowToggle">Enable dropshadow :<input type="checkbox" id="dropshadowToggle" /></div>
+                    <div class="settingsRow"><label class="text" for="effectThemes-select">Theme :</label>
+                      <select name="effectThemes" id="effectThemes-select">
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                        <option value="sepia">Sepia</option>
+                        <option value="olive">Green</option>
+                        <option value="plastic">Plastic Beach</option>
+                        <option value="custom1">-- custom 1 --</option>
+                        <option value="custom2">-- custom 2 --</option>
+                        <option value="custom3">-- custom 3 --</option>
+                      </select>
+                    </div>
+                  <div class="settingsRow"><label class="text" for="XOffset">X-Offset :</label><input type="number" min="-10.0" max="10.0" step="0.1" id="XOffset"></div>
+                  <div class="settingsRow"><label class="text" for="YOffset">Y-Offset :</label><input type="number" min="-10.0" max="10.0" step="0.1" id="YOffset"></div>
+                  <div class="settingsRow"><label class="text" for="radius">Blur Radius :</label><input type="number" min="0.0" max="10.0" step="0.1" id="radius"></div>
+                  <div class="settingsRow"><label class="text" for="dropshadowColor">Color :</label><input type="color" id="dropshadowColor"></div>
                 </div>
                 <div id="changeAutoParse" class="tab">
                   <div class="settingsRow" id="settingsAutoParse"><label class="text" for="autoParse">Auto-parse :<input type="checkbox" id="autoParse" /></div>
-                  <label class="settingsDesc">(Experimental) Turn this on to auto-parse an AI generated story and attempt to format the pages a bit better. 
+                  <label class="settingsDesc">Turn this on to auto-parse an AI generated story and attempt to format the pages a bit better. 
                   (ex: summary lines get trimmed, user story action lines beginning with '&gt' are combined with regular pages)
                   </label>
                 </div>
+                <div id="changeData" class="tab">
+                  Story input copy, share link
+                </div>
                 <div id="changeExtras" class="tab">
                   <div class="settingsRow" id="settingsSanitize"><label class="text" for="sanitizeToggle">Sanitize text (remove html) :<input type="checkbox" id="sanitizeToggle" /></div>
-                    <div class="settingsRow" id="settingsSanitize"><label class="text" for="splashToggle">Enable splash screen :<input type="checkbox" id="splashToggle" /></div>
+                  <div class="settingsRow" id="settingsSanitize"><label class="text" for="splashToggle">Enable splash screen :<input type="checkbox" id="splashToggle" /></div>
+                  <div class="settingsRow" id="settingsSanitize"><label class="text" for="splashToggle">Hide footer :<input type="checkbox" id="splashToggle" /></div>
                   <div class="settingsRow settingsButtons"><button id="clearAllCache">Purge local storage</button></div>
                   <label class="settingsDesc">
                     Delete all story data, reset all settings to default

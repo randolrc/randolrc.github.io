@@ -276,6 +276,10 @@ header.hidden {
     filter: invert(0%) sepia(100%) saturate(100%) hue-rotate(127deg) brightness(0%) contrast(100%);
 }
 
+#pauseIcon {
+    display: none;
+}
+
 main {
     flex: 1;
     margin: 50px auto;
@@ -302,7 +306,11 @@ main {
     background-color: #000;
     visibility: hidden;
 }
-
+/*
+#storyInput::placeholder {
+    color: red
+}
+*/
 #storySubmit {
     visibility: hidden;
 }

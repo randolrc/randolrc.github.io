@@ -194,7 +194,7 @@ function loadElements() {
 
 function setColors(colorObj) {
     $display.css("color", colorObj.baseColor);
-    $display.css("text-shadow", `${colorObj.baseColor} 1px 1px 2px`);
+    //$display.css("text-shadow", `${colorObj.baseColor} 1px 1px 2px`);
     $fontBaseColor.val(colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
     $("body").css("color", colorObj.baseColor);
@@ -242,6 +242,9 @@ function setColors(colorObj) {
     $('.centeredButtons button').css('border-color', colorObj.BGColor);
     $('.centeredButtons input').css('border-color', colorObj.BGColor);
     $('#totalPageContainer').css('color', colorObj.baseColor);
+
+    $('#storyInput').css('color',colorObj.baseColor);
+    $('#storyInput').css('background-color',colorObj.BGColor);
 }
 
 function setEvents() {
@@ -791,7 +794,8 @@ function showPage(pageNum, result) {
         autoPageMode = !autoPageMode;
 
         if (autoPageMode) {
-            $playPauseButton.find("img").attr("src","img/pause.svg");
+            $('#playIcon').css('display','none');
+            $('#pauseIcon').css('display','inline');
             if (!printText) checkAutoPlay(true);
         } else {
             stopAutoPlay();
@@ -809,7 +813,8 @@ function showPage(pageNum, result) {
 
     function stopAutoPlay() {
         autoPageMode = false;
-        $playPauseButton.find("img").attr("src","img/play.svg");
+        $('#playIcon').css('display','inline');
+        $('#pauseIcon').css('display','none');
         clearAllTimeouts();
     }
 
