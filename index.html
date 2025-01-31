@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 
 </head>
@@ -114,19 +115,17 @@
                 <div id="changeFontStyle" class="tab">
                   <div class="settingsRow"><label class="text" for="font-select">Font :</label>
                     <select name="font" id="font-select">
-                      <option value="baskerville">Libre Baskerville - Serif</option>
-                      <option value="merriweather">Merriweather</option>
-                      <option value="georgia">Georgia</option>
-                      <option value="times">Times New Roman</option>
-                      <option value="ibm">IBM Plex - Serif</option>
-                      <option value="source">Source Code Pro</option>
-                      <option value="custom2">-- custom 2 --</option>
-                      <option value="custom3">-- custom 3 --</option>
+                      <option value='"Libre Baskerville", serif'>Libre Baskerville</option>
+                      <option value='"Merriweather", serif'>Merriweather</option>
+                      <option value='"Georgia", serif'>Georgia</option>
+                      <option value='"Times New Roman", serif'>Times New Roman</option>
+                      <option value='"IBM Plex Serif", serif'>IBM Plex</option>
+                      <option value='"Source Code Pro", serif'>Source Code Pro</option>
                     </select>
                   </div>
                   <div class="settingsRow"><label class="text" for="fontSize">Size :</label><input type="number" min="0.5" max="2.0" step="0.1" id="fontSize"><label class="unit">(em)</label></div>
                   <div class="settingsRow" id="settingsItalics"><label class="text" for="italicsToggle">Italicize quoted text :<input type="checkbox" id="italicsToggle" /></div>
-                    
+                  <div class="settingsRow" id="settingsBold"><label class="text" for="boldToggle">Bold quoted text :<input type="checkbox" id="boldToggle" /></div>
                   <div class="settingsRow settingsButtons"><button id="setFontDefaults">Set Defaults</button></div>
                 </div>
                 <div id="changeEffects" class="tab">

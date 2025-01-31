@@ -38,6 +38,7 @@ let $fontQuoteColor;
 let $BGColor;
 
 let $fontSize;
+let $fontSelector;
 
 let $clearAllCache;
 
@@ -60,6 +61,7 @@ const plasticColorObj = {name: "plastic", baseColor: "#218AE0", quoteColor: "#29
 
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
+let font = '"Libre Baskerville", serif';
 
 let styleElement;
 
@@ -94,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fontSize =  savedSettings.fontSize || fontSize_default;
         colorSelectIndex = savedSettings.colorSelectIndex || 0;
         colorSettings = savedSettings.colorSettings || colorSettings;
+        font = savedSettings.font || font;
     }
 
     loadElements();
@@ -188,6 +191,10 @@ function loadElements() {
     $fontSize = $("#fontSize");
     $display.css("font-size", `${fontSize}em`);
     $fontSize.val(fontSize);
+
+    $fontSelector = $('#font-select');
+    $fontSelector.val(font);
+    $('main').css('font-family', font);
 
     $clearAllCache = $('#clearAllCache');
 }
@@ -437,7 +444,7 @@ function saveSettings() {
     autoPageTimer = $inputNextPageDelay.val();
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
-    colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex };
+    colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font};
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
@@ -800,6 +807,14 @@ function showPage(pageNum, result) {
         } else {
             stopAutoPlay();
         }
+    });
+
+    $fontSelector.on('change', () => {
+        font = $fontSelector.val();
+
+        $('main').css('font-family', $fontSelector.val());
+
+        displayFullText(paragraphs[currentPage]);
     });
 
     $fontSize.on("change", () => {
