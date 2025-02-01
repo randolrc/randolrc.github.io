@@ -586,7 +586,7 @@ function showPage(pageNum, result) {
         // Set the font style to match the container's computed font style
         const computedStyle = window.getComputedStyle($display[0]);
         context.font = `${boldFlag} ${italicFlag} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
-        return context.measureText(word).width + 2; // + fudge factor
+        return context.measureText(word).width + context.measureText(" ").width;
     }
 
     /**
@@ -612,19 +612,27 @@ function showPage(pageNum, result) {
             if (startsWithQuote) {
                 boldFlag = true;
                 italicFlag = true;
+                disableFlagsNewline = false;
             }
 
             const wordWidth = measureWordWidth(word, boldFlag, italicFlag);
             const lineWidth = measureWordWidth(line, boldFlag, italicFlag);
-            const fudge = 5;
+            const fudge = 20;
 
             if (lineWidth + wordWidth + fudge > containerWidth) {
+                console.log(line);
+                console.log(lineWidth);
+                console.log(wordWidth);
+                console.log(containerWidth);
+                console.log('---');
+
                 wrappedText += line.trim() + "\n"; // Add the current line and start a new one
                 line = "";
 
                 if (disableFlagsNewline) {
                     boldFlag = false;
                     italicFlag = false;
+                    disableFlagsNewline = false;
                 }
             }
 
@@ -657,8 +665,6 @@ function showPage(pageNum, result) {
         if (index >= text.length) return false;
 
         return quoteMarksList.includes(text[index]);
-
-        //return (text[index] === '\"' || text[index] === "\'" || text[index] === "*" || text[index] === "”");
     }
 
     function displayText(text) {
