@@ -69,6 +69,8 @@ let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
 
+const quoteMarksList = ['\"', "\'", "*", "”"];
+
 document.addEventListener("DOMContentLoaded", () => {
     const cUrlStory = getQueryParams(window.location.href).story;
 
@@ -210,6 +212,8 @@ function setColors(colorObj) {
     styleElement.textContent = `
         .quoteFormat {
             color: ${colorObj.quoteColor};
+            font-style: italic;
+            font-weight: bold;
         }
 
         .svgHeaderButton:hover {
@@ -572,14 +576,16 @@ function showPage(pageNum, result) {
      * @param {string} word - The word to measure.
      * @returns {number} - The pixel width of the word.
      */
-    function measureWordWidth(word) {
+    function measureWordWidth(word, bolded = false, italicized = false) {
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
+        let boldFlag = bolded ? 'bold' : '';
+        let italicFlag = italicized ? 'italic' : '';
+
         // Set the font style to match the container's computed font style
         const computedStyle = window.getComputedStyle($display[0]);
-        context.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
-
+        context.font = `${boldFlag} ${italicFlag} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
         return context.measureText(word).width + 2; // + fudge factor
     }
 
@@ -594,17 +600,39 @@ function showPage(pageNum, result) {
         let line = "";
         let wrappedText = "";
 
+        let boldFlag = false;
+        let italicFlag = false;
+        let disableFlagsNewline = false;
+
         words.forEach(word => {
-            const wordWidth = measureWordWidth(word);
-            const lineWidth = measureWordWidth(line);
-            const fudge = 1;
+
+            let startsWithQuote = quoteMarksList.some(prefix => word.startsWith(prefix));
+            let endsWithQuote = quoteMarksList.some(prefix => word.endsWith(prefix));
+            
+            if (startsWithQuote) {
+                boldFlag = true;
+                italicFlag = true;
+            }
+
+            const wordWidth = measureWordWidth(word, boldFlag, italicFlag);
+            const lineWidth = measureWordWidth(line, boldFlag, italicFlag);
+            const fudge = 5;
 
             if (lineWidth + wordWidth + fudge > containerWidth) {
                 wrappedText += line.trim() + "\n"; // Add the current line and start a new one
                 line = "";
+
+                if (disableFlagsNewline) {
+                    boldFlag = false;
+                    italicFlag = false;
+                }
             }
 
             line += word + " ";
+
+            if (endsWithQuote) {
+                disableFlagsNewline = true;
+            }
         });
 
         wrappedText += line.trim(); // Add the last line
@@ -628,7 +656,9 @@ function showPage(pageNum, result) {
     function quoteComesNext(text, index) {
         if (index >= text.length) return false;
 
-        return (text[index] === '\"' || text[index] === "\'" || text[index] === "*" || text[index] === "”");
+        return quoteMarksList.includes(text[index]);
+
+        //return (text[index] === '\"' || text[index] === "\'" || text[index] === "*" || text[index] === "”");
     }
 
     function displayText(text) {
@@ -814,7 +844,10 @@ function showPage(pageNum, result) {
 
         $('main').css('font-family', $fontSelector.val());
 
-        displayFullText(paragraphs[currentPage]);
+        setTimeout(() => { //wait for browser to load font
+            displayFullText(paragraphs[currentPage]);
+        }, 100);
+
     });
 
     $fontSize.on("change", () => {

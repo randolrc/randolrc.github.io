@@ -6,7 +6,7 @@
   <title>TaleTeller</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
+  <link rel="preload" id="splashFonts" as="style" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Basic&family=Caesar+Dressing&family=Eater&family=Henny+Penny&family=Kablammo&family=Libre+Baskerville&family=Mystery+Quest&family=Pacifico&family=Rubik+Gemstones&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
@@ -202,7 +202,7 @@ Paste your story here and hit the button below! It'll auto-create pages out of e
   <script src="libs/jquery.min.js"></script>
   <script type="text/javascript" src="libs/purify.min.js"></script>
   <script>
-    let rawFonts = $('link[rel="preload"]').attr("href").split("family");
+    let rawFonts = $('#splashFonts').attr("href").split("family");
 
     let loadedFonts = [];
 
