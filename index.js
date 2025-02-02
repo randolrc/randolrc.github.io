@@ -40,6 +40,11 @@ let $BGColor;
 let $fontSize;
 let $fontSelector;
 
+let $italicsToggle;
+let italicsToggleCSS = '';
+let $boldToggle;
+let boldToggleCSS = '';
+
 let $clearAllCache;
 
 const delayScroll_default = 40;
@@ -99,6 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
         colorSelectIndex = savedSettings.colorSelectIndex || 0;
         colorSettings = savedSettings.colorSettings || colorSettings;
         font = savedSettings.font || font;
+        italicsToggleCSS = savedSettings.italicsToggleCSS || italicsToggleCSS;
+        boldToggleCSS = savedSettings.boldToggleCSS || boldToggleCSS;
     }
 
     loadElements();
@@ -194,6 +201,11 @@ function loadElements() {
     $display.css("font-size", `${fontSize}em`);
     $fontSize.val(fontSize);
 
+    $italicsToggle = $("#italicsToggle");
+    $italicsToggle.prop('checked', italicsToggleCSS ? true : false)
+    $boldToggle = $("#boldToggle");
+    $boldToggle.prop('checked', boldToggleCSS ? true : false)
+
     $fontSelector = $('#font-select');
     $fontSelector.val(font);
     $('main').css('font-family', font);
@@ -212,8 +224,8 @@ function setColors(colorObj) {
     styleElement.textContent = `
         .quoteFormat {
             color: ${colorObj.quoteColor};
-            font-style: italic;
-            font-weight: bold;
+            font-style: ${italicsToggleCSS};
+            font-weight: ${boldToggleCSS};
         }
 
         .svgHeaderButton:hover {
@@ -448,7 +460,8 @@ function saveSettings() {
     autoPageTimer = $inputNextPageDelay.val();
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
-    colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font};
+    colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font, italicsToggleCSS: italicsToggleCSS,
+    boldToggleCSS: boldToggleCSS};
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
@@ -604,14 +617,17 @@ function showPage(pageNum, result) {
         let italicFlag = false;
         let disableFlagsNewline = false;
 
+        let italicToggleOn = italicsToggleCSS ? true : false;
+        let boldToggleOn = boldToggleCSS ? true : false;
+
         words.forEach(word => {
 
             let startsWithQuote = quoteMarksList.some(prefix => word.startsWith(prefix));
             let endsWithQuote = quoteMarksList.some(prefix => word.endsWith(prefix));
             
             if (startsWithQuote) {
-                boldFlag = true;
-                italicFlag = true;
+                boldFlag = true && boldToggleOn;
+                italicFlag = true && italicToggleOn;
                 disableFlagsNewline = false;
             }
 
@@ -620,12 +636,6 @@ function showPage(pageNum, result) {
             const fudge = 20;
 
             if (lineWidth + wordWidth + fudge > containerWidth) {
-                console.log(line);
-                console.log(lineWidth);
-                console.log(wordWidth);
-                console.log(containerWidth);
-                console.log('---');
-
                 wrappedText += line.trim() + "\n"; // Add the current line and start a new one
                 line = "";
 
@@ -638,7 +648,7 @@ function showPage(pageNum, result) {
 
             line += word + " ";
 
-            if (endsWithQuote) {
+            if (endsWithQuote && (boldToggleOn || italicToggleOn)) {
                 disableFlagsNewline = true;
             }
         });
@@ -863,6 +873,34 @@ function showPage(pageNum, result) {
         resizeMainContainer();
 
         displayFullText(paragraphs[currentPage]);
+    });
+
+    $italicsToggle.on("change", () => {
+        if ($italicsToggle.prop('checked')) {
+            italicsToggleCSS = 'italic';
+        } else {
+            italicsToggleCSS = '';
+        }
+
+        setColors(colorSettings[colorSelectIndex]);
+
+        setTimeout(() => { //wait for browser to load font
+            displayFullText(paragraphs[currentPage]);
+        }, 100);
+    });
+
+    $boldToggle.on("change", () => {
+        if ($boldToggle.prop('checked')) {
+            boldToggleCSS = 'bold';
+        } else {
+            boldToggleCSS = '';
+        }
+
+        setColors(colorSettings[colorSelectIndex]);
+
+        setTimeout(() => { //wait for browser to load font
+            displayFullText(paragraphs[currentPage]);
+        }, 100);
     });
 
     function stopAutoPlay() {
