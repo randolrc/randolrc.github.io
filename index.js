@@ -45,6 +45,11 @@ let italicsToggleCSS = '';
 let $boldToggle;
 let boldToggleCSS = '';
 
+let $shadowToggle;
+let shadowToggleOn = false;
+const shadowObjDark3D = { xoff: 1, yoff: 1, blur: 1, color: '#000000' };
+let shadowSettings = [shadowObjDark3D];
+
 let $clearAllCache;
 
 const delayScroll_default = 40;
@@ -56,13 +61,14 @@ let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
 
-let colorSettings = [];
+
 const darkColorObj = {name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 const lightColorObj = {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"};
 const sepiaColorObj = {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"};
 const oliveColorObj = {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"};
 const customColorObj = {name: "custom", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 const plasticColorObj = {name: "plastic", baseColor: "#218AE0", quoteColor: "#299FFF", BGColor: "#F3A7D1"};
+let colorSettings = [darkColorObj, lightColorObj, sepiaColorObj, oliveColorObj, customColorObj, plasticColorObj];
 
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
@@ -87,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
 
+/*
     colorSettings.push(structuredClone(darkColorObj));
     colorSettings.push(structuredClone(lightColorObj));
     colorSettings.push(structuredClone(sepiaColorObj));
@@ -95,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
-
+*/
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll || delayScroll_default;
         delayFullStop = savedSettings.delayFullStop || delayFullStop_default;
@@ -106,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
         font = savedSettings.font || font;
         italicsToggleCSS = savedSettings.italicsToggleCSS || italicsToggleCSS;
         boldToggleCSS = savedSettings.boldToggleCSS || boldToggleCSS;
+        shadowToggleOn = savedSettings.shadowToggleOn || shadowToggleOn;
     }
 
     loadElements();
@@ -202,9 +210,13 @@ function loadElements() {
     $fontSize.val(fontSize);
 
     $italicsToggle = $("#italicsToggle");
-    $italicsToggle.prop('checked', italicsToggleCSS ? true : false)
+    $italicsToggle.prop('checked', italicsToggleCSS ? true : false);
     $boldToggle = $("#boldToggle");
-    $boldToggle.prop('checked', boldToggleCSS ? true : false)
+    $boldToggle.prop('checked', boldToggleCSS ? true : false);
+
+    $shadowToggle = $('#dropshadowToggle');
+    $shadowToggle.prop('checked', shadowToggleOn);
+    setTextShadow();
 
     $fontSelector = $('#font-select');
     $fontSelector.val(font);
@@ -215,7 +227,6 @@ function loadElements() {
 
 function setColors(colorObj) {
     $display.css("color", colorObj.baseColor);
-    //$display.css("text-shadow", `${colorObj.baseColor} 1px 1px 2px`);
     $fontBaseColor.val(colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
     $("body").css("color", colorObj.baseColor);
@@ -433,6 +444,10 @@ function setEvents() {
         setColors(colorSettings[colorSelectIndex]);
     });
 
+    $shadowToggle.on('change', () => {
+        setTextShadow();
+    });
+
     $clearAllCache.click(() => {
         localStorage.clear();
         window.location.reload();
@@ -441,6 +456,17 @@ function setEvents() {
     $footerAbout.click(() => {
         showSettingsTab();
     });
+}
+
+function setTextShadow() {
+    if ($shadowToggle.prop('checked')) {
+        let shadow = `${shadowSettings[0].xoff}px ${shadowSettings[0].yoff}px ${shadowSettings[0].blur}px ${shadowSettings[0].color}`;
+        $display.css('text-shadow', shadow);
+        shadowToggleOn = true;
+    } else {
+        $display.css('text-shadow', '');
+        shadowToggleOn = false;
+    }
 }
 /*
 function rgbToHex(rgb) {
@@ -461,7 +487,7 @@ function saveSettings() {
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
     colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font, italicsToggleCSS: italicsToggleCSS,
-    boldToggleCSS: boldToggleCSS};
+    boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn};
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
