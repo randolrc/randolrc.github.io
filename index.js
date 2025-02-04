@@ -805,6 +805,7 @@ function showPage(pageNum, result) {
         if (index >= 0 && index < paragraphs.length) {
             currentPage = index;
             printText = true;
+            displayedFullText = false;
             displayText(paragraphs[currentPage]);
             updateIndicator();
         }
