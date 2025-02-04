@@ -60,15 +60,17 @@ const fontSize_default = 1.1;
 let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
 let autoPageTimer = autoPageTimer_default;
-
-
+/*
 const darkColorObj = {name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 const lightColorObj = {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"};
 const sepiaColorObj = {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"};
 const oliveColorObj = {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"};
 const customColorObj = {name: "custom", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"};
 const plasticColorObj = {name: "plastic", baseColor: "#218AE0", quoteColor: "#299FFF", BGColor: "#F3A7D1"};
-let colorSettings = [darkColorObj, lightColorObj, sepiaColorObj, oliveColorObj, customColorObj, plasticColorObj];
+let colorSettings = [structuredClone(darkColorObj), structuredClone(lightColorObj), structuredClone(sepiaColorObj), 
+    structuredClone(oliveColorObj), structuredClone(customColorObj), structuredClone(plasticColorObj)];
+*/
+let colorSettings;
 
 let colorSelectIndex = 0;
 let fontSize = fontSize_default;
@@ -103,6 +105,8 @@ document.addEventListener("DOMContentLoaded", () => {
     colorSettings.push(structuredClone(customColorObj));
     colorSettings.push(structuredClone(customColorObj));
 */
+    setColorDefaults();
+
     if (savedSettings) {
         delayScroll = savedSettings.delayScroll || delayScroll_default;
         delayFullStop = savedSettings.delayFullStop || delayFullStop_default;
@@ -223,6 +227,43 @@ function loadElements() {
     $('main').css('font-family', font);
 
     $clearAllCache = $('#clearAllCache');
+}
+
+function setColorDefaults() {
+
+    const searchObjects = (arr, searchStrings) =>
+        arr.filter(obj => 
+        searchStrings.some(searchString =>
+            Object.values(obj).some(value => 
+            String(value).toLowerCase().includes(searchString.toLowerCase())
+            )
+        )
+    );
+
+    const updateObjects = (existingArray, updatedArray) => 
+        existingArray.map(obj => 
+            updatedArray.find(updatedObj => updatedObj.name === obj.name) || obj
+    );
+
+    let savedCustoms;
+
+    if (colorSettings) {
+        savedCustoms = searchObjects(colorSettings, ['custom1','custom2','custom3']);
+    }
+
+    colorSettings = [{name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
+        {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"},
+        {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"},
+        {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"},
+        {name: "plastic", baseColor: "#218AE0", quoteColor: "#299FFF", BGColor: "#F3A7D1"},
+        {name: "custom1", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
+        {name: "custom2", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
+        {name: "custom3", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"}
+        ];
+
+    if (savedCustoms) {
+        colorSettings = updateObjects(colorSettings, savedCustoms);
+    }
 }
 
 function setColors(colorObj) {
@@ -408,8 +449,10 @@ function setEvents() {
     });
 
     $setColorDefaults.click(() => {
-        colorSettings[0] = structuredClone(darkColorObj);
-        colorSettings[1] = structuredClone(sepiaColorObj);
+        //colorSettings[0] = structuredClone(darkColorObj);
+        //colorSettings[1] = structuredClone(sepiaColorObj);
+
+        setColorDefaults();
 
         colorSelectIndex = 0;
         $colorThemes.prop('selectedIndex', colorSelectIndex);
