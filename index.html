@@ -126,26 +126,33 @@
                   <div class="settingsRow"><label class="text" for="fontSize">Size :</label><input type="number" min="0.5" max="2.0" step="0.1" id="fontSize"><label class="unit">(em)</label></div>
                   <div class="settingsRow" id="settingsItalics"><label class="text" for="italicsToggle">Italicize quoted text :<input type="checkbox" id="italicsToggle" /></div>
                   <div class="settingsRow" id="settingsBold"><label class="text" for="boldToggle">Bold quoted text :<input type="checkbox" id="boldToggle" /></div>
-                  <div class="settingsRow settingsButtons"><button id="setFontDefaults">Set Defaults</button></div>
                 </div>
                 <div id="changeEffects" class="tab">
                   <div class="settingsRow" id="settingsDropShadow"><label class="text" for="dropshadowToggle">Enable dropshadow :<input type="checkbox" id="dropshadowToggle" /></div>
                   <div class="settingsRow"><label class="text" for="effectThemes-select">Theme :</label>
                     <select name="effectThemes" id="effectThemes-select">
-                      <option value="dark">Dark</option>
-                      <option value="light">Light</option>
-                      <option value="sepia">Sepia</option>
-                      <option value="olive">Green</option>
-                      <option value="plastic">Plastic Beach</option>
+                      <option value="dark">Dark 3D</option>
+                      <option value="light">Light 3D</option>
+                      <option value="sepia">Ghost</option>
+                      <option value="olive">Blood</option>
+                      <option value="plastic">Radioactive</option>
                       <option value="custom1">-- custom 1 --</option>
                       <option value="custom2">-- custom 2 --</option>
                       <option value="custom3">-- custom 3 --</option>
                     </select>
                   </div>
-                  <div class="settingsRow"><label class="text" for="XOffset">X-Offset :</label><input type="number" min="-10.0" max="10.0" step="0.1" id="XOffset"></div>
-                  <div class="settingsRow"><label class="text" for="YOffset">Y-Offset :</label><input type="number" min="-10.0" max="10.0" step="0.1" id="YOffset"></div>
-                  <div class="settingsRow"><label class="text" for="radius">Blur Radius :</label><input type="number" min="0.0" max="10.0" step="0.1" id="radius"></div>
+                  <div class="settingsRow"><label class="text" for="applyTo-select">Add shadow to :</label>
+                    <select name="applyTo" id="applyTo-select">
+                      <option value="all">All Text</option>
+                      <option value="quoted">Quoted</option>
+                      <option value="normal">Normal</option>
+                    </select>
+                  </div>
+                  <div class="settingsRow"><label class="text" for="XOffset">X-Offset :</label><input type="number" min="-100.0" max="100.0" step="0.1" id="XOffset"></div>
+                  <div class="settingsRow"><label class="text" for="YOffset">Y-Offset :</label><input type="number" min="-100.0" max="100.0" step="0.1" id="YOffset"></div>
+                  <div class="settingsRow"><label class="text" for="radius">Blur Radius :</label><input type="number" min="0.0" max="50.0" step="0.1" id="radius"></div>
                   <div class="settingsRow"><label class="text" for="dropshadowColor">Color :</label><input type="color" id="dropshadowColor"></div>
+                  <div class="settingsRow settingsButtons"><button id="setShadowDefaults">Reset Defaults</button></div>
                 </div>
                 <div id="changeAutoParse" class="tab">
                   <div class="settingsRow" id="settingsAutoParse"><label class="text" for="autoParse">Auto-parse :<input type="checkbox" id="autoParse" /></div>
@@ -189,8 +196,12 @@ Paste your story here and hit the button below! It'll auto-create pages out of e
  - Play button will toggle auto-advancing to the next page after a delay.
  
  - Fullscreen button on top right will do what it's supposed to, unless it doesn't.
+
+ - Options has a bunch of fun and useful things (WIP).
  
- - Works pretty horribly on mobile."></textarea>
+ - Works pretty horribly on mobile, I'll make it better sometime.
+ 
+ Made by Carter, carter@taleteller.io"></textarea>
     <div class="centeredButtons"><button id="storySubmit">Tell me a Tale</button></div>
     <div id="display"></div>
   </main>
