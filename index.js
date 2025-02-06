@@ -52,6 +52,9 @@ let $XOffset;
 let $YOffset;
 let $sBlur;
 let $sColor;
+let $effectThemes;
+let effectSelectIndex = 0;
+let $sApplyTo;
 
 let $clearAllCache;
 
@@ -76,7 +79,7 @@ let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
 
-const quoteMarksList = ['\"', "\'", "*", "”"];
+const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
 document.addEventListener("DOMContentLoaded", () => {
     const cUrlStory = getQueryParams(window.location.href).story;
@@ -103,6 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
         boldToggleCSS = savedSettings.boldToggleCSS || boldToggleCSS;
         shadowToggleOn = savedSettings.shadowToggleOn || shadowToggleOn;
         shadowSettings = savedSettings.shadowSettings || shadowSettings;
+        effectSelectIndex = savedSettings.effectSelectIndex || effectSelectIndex;
     }
 
     loadElements();
@@ -184,6 +188,8 @@ function loadElements() {
     $colorThemes = $("#colorThemes-select");
     $colorThemes.prop('selectedIndex', colorSelectIndex);
 
+    $sApplyTo = $("#applyTo-select");
+
     $fontBaseColor = $("#fontBaseColor");
     $fontQuoteColor = $("#fontQuoteColor");
     $BGColor = $("#BGColor");
@@ -208,13 +214,16 @@ function loadElements() {
     setTextShadow();
 
     $XOffset = $('#XOffset');
-    $XOffset.val(shadowSettings[0].xoff);
+    $XOffset.val(shadowSettings[effectSelectIndex].xoff);
     $YOffset = $('#YOffset');
-    $YOffset.val(shadowSettings[0].yoff);
+    $YOffset.val(shadowSettings[effectSelectIndex].yoff);
     $sBlur = $('#radius');
-    $sBlur.val(shadowSettings[0].blur);
+    $sBlur.val(shadowSettings[effectSelectIndex].blur);
     $sColor = $('#dropshadowColor');
-    $sColor.val(shadowSettings[0].color);
+    $sColor.val(shadowSettings[effectSelectIndex].color);
+
+    $effectThemes = $("#effectThemes-select");
+    $effectThemes.prop('selectedIndex', effectSelectIndex);
 
     $fontSelector = $('#font-select');
     $fontSelector.val(font);
@@ -262,7 +271,13 @@ function setColorDefaults() {
 
     //TEXT SHADOWS
     shadowSettings = [{ name: 'Light3D', xoff: 1, yoff: 1, blur: 1, color: '#B3B3B3' },
-        { name: 'Dark3D', xoff: 1, yoff: 1, blur: 1, color: '#000000' }
+        { name: 'Dark3D', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        { name: 'ghost', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        { name: 'vampire', xoff: 0, yoff: 3, blur: 3, color: '#FF0000' },
+        { name: 'mutagen', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        { name: 'custom1', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        { name: 'custom2', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        { name: 'custom3', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
     ];
 }
 
@@ -489,6 +504,15 @@ function setEvents() {
         setTextShadow();
     });
 
+    $effectThemes.on("change", () => {
+        effectSelectIndex = $effectThemes.prop('selectedIndex');
+        $XOffset.val(shadowSettings[effectSelectIndex].xoff);
+        $YOffset.val(shadowSettings[effectSelectIndex].yoff);
+        $sBlur.val(shadowSettings[effectSelectIndex].blur);
+        $sColor.val(shadowSettings[effectSelectIndex].color);
+        setTextShadow();
+    });
+
     $XOffset.on('input', () => {
         shadowSettings[0].xoff = $XOffset.val();
         setTextShadow();
@@ -521,7 +545,8 @@ function setEvents() {
 
 function setTextShadow() {
     if ($shadowToggle.prop('checked')) {
-        let shadow = `${shadowSettings[0].xoff}px ${shadowSettings[0].yoff}px ${shadowSettings[0].blur}px ${shadowSettings[0].color}`;
+        let shadow = `${shadowSettings[effectSelectIndex].xoff}px ${shadowSettings[effectSelectIndex].yoff}px 
+            ${shadowSettings[effectSelectIndex].blur}px ${shadowSettings[effectSelectIndex].color}`;
         $display.css('text-shadow', shadow);
         $splash.css('text-shadow', shadow);
         shadowToggleOn = true;
@@ -550,7 +575,7 @@ function saveSettings() {
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
     colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font, italicsToggleCSS: italicsToggleCSS,
-    boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn, shadowSettings: shadowSettings};
+    boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn, shadowSettings: shadowSettings, effectSelectIndex: effectSelectIndex};
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
@@ -784,7 +809,7 @@ function showPage(pageNum, result) {
 
                 let doOneMoreQuoteColor = false;
 
-                if (t === '\"') {
+                if (quoteMarksList.includes(t)) {
                     doQuoteColor = !doQuoteColor;
 
                     if (!doQuoteColor) {
@@ -855,7 +880,7 @@ function showPage(pageNum, result) {
 
     function setFullTextEffects(text) {
         // Regular expression to match text in double quotes
-        let updatedString = text.replace(/"([^"]*)"/g, `<span class=${classQuoteFormat}>"$1"</span>`);
+        let updatedString = text.replace(/["'“”‘’]([^"'“”‘’]*)["'“”‘’]/g, `<span class=${classQuoteFormat}>"$1"</span>`);
 
         return updatedString;
     }
