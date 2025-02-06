@@ -269,8 +269,9 @@ function setColorDefaults() {
 function setColors(colorObj) {
     $display.css("color", colorObj.baseColor);
     $fontBaseColor.val(colorObj.baseColor);
+
+    $splash.css("color", colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
-    $("body").css("color", colorObj.baseColor);
     $BGColor.val(colorObj.BGColor);
     $fontQuoteColor.val(colorObj.quoteColor);
     styleElement.textContent = `
@@ -449,9 +450,6 @@ function setEvents() {
     });
 
     $setColorDefaults.click(() => {
-        //colorSettings[0] = structuredClone(darkColorObj);
-        //colorSettings[1] = structuredClone(sepiaColorObj);
-
         setColorDefaults();
 
         colorSelectIndex = 0;
@@ -525,11 +523,11 @@ function setTextShadow() {
     if ($shadowToggle.prop('checked')) {
         let shadow = `${shadowSettings[0].xoff}px ${shadowSettings[0].yoff}px ${shadowSettings[0].blur}px ${shadowSettings[0].color}`;
         $display.css('text-shadow', shadow);
-        $('body').css('text-shadow', shadow);
+        $splash.css('text-shadow', shadow);
         shadowToggleOn = true;
     } else {
         $display.css('text-shadow', '');
-        $('body').css('text-shadow', '');
+        $splash.css('text-shadow', '');
         shadowToggleOn = false;
     }
 }
