@@ -270,11 +270,12 @@ function setColorDefaults() {
     }
 
     //TEXT SHADOWS
-    shadowSettings = [{ name: 'Light3D', xoff: 1, yoff: 1, blur: 1, color: '#B3B3B3' },
-        { name: 'Dark3D', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
-        { name: 'ghost', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
-        { name: 'vampire', xoff: 0, yoff: 3, blur: 3, color: '#FF0000' },
-        { name: 'mutagen', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+    shadowSettings = [{ name: 'light3D', xoff: 1, yoff: 1, blur: 1, color: '#B3B3B3' },
+        { name: 'dark3D', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        { name: 'darkGhost', xoff: 0, yoff: 0, blur: 10, color: '#FFFFFF' },
+        { name: 'lightGhost', xoff: 0, yoff: 0, blur: 10, color: '#878787' },
+        { name: 'vampire', xoff: 0, yoff: 3, blur: 3, color: '#FF7575' },
+        { name: 'mutagen', xoff: 1, yoff: -1.5, blur: 5, color: '#A6FF00' },
         { name: 'custom1', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
         { name: 'custom2', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
         { name: 'custom3', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
@@ -285,6 +286,13 @@ function setColors(colorObj) {
     $display.css("color", colorObj.baseColor);
     $fontBaseColor.val(colorObj.baseColor);
 
+    let shadow = 'none';
+
+    if (shadowToggleOn) {
+        shadow = `${shadowSettings[effectSelectIndex].xoff}px ${shadowSettings[effectSelectIndex].yoff}px 
+        ${shadowSettings[effectSelectIndex].blur}px ${shadowSettings[effectSelectIndex].color}`;
+    }
+
     $splash.css("color", colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
     $BGColor.val(colorObj.BGColor);
@@ -294,6 +302,7 @@ function setColors(colorObj) {
             color: ${colorObj.quoteColor};
             font-style: ${italicsToggleCSS};
             font-weight: ${boldToggleCSS};
+            text-shadow: ${shadow};
         }
 
         .svgHeaderButton:hover {
@@ -514,22 +523,22 @@ function setEvents() {
     });
 
     $XOffset.on('input', () => {
-        shadowSettings[0].xoff = $XOffset.val();
+        shadowSettings[effectSelectIndex].xoff = $XOffset.val();
         setTextShadow();
     });
 
     $YOffset.on('input', () => {
-        shadowSettings[0].yoff = $YOffset.val();
+        shadowSettings[effectSelectIndex].yoff = $YOffset.val();
         setTextShadow();
     });
 
     $sBlur.on('input', () => {
-        shadowSettings[0].blur = $sBlur.val();
+        shadowSettings[effectSelectIndex].blur = $sBlur.val();
         setTextShadow();
     });
 
     $sColor.on('change', () => {
-        shadowSettings[0].color = $sColor.val();
+        shadowSettings[effectSelectIndex].color = $sColor.val();
         setTextShadow();
     });
 
@@ -550,10 +559,12 @@ function setTextShadow() {
         $display.css('text-shadow', shadow);
         $splash.css('text-shadow', shadow);
         shadowToggleOn = true;
+        setColors(colorSettings[colorSelectIndex]);
     } else {
-        $display.css('text-shadow', '');
-        $splash.css('text-shadow', '');
+        $display.css('text-shadow', 'none');
+        $splash.css('text-shadow', 'none');
         shadowToggleOn = false;
+        setColors(colorSettings[colorSelectIndex]);
     }
 }
 /*
