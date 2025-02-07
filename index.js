@@ -55,6 +55,7 @@ let $sColor;
 let $effectThemes;
 let effectSelectIndex = 0;
 let $sApplyTo;
+let sApplyToIndex = 0;
 
 let $clearAllCache;
 
@@ -107,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         shadowToggleOn = savedSettings.shadowToggleOn || shadowToggleOn;
         shadowSettings = savedSettings.shadowSettings || shadowSettings;
         effectSelectIndex = savedSettings.effectSelectIndex || effectSelectIndex;
+        sApplyToIndex = savedSettings.sApplyToIndex || sApplyToIndex;
     }
 
     loadElements();
@@ -189,6 +191,7 @@ function loadElements() {
     $colorThemes.prop('selectedIndex', colorSelectIndex);
 
     $sApplyTo = $("#applyTo-select");
+    $sApplyTo.prop('selectedIndex', sApplyToIndex);
 
     $fontBaseColor = $("#fontBaseColor");
     $fontQuoteColor = $("#fontQuoteColor");
@@ -542,6 +545,11 @@ function setEvents() {
         setTextShadow();
     });
 
+    $sApplyTo.on('change', () => {
+        sApplyToIndex = $sApplyTo.prop('selectedIndex');
+        setTextShadow();
+    });
+
     $clearAllCache.click(() => {
         localStorage.clear();
         window.location.reload();
@@ -556,8 +564,15 @@ function setTextShadow() {
     if ($shadowToggle.prop('checked')) {
         let shadow = `${shadowSettings[effectSelectIndex].xoff}px ${shadowSettings[effectSelectIndex].yoff}px 
             ${shadowSettings[effectSelectIndex].blur}px ${shadowSettings[effectSelectIndex].color}`;
-        $display.css('text-shadow', shadow);
-        $splash.css('text-shadow', shadow);
+
+        if ($sApplyTo.val() === 'all') {
+            $display.css('text-shadow', shadow);
+            $splash.css('text-shadow', shadow);
+        } else {
+            $display.css('text-shadow', 'none');
+            $splash.css('text-shadow', 'none');
+        }
+
         shadowToggleOn = true;
         setColors(colorSettings[colorSelectIndex]);
     } else {
@@ -586,7 +601,8 @@ function saveSettings() {
 
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
     colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font, italicsToggleCSS: italicsToggleCSS,
-    boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn, shadowSettings: shadowSettings, effectSelectIndex: effectSelectIndex};
+    boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn, shadowSettings: shadowSettings, effectSelectIndex: effectSelectIndex,
+    sApplyToIndex: sApplyToIndex};
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
