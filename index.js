@@ -500,10 +500,7 @@ function setEvents() {
         let quoteColor = $fontQuoteColor.val();
         colorSettings[colorSelectIndex].quoteColor = quoteColor;
 
-        styleElement.textContent =
-            `.quoteFormat {
-                color: ${quoteColor};
-            }`;
+        setColors(colorSettings[colorSelectIndex]);
     });
 
     $BGColor.on("change", (event) => {
@@ -812,6 +809,12 @@ function showPage(pageNum, result) {
         }
     }
 
+    function inContractedWord(text, index) {
+        if (index - 1 < 0 || index >= text.length) return false;
+
+        return /^[a-zA-Z]$/.test(text[index - 1]) && /^[a-zA-Z]$/.test(text[index + 1]);
+    }
+
     function quoteComesNext(text, index) {
         if (index >= text.length) return false;
 
@@ -824,6 +827,7 @@ function showPage(pageNum, result) {
         let index = 0;
         let doQuoteColor = false;
         let doDelayedPause = false;
+        let prevCharIsSpace = false;
         clearAllTimeouts();
 
         const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "Hon.", "Capt.", "Sgt.", "Lt.", "Gen.", "Col.", "Gov.", "Pres.", "Atty."];
@@ -836,7 +840,7 @@ function showPage(pageNum, result) {
 
                 let doOneMoreQuoteColor = false;
 
-                if (quoteMarksList.includes(t)) {
+                if (quoteMarksList.includes(t) && !inContractedWord(wrappedText, index)) {
                     doQuoteColor = !doQuoteColor;
 
                     if (!doQuoteColor) {
@@ -907,7 +911,27 @@ function showPage(pageNum, result) {
 
     function setFullTextEffects(text) {
         // Regular expression to match text in double quotes
-        let updatedString = text.replace(/["'“”‘’]([^"'“”‘’]*)["'“”‘’]/g, `<span class=${classQuoteFormat}>"$1"</span>`);
+        //let updatedString = text.replace(/(?<=\s|^)(["'“”‘’])([^"'“”‘’]+)\1(?=\s|[.,!?;:]|$)/g, `<span class=${classQuoteFormat}>$1$2$1</span>`);
+
+        let updatedString = text.replace(
+            /(?<=\s|^)(["“‘'])([^"'“”‘’]+?(?:\b'\b[^"'“”‘’]*)*)(["”’'])(?=\s|[.,!?;:]|$)/g, 
+            (match, openQuote, text, closeQuote) => {
+                // Ensure the opening and closing quotes are a valid pair
+                const quotePairs = {
+                    '"': '"',
+                    '“': '”',
+                    '‘': '’',
+                    "'": "'"  // Normal single quotes, handled separately
+                };
+        
+                // Check if the detected quotes form a valid pair
+                if (quotePairs[openQuote] === closeQuote) {
+                    return `<span class=${classQuoteFormat}>${openQuote}${text}${closeQuote}</span>`;
+                }
+        
+                return match; // If not a valid pair, keep the original text
+            }
+        );
 
         return updatedString;
     }
