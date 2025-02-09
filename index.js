@@ -56,6 +56,7 @@ let $effectThemes;
 let effectSelectIndex = 0;
 let $sApplyTo;
 let sApplyToIndex = 0;
+let $setShadowDefaults;
 
 let $clearAllCache;
 
@@ -224,6 +225,7 @@ function loadElements() {
     $sBlur.val(shadowSettings[effectSelectIndex].blur);
     $sColor = $('#dropshadowColor');
     $sColor.val(shadowSettings[effectSelectIndex].color);
+    $setShadowDefaults = $('#setShadowDefaults');
 
     $effectThemes = $("#effectThemes-select");
     $effectThemes.prop('selectedIndex', effectSelectIndex);
@@ -235,7 +237,7 @@ function loadElements() {
     $clearAllCache = $('#clearAllCache');
 }
 
-function setColorDefaults() {
+function setColorDefaults(setBaseColors = true, setShadowColors = true) {
 
     const searchObjects = (arr, searchStrings) =>
         arr.filter(obj => 
@@ -258,31 +260,34 @@ function setColorDefaults() {
         savedCustoms = searchObjects(colorSettings, ['custom1','custom2','custom3']);
     }
 
-    colorSettings = [{name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
-        {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"},
-        {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"},
-        {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"},
-        {name: "plastic", baseColor: "#218AE0", quoteColor: "#299FFF", BGColor: "#F3A7D1"},
-        {name: "custom1", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
-        {name: "custom2", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
-        {name: "custom3", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"}
-        ];
+    if (setBaseColors) { 
+        colorSettings = [{name: "dark", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
+            {name: "light", baseColor: "#000000", quoteColor: "#2E2E2E", BGColor: "#FFFFFF"},
+            {name: "sepia", baseColor: "#5F4B32", quoteColor: "#7B6142", BGColor: "#FBF0D9"},
+            {name: "green", baseColor: "#617b6b", quoteColor: "#708F7C", BGColor: "#c3e6cc"},
+            {name: "plastic", baseColor: "#218AE0", quoteColor: "#299FFF", BGColor: "#F3A7D1"},
+            {name: "custom1", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
+            {name: "custom2", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"},
+            {name: "custom3", baseColor: "#e4e4e4", quoteColor: "#FFFFFF", BGColor: "#000000"}
+            ];
+    }
 
     if (savedCustoms) {
         colorSettings = updateObjects(colorSettings, savedCustoms);
     }
 
-    //TEXT SHADOWS
-    shadowSettings = [{ name: 'light3D', xoff: 1, yoff: 1, blur: 1, color: '#B3B3B3' },
-        { name: 'dark3D', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
-        { name: 'darkGhost', xoff: 0, yoff: 0, blur: 10, color: '#FFFFFF' },
-        { name: 'lightGhost', xoff: 0, yoff: 0, blur: 10, color: '#878787' },
-        { name: 'vampire', xoff: 0, yoff: 3, blur: 3, color: '#FF7575' },
-        { name: 'mutagen', xoff: 1, yoff: -1.5, blur: 5, color: '#A6FF00' },
-        { name: 'custom1', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
-        { name: 'custom2', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
-        { name: 'custom3', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
-    ];
+    if (setShadowColors) {
+        shadowSettings = [{ name: 'light3D', xoff: 1, yoff: 1, blur: 1, color: '#B3B3B3' },
+            { name: 'dark3D', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+            { name: 'darkGhost', xoff: 0, yoff: 0, blur: 10, color: '#FFFFFF' },
+            { name: 'lightGhost', xoff: 0, yoff: 0, blur: 10, color: '#878787' },
+            { name: 'vampire', xoff: 0, yoff: 3, blur: 3, color: '#FF7575' },
+            { name: 'mutagen', xoff: 1, yoff: -1.5, blur: 5, color: '#A6FF00' },
+            { name: 'custom1', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+            { name: 'custom2', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+            { name: 'custom3', xoff: 1, yoff: 1, blur: 1, color: '#000000' },
+        ];
+    }
 }
 
 function setColors(colorObj) {
@@ -477,7 +482,7 @@ function setEvents() {
     });
 
     $setColorDefaults.click(() => {
-        setColorDefaults();
+        setColorDefaults(true, false);
 
         colorSelectIndex = 0;
         $colorThemes.prop('selectedIndex', colorSelectIndex);
@@ -544,6 +549,23 @@ function setEvents() {
 
     $sApplyTo.on('change', () => {
         sApplyToIndex = $sApplyTo.prop('selectedIndex');
+        setTextShadow();
+    });
+
+    $setShadowDefaults.click(() => {
+        setColorDefaults(false, true);
+
+        effectSelectIndex = 0;
+        $effectThemes.prop('selectedIndex', effectSelectIndex);
+        sApplyToIndex = 0;
+        $sApplyTo.prop('selectedIndex', sApplyToIndex);
+        $shadowToggle.prop('checked', false);
+
+        $XOffset.val(shadowSettings[effectSelectIndex].xoff);
+        $YOffset.val(shadowSettings[effectSelectIndex].yoff);
+        $sBlur.val(shadowSettings[effectSelectIndex].blur);
+        $sColor.val(shadowSettings[effectSelectIndex].color);
+
         setTextShadow();
     });
 
