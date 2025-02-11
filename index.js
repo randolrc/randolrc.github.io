@@ -843,6 +843,14 @@ function showPage(pageNum, result) {
         return quoteMarksList.includes(text[index]);
     }
 
+    function charIsSingleQuote(char) {
+        return (char === '\'' || char === "‘" || char === "’");
+    }
+
+    function charIsDoubleQuote(char) {
+        return (char === '\"' || char === "“" || char === "”");
+    }
+
     function displayText(text) {
         $display.empty(); // Clear existing content
         let wrappedText = wrapText(text); // Approximate line length
@@ -854,7 +862,9 @@ function showPage(pageNum, result) {
 
         const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "Hon.", "Capt.", "Sgt.", "Lt.", "Gen.", "Col.", "Gov.", "Pres.", "Atty."];
 
-        function displayNextLetter() {
+        let startQuoteChar = "";
+
+        function displayNextChar() {
             if (index < wrappedText.length && printText) {
                 //printText = true;
                 let t = wrappedText[index];
@@ -862,11 +872,18 @@ function showPage(pageNum, result) {
 
                 let doOneMoreQuoteColor = false;
 
-                if (quoteMarksList.includes(t) && !inContractedWord(wrappedText, index)) {
+                if (quoteMarksList.includes(t) && !inContractedWord(wrappedText, index)  
+                && (startQuoteChar === "" || (charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
+                (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t)))) {
                     doQuoteColor = !doQuoteColor;
+
+                    if (doQuoteColor) {
+                        startQuoteChar = t;
+                    }
 
                     if (!doQuoteColor) {
                         doOneMoreQuoteColor = true;
+                        startQuoteChar = "";
                     }
                 }
 
@@ -899,7 +916,7 @@ function showPage(pageNum, result) {
                     $("#t" + (index - 11)).removeClass("fade-in");
                 }
 
-                setTimeout(displayNextLetter, d);
+                setTimeout(displayNextChar, d);
             } else {
                 printText = false;
                 ignoreClicksOnce = false;
@@ -908,7 +925,7 @@ function showPage(pageNum, result) {
             }
         }
 
-        displayNextLetter();
+        displayNextChar();
     }
 
     function checkAutoPlay(doNow = false) {
@@ -935,6 +952,33 @@ function showPage(pageNum, result) {
         // Regular expression to match text in double quotes
         //let updatedString = text.replace(/(?<=\s|^)(["'“”‘’])([^"'“”‘’]+)\1(?=\s|[.,!?;:]|$)/g, `<span class=${classQuoteFormat}>$1$2$1</span>`);
 
+        let startQuoteChar = "";
+        let words = text.split(/\s+/);
+        let updatedText = "";
+
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i];
+            let startChar = word[0];
+            let endChar = word[word.length-1];
+
+            if (quoteMarksList.includes(startChar)) {
+                if (startQuoteChar === "") {
+                    startQuoteChar = startChar;
+                    word = `<span class=${classQuoteFormat}>${word}`;
+                }
+            }
+
+            if (quoteMarksList.includes(endChar)) {
+                if ((charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(endChar)) ||
+                (charIsSingleQuote(startChar) && charIsSingleQuote(endChar))) {
+                    startQuoteChar = "";
+                    word = `${word}</span>`;
+                }
+            }
+
+            updatedText += `${word} `;
+        }
+/*
         let updatedString = text.replace(
             /(?<=\s|^)(["“‘'])([^"'“”‘’]+?(?:\b'\b[^"'“”‘’]*)*)(["”’'])(?=\s|[.,!?;:]|$)/g, 
             (match, openQuote, text, closeQuote) => {
@@ -954,8 +998,10 @@ function showPage(pageNum, result) {
                 return match; // If not a valid pair, keep the original text
             }
         );
+        */
+       
 
-        return updatedString;
+        return updatedText;
     }
 
     function updateIndicator() {
