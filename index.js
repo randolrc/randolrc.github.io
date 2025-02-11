@@ -831,10 +831,22 @@ function showPage(pageNum, result) {
         }
     }
 
-    function inContractedWord(text, index) {
+    function isStartChar(text, index) {
+        if (index >= text.length) return false;
+
+        return !/\s+/.test(text[index + 1]);
+    }
+
+    function isEndChar(text, index) {
         if (index - 1 < 0 || index >= text.length) return false;
 
-        return /^[a-zA-Z]$/.test(text[index - 1]) && /^[a-zA-Z]$/.test(text[index + 1]);
+        return !/\s+/.test(text[index - 1]) && /\s+/.test(text[index + 1]);
+    }
+
+    function isStartEndChar(text, index) {
+        if (index - 1 < 0 || index >= text.length) return true;
+
+        return /\s+/.test(text[index - 1]) || /\s+/.test(text[index + 1]);
     }
 
     function quoteComesNext(text, index) {
@@ -872,18 +884,25 @@ function showPage(pageNum, result) {
 
                 let doOneMoreQuoteColor = false;
 
-                if (quoteMarksList.includes(t) && !inContractedWord(wrappedText, index)  
+                if (quoteMarksList.includes(t) 
+                /*&& isStartQuote(wrappedText, index)  
                 && (startQuoteChar === "" || (charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
-                (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t)))) {
-                    doQuoteColor = !doQuoteColor;
+                (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t)))*/) {
+                    if (isStartEndChar(wrappedText, index) && (isStartChar(wrappedText, index) && startQuoteChar === "") ||
+                    (isEndChar(wrappedText, index) && ((charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
+                    (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t))))
+                    )
+                    {
+                        doQuoteColor = !doQuoteColor;
 
-                    if (doQuoteColor) {
-                        startQuoteChar = t;
-                    }
+                        if (doQuoteColor) {
+                            startQuoteChar = t;
+                        }
 
-                    if (!doQuoteColor) {
-                        doOneMoreQuoteColor = true;
-                        startQuoteChar = "";
+                        if (!doQuoteColor) {
+                            doOneMoreQuoteColor = true;
+                            startQuoteChar = "";  
+                        }
                     }
                 }
 
@@ -921,16 +940,28 @@ function showPage(pageNum, result) {
                 printText = false;
                 ignoreClicksOnce = false;
 
-                if (!displayedFullText) checkAutoPlay();
+                if (!displayedFullText) checkAutoPlay(false, wrappedText.split("\n").length);
             }
         }
 
         displayNextChar();
     }
 
-    function checkAutoPlay(doNow = false) {
+    function checkAutoPlay(doNow = false, lineLength = -1) {
         if (autoPageMode) {
             let timer = autoPageTimer;
+
+            switch(lineLength) {    
+                case 1:
+                    timer /= 4
+                    break;
+                case 2:
+                    timer /= 3
+                    break;
+                case 3:
+                    timer /= 2;
+                    break;
+            }
 
             if (doNow) timer = 0;
 
