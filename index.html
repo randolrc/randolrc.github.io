@@ -92,6 +92,7 @@
                   <div class="settingsRow"><label class="text" for="scrollDelay">Text scroll delay :</label><input type="number" min="0" id="scrollDelay"><label class="unit">(ms)</label></div>
                   <div class="settingsRow"><label class="text" for="fullStopDelay">Full stop delay :</label><input type="number" min="0" id="fullStopDelay"><label class="unit">(ms)</label></div>
                   <div class="settingsRow"><label class="text" for="nextPageDelay">Next page delay :</label><input type="number" min="0" id="nextPageDelay"><label class="unit">(ms)</label></div>
+                  <div class="settingsRow" id="settingsDynamicPage"><label class="text" for="dynamicPageToggle">Less page delay on shorter pages :<input type="checkbox" id="dynamicPageToggle" /></div>
                   <div class="settingsRow settingsButtons"><button id="setDelayDefaults">Set Defaults</button></div>
                 </div>
                 <div id="changeFontColor" class="tab">
@@ -200,6 +201,8 @@ Paste your story here and hit the button below! It'll auto-create pages out of e
  - Options has a bunch of fun and useful things (WIP).
  
  - Works pretty horribly on mobile, I'll make it better sometime.
+
+ - Stuff can break at any time, if refreshing doesn't work try going to Options -> Extras and purge local storage
  
  Made by Carter, carter@taleteller.io"></textarea>
     <div class="centeredButtons"><button id="storySubmit">Tell me a Tale</button></div>

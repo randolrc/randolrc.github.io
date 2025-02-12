@@ -32,6 +32,9 @@ let $setColorDefaults;
 let $inputScrollDelay;
 let $inputFullStopDelay;
 let $inputNextPageDelay;
+let $dynamicPageToggle;
+let dynamicPageToggle = true;
+
 let $colorThemes;
 let $fontBaseColor;
 let $fontQuoteColor;
@@ -60,8 +63,8 @@ let $setShadowDefaults;
 
 let $clearAllCache;
 
-const delayScroll_default = 40;
-const delayFullStop_default = 750;
+const delayScroll_default = 45;
+const delayFullStop_default = 850;
 const autoPageTimer_default = 3 * 1000;
 const fontSize_default = 1.1;
 
@@ -80,6 +83,7 @@ let styleElement;
 let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
+let savedPageNum = 0;
 
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
@@ -110,8 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
         shadowSettings = savedSettings.shadowSettings || shadowSettings;
         effectSelectIndex = savedSettings.effectSelectIndex || effectSelectIndex;
         sApplyToIndex = savedSettings.sApplyToIndex || sApplyToIndex;
+        dynamicPageToggle = Object.hasOwn(savedSettings, 'dynamicPageToggle') ? savedSettings.dynamicPageToggle : dynamicPageToggle;
     }
 
+    savedPageNum = Number(localStorage.getItem("TaleTeller_pageNum")) || savedPageNum;
+    
     loadElements();
     setEvents();
 
@@ -183,6 +190,8 @@ function loadElements() {
     $inputScrollDelay = $("#scrollDelay");
     $inputFullStopDelay = $("#fullStopDelay");
     $inputNextPageDelay = $("#nextPageDelay");
+    $dynamicPageToggle = $("#dynamicPageToggle");
+    $dynamicPageToggle.prop('checked', dynamicPageToggle);
 
     $inputScrollDelay.val(delayScroll);
     $inputFullStopDelay.val(delayFullStop);
@@ -362,6 +371,8 @@ function setEvents() {
 
     $reloadButton.click(() => {
         localStorage.removeItem("TaleTeller_story");
+        savedPageNum = 0;
+        localStorage.setItem("TaleTeller_pageNum", savedPageNum);
         location.reload();
     });
 
@@ -473,6 +484,10 @@ function setEvents() {
                 console.error(`Failed to exit fullscreen mode: ${err.message}`);
               });
           }
+    });
+
+    $dynamicPageToggle.on("change", () => {
+        dynamicPageToggle = $dynamicPageToggle.prop('checked');
     });
 
     $setDelayDefaults.click(() => {
@@ -618,10 +633,10 @@ function saveSettings() {
     delayFullStop = $inputFullStopDelay.val();
     autoPageTimer = $inputNextPageDelay.val();
 
-    settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer,
+    settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer, dynamicPageToggle: dynamicPageToggle,
     colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font, italicsToggleCSS: italicsToggleCSS,
     boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn, shadowSettings: shadowSettings, effectSelectIndex: effectSelectIndex,
-    sApplyToIndex: sApplyToIndex};
+    sApplyToIndex: sApplyToIndex };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
     //localStorage.setItem("delayScroll", cUrlStory);
@@ -689,7 +704,7 @@ function setupStory() {
     $storyInput.remove();
     $storySubmit.remove();
 
-    showPage(0, result);
+    showPage(savedPageNum, result);
 }
 
 function uint8ArrayToBase64(uint8Array) {
@@ -951,16 +966,18 @@ function showPage(pageNum, result) {
         if (autoPageMode) {
             let timer = autoPageTimer;
 
-            switch(lineLength) {    
-                case 1:
-                    timer /= 4
-                    break;
-                case 2:
-                    timer /= 3
-                    break;
-                case 3:
-                    timer /= 2;
-                    break;
+            if (dynamicPageToggle) {
+                switch(lineLength) {    
+                    case 1:
+                        timer /= 2
+                        break;
+                    case 2:
+                        timer /= 1.5
+                        break;
+                    case 3:
+                        timer /= 1;
+                        break;
+                }
             }
 
             if (doNow) timer = 0;
@@ -1046,6 +1063,9 @@ function showPage(pageNum, result) {
             displayedFullText = false;
             displayText(paragraphs[currentPage]);
             updateIndicator();
+
+            savedPageNum = currentPage;
+            localStorage.setItem("TaleTeller_pageNum", savedPageNum);
         }
     }
 
@@ -1224,6 +1244,9 @@ function showPage(pageNum, result) {
                 updateIndicator();
             }
         }
+
+        savedPageNum = currentPage;
+        localStorage.setItem("TaleTeller_pageNum", savedPageNum);
     }
 }
       
