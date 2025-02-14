@@ -80,10 +80,10 @@ let font = '"Libre Baskerville", serif';
 
 let styleElement;
 
-let cStory;
 const timeoutIds = [];
 let invisCursorTimer;
-let savedPageNum = 0;
+
+let storyObj = {story: "", pageNum: 0};
 
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
@@ -91,7 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cUrlStory = getQueryParams(window.location.href).story;
 
     if (cUrlStory) {
-        localStorage.setItem("TaleTeller_story", cUrlStory);
+        storyObj.story = cUrlStory;
+        localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
         window.location.href = window.location.href.split('?')[0];
         return;
     }
@@ -116,8 +117,6 @@ document.addEventListener("DOMContentLoaded", () => {
         sApplyToIndex = savedSettings.sApplyToIndex || sApplyToIndex;
         dynamicPageToggle = Object.hasOwn(savedSettings, 'dynamicPageToggle') ? savedSettings.dynamicPageToggle : dynamicPageToggle;
     }
-
-    savedPageNum = Number(localStorage.getItem("TaleTeller_pageNum")) || savedPageNum;
     
     loadElements();
     setEvents();
@@ -134,10 +133,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadMain() {
-    cStory = localStorage.getItem("TaleTeller_story");
+    storyObj = JSON.parse(localStorage.getItem("TaleTeller_story")) || storyObj;
 
-    if (cStory) {
-        let story = decodeAndDecompress(cStory);
+    if (storyObj.story) {
+        let story = decodeAndDecompress(storyObj.story);
         $storyInput.val(story);
         ignoreClicksOnce = false;
         setupStory();
@@ -371,8 +370,6 @@ function setEvents() {
 
     $reloadButton.click(() => {
         localStorage.removeItem("TaleTeller_story");
-        savedPageNum = 0;
-        localStorage.setItem("TaleTeller_pageNum", savedPageNum);
         location.reload();
     });
 
@@ -616,17 +613,6 @@ function setTextShadow() {
         setColors(colorSettings[colorSelectIndex]);
     }
 }
-/*
-function rgbToHex(rgb) {
-    // Extract the RGB values using a regular expression
-    const match = rgb.match(/\d+/g);
-    if (!match) return null;
-
-    // Convert each value to hexadecimal and pad with zeros if necessary
-    const [r, g, b] = match.map(num => parseInt(num, 10));
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase()}`;
-}
-*/
 
 function saveSettings() {
     delayScroll = $inputScrollDelay.val();
@@ -639,7 +625,6 @@ function saveSettings() {
     sApplyToIndex: sApplyToIndex };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
-    //localStorage.setItem("delayScroll", cUrlStory);
 }
 
 function resizeMainContainer() {
@@ -685,9 +670,9 @@ function setupStory() {
 
     let story = $storyInput.val();
 
-    cStory = compressAndEncode(story);
+    storyObj.story = compressAndEncode(story);
 
-    localStorage.setItem("TaleTeller_story", cStory);
+    localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
 
     let shareLink = "";
 
@@ -696,7 +681,7 @@ function setupStory() {
     else
         shareLink = "http://127.0.0.1:3000/";
 
-    shareLink += `?story=${cStory}`;
+    shareLink += `?story=${storyObj.story}`;
     $urlInput.val(shareLink);
 
     let result = {storyText: story};
@@ -704,7 +689,7 @@ function setupStory() {
     $storyInput.remove();
     $storySubmit.remove();
 
-    showPage(savedPageNum, result);
+    showPage(storyObj.pageNum, result);
 }
 
 function uint8ArrayToBase64(uint8Array) {
@@ -774,7 +759,7 @@ function showPage(pageNum, result) {
         // Set the font style to match the container's computed font style
         const computedStyle = window.getComputedStyle($display[0]);
         context.font = `${boldFlag} ${italicFlag} ${computedStyle.fontSize} ${computedStyle.fontFamily}`;
-        return context.measureText(word).width + context.measureText(" ").width;
+        return context.measureText(word + " ").width;
     }
 
     /**
@@ -884,7 +869,7 @@ function showPage(pageNum, result) {
         let index = 0;
         let doQuoteColor = false;
         let doDelayedPause = false;
-        let prevCharIsSpace = false;
+        //let prevCharIsSpace = false;
         clearAllTimeouts();
 
         const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "Hon.", "Capt.", "Sgt.", "Lt.", "Gen.", "Col.", "Gov.", "Pres.", "Atty."];
@@ -893,16 +878,13 @@ function showPage(pageNum, result) {
 
         function displayNextChar() {
             if (index < wrappedText.length && printText) {
-                //printText = true;
+
                 let t = wrappedText[index];
                 let quoteColorClass = "";
 
                 let doOneMoreQuoteColor = false;
 
-                if (quoteMarksList.includes(t) 
-                /*&& isStartQuote(wrappedText, index)  
-                && (startQuoteChar === "" || (charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
-                (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t)))*/) {
+                if (quoteMarksList.includes(t)) {
                     if (isStartEndChar(wrappedText, index) && (isStartChar(wrappedText, index) && startQuoteChar === "") ||
                     (isEndChar(wrappedText, index) && ((charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
                     (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t))))
@@ -1064,8 +1046,8 @@ function showPage(pageNum, result) {
             displayText(paragraphs[currentPage]);
             updateIndicator();
 
-            savedPageNum = currentPage;
-            localStorage.setItem("TaleTeller_pageNum", savedPageNum);
+            storyObj.pageNum = currentPage;
+            localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
         }
     }
 
@@ -1245,8 +1227,8 @@ function showPage(pageNum, result) {
             }
         }
 
-        savedPageNum = currentPage;
-        localStorage.setItem("TaleTeller_pageNum", savedPageNum);
+        storyObj.pageNum = currentPage;
+        localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
     }
 }
       
