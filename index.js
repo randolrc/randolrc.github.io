@@ -80,7 +80,8 @@ let font = '"Libre Baskerville", serif';
 
 let styleElement;
 
-const timeoutIds = [];
+const timeoutIdsNextPage = [];
+const timeoutIdsNextChar = [];
 let invisCursorTimer;
 
 let storyObj = {story: "", pageNum: 0};
@@ -491,6 +492,8 @@ function setEvents() {
         $inputScrollDelay.val(delayScroll_default);
         $inputFullStopDelay.val(delayFullStop_default);
         $inputNextPageDelay.val(autoPageTimer_default);
+        dynamicPageToggle = true;
+        $dynamicPageToggle.prop('checked', dynamicPageToggle);
     });
 
     $setColorDefaults.click(() => {
@@ -637,15 +640,15 @@ function resizeMainContainer() {
     }
 }
 
-function setTrackedTimeout(callback, delay) {
+function setTrackedTimeout(callback, delay, idArr) {
     const id = setTimeout(callback, delay);
-    timeoutIds.push(id);
+    idArr.push(id);
     return id;
 }
 
-function clearAllTimeouts() {
-    timeoutIds.forEach(clearTimeout); // Clear each timeout
-    timeoutIds.length = 0;           // Reset the array
+function clearAllTimeouts(idArr) {
+    idArr.forEach(clearTimeout); // Clear each timeout
+    idArr.length = 0;           // Reset the array
 }
 
 function showSettingsTab() {
@@ -869,8 +872,8 @@ function showPage(pageNum, result) {
         let index = 0;
         let doQuoteColor = false;
         let doDelayedPause = false;
-        //let prevCharIsSpace = false;
-        clearAllTimeouts();
+        clearAllTimeouts(timeoutIdsNextPage);
+        clearAllTimeouts(timeoutIdsNextChar);
 
         const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "Hon.", "Capt.", "Sgt.", "Lt.", "Gen.", "Col.", "Gov.", "Pres.", "Atty."];
 
@@ -932,12 +935,16 @@ function showPage(pageNum, result) {
                     $("#t" + (index - 11)).removeClass("fade-in");
                 }
 
-                setTimeout(displayNextChar, d);
+                setTrackedTimeout(displayNextChar, d, timeoutIdsNextChar)
             } else {
                 printText = false;
                 ignoreClicksOnce = false;
 
-                if (!displayedFullText) checkAutoPlay(false, wrappedText.split("\n").length);
+                if (currentPage >= paragraphs.length - 1) {
+                    stopAutoPlay();
+                } else if (!displayedFullText) {
+                    checkAutoPlay(false, wrappedText.split("\n").length);
+                }
             }
         }
 
@@ -964,7 +971,7 @@ function showPage(pageNum, result) {
 
             if (doNow) timer = 0;
 
-            setTrackedTimeout(() => changePage(1), timer);
+            setTrackedTimeout(() => changePage(1), timer, timeoutIdsNextPage);
         } 
     }
 
@@ -974,7 +981,8 @@ function showPage(pageNum, result) {
         let wrappedText = wrapText(text); 
         let formattedText = setFullTextEffects(wrappedText);
         $display.append(formattedText);
-        clearAllTimeouts();
+        clearAllTimeouts(timeoutIdsNextPage);
+        clearAllTimeouts(timeoutIdsNextChar);
         checkAutoPlay();
     }
 
@@ -1174,7 +1182,7 @@ function showPage(pageNum, result) {
         autoPageMode = false;
         $('#playIcon').css('display','inline');
         $('#pauseIcon').css('display','none');
-        clearAllTimeouts();
+        clearAllTimeouts(timeoutIdsNextPage);
     }
 
     // Handle Enter key for indicator input
