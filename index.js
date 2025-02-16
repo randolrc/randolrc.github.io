@@ -10,6 +10,7 @@ let $footerAbout;
 let $totalPages;
 let $storySubmit;
 let $storyInput;
+let $storyTitle;
 let $arrowButtons;
 let $reloadButton;
 let $shareButton;
@@ -84,12 +85,12 @@ const timeoutIdsNextPage = [];
 const timeoutIdsNextChar = [];
 let invisCursorTimer;
 
-let storyObj = {story: "", pageNum: 0};
+let storyObj = {title: "", story: "", pageNum: 0};
 
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
 document.addEventListener("DOMContentLoaded", () => {
-    const cUrlStory = getQueryParams(window.location.href).story;
+    const cUrlStory = purifyText(getQueryParams(window.location.href).story);
 
     if (cUrlStory) {
         storyObj.story = cUrlStory;
@@ -142,8 +143,9 @@ function loadMain() {
         ignoreClicksOnce = false;
         setupStory();
     } else {
-        $storySubmit.css("visibility","visible");
-        $storyInput.css("visibility","visible");
+        //$storySubmit.css("visibility","visible");
+        //$storyInput.css("visibility","visible");
+        $('#addNewStory').css("visibility","visible");
     }
 }
 
@@ -167,6 +169,7 @@ function loadElements() {
     $totalPages = $("#totalPages");
     $storySubmit = $("#storySubmit");
     $storyInput = $("#storyInput");
+    $storyTitle = $('#storyTitle');
     $arrowButtons = $("#arrows");
     $reloadButton = $("#reloadButton");
     $shareButton = $("#shareButton");
@@ -362,6 +365,9 @@ function setColors(colorObj) {
 
     $('#storyInput').css('color',colorObj.baseColor);
     $('#storyInput').css('background-color',colorObj.BGColor);
+
+    $('#storyTitle').css('color',colorObj.baseColor);
+    $('#storyTitle').css('background-color',colorObj.BGColor);
 }
 
 function setEvents() {
@@ -630,6 +636,18 @@ function saveSettings() {
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
 }
 
+function purifyText(text) {
+    if (text) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+        text = doc.body.textContent || '';
+        text = DOMPurify.sanitize(text);
+        return text;
+    }
+
+    return undefined;
+}
+
 function resizeMainContainer() {
     if (Number(fontSize) >= 1.5) {
         $('main').css("width", "80%");
@@ -671,8 +689,10 @@ function setupStory() {
 
     playbackMode = true;
 
-    let story = $storyInput.val();
+    let title = purifyText($storyTitle.val());
+    let story = purifyText($storyInput.val());
 
+    storyObj.title = title;
     storyObj.story = compressAndEncode(story);
 
     localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
@@ -687,12 +707,9 @@ function setupStory() {
     shareLink += `?story=${storyObj.story}`;
     $urlInput.val(shareLink);
 
-    let result = {storyText: story};
+    $('#addNewStory').remove();
 
-    $storyInput.remove();
-    $storySubmit.remove();
-
-    showPage(storyObj.pageNum, result);
+    showPage(storyObj.pageNum, story);
 }
 
 function uint8ArrayToBase64(uint8Array) {
@@ -717,20 +734,17 @@ function decodeAndDecompress(encodedBlob) {
     return decompressed;
 }
     
-function showPage(pageNum, result) {
+function showPage(pageNum, story) {
 
-    let text = result.storyText || 'There once was a man from Bel Air, who sat in his old rocking chair. He yawned with a sigh, and stared at the sky, wishing something exciting was there!';
+    story = story || 'There once was a man from Bel Air, who sat in his old rocking chair. He yawned with a sigh, and stared at the sky, wishing something exciting was there!';
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, 'text/html');
-    text = doc.body.textContent || '';
-    text = DOMPurify.sanitize(text);
+    story = purifyText(story);
 
     const classQuoteFormat = "quoteFormat";
 
     let printText = true;
     let currentPage = pageNum;
-    let paragraphs = getParagraphs(text);
+    let paragraphs = getParagraphs(story);
 
     resizeMainContainer();
 
@@ -834,8 +848,14 @@ function showPage(pageNum, result) {
         }
     }
 
-    function isStartChar(text, index) {
+    function isWhitespaceChar(text, index, char) {
         if (index >= text.length) return false;
+
+        return /\s+/.test(text[index]);
+    }
+
+    function isStartChar(text, index) {
+        if (index + 1 >= text.length) return false;
 
         return !/\s+/.test(text[index + 1]);
     }
@@ -927,7 +947,7 @@ function showPage(pageNum, result) {
                     case '.' :
                         if (preWordExists(wrappedText, titles, index)) break;
                         doDelayedPause = quoteComesNext(wrappedText, index);
-                        if (!doDelayedPause) d = delayFullStop;
+                        if (!doDelayedPause && (isWhitespaceChar(wrappedText, index, " "))) d = delayFullStop;
                         break;
                 }
 
