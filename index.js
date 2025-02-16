@@ -86,6 +86,7 @@ const timeoutIdsNextChar = [];
 let invisCursorTimer;
 
 let storyObj = {title: "", story: "", pageNum: 0};
+let sampleStory = "";
 
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
@@ -119,6 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
         sApplyToIndex = savedSettings.sApplyToIndex || sApplyToIndex;
         dynamicPageToggle = Object.hasOwn(savedSettings, 'dynamicPageToggle') ? savedSettings.dynamicPageToggle : dynamicPageToggle;
     }
+
+    sampleStory = 
     
     loadElements();
     setEvents();
@@ -247,6 +250,7 @@ function loadElements() {
     $('main').css('font-family', font);
 
     $clearAllCache = $('#clearAllCache');
+
 }
 
 function setColorDefaults(setBaseColors = true, setShadowColors = true) {
@@ -598,6 +602,10 @@ function setEvents() {
     $footerAbout.click(() => {
         showSettingsTab();
     });
+
+    $("#textFrame").on("load", function () {
+        sampleStory = $(this).contents().text();
+    });
 }
 
 function setTextShadow() {
@@ -637,7 +645,7 @@ function saveSettings() {
 }
 
 function purifyText(text) {
-    if (text) {
+    if (text && text !== "") {
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
         text = doc.body.textContent || '';
@@ -692,6 +700,10 @@ function setupStory() {
     let title = purifyText($storyTitle.val());
     let story = purifyText($storyInput.val());
 
+    if (!story || story === "") {
+        story = sampleStory;
+    }
+
     storyObj.title = title;
     storyObj.story = compressAndEncode(story);
 
@@ -735,8 +747,6 @@ function decodeAndDecompress(encodedBlob) {
 }
     
 function showPage(pageNum, story) {
-
-    story = story || 'There once was a man from Bel Air, who sat in his old rocking chair. He yawned with a sigh, and stared at the sky, wishing something exciting was there!';
 
     story = purifyText(story);
 
@@ -947,7 +957,10 @@ function showPage(pageNum, story) {
                     case '.' :
                         if (preWordExists(wrappedText, titles, index)) break;
                         doDelayedPause = quoteComesNext(wrappedText, index);
-                        if (!doDelayedPause && (isWhitespaceChar(wrappedText, index, " "))) d = delayFullStop;
+                        if (!doDelayedPause && ((isWhitespaceChar(wrappedText, index, " ")) || index >=  paragraphs.length - 1)) {
+                            d = delayFullStop;
+                        }
+                            
                         break;
                 }
 
@@ -960,7 +973,7 @@ function showPage(pageNum, story) {
                 printText = false;
                 ignoreClicksOnce = false;
 
-                if (currentPage >= paragraphs.length - 1) {
+                if (currentPage >= paragraphs.length - 1) { //last page
                     stopAutoPlay();
                 } else if (!displayedFullText) {
                     checkAutoPlay(false, wrappedText.split("\n").length);
