@@ -30,8 +30,6 @@ Nothing submitted is uploaded anywhere, it's all saved to your browser's storage
  
  - Fullscreen button on top right will do what it's supposed to, unless it doesn't.
 
- ((SCROLL DOWN))
-
  - Options has a bunch of fun and useful things (WIP).
  
  - Works pretty horribly on mobile, I'll make it better sometime.
