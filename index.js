@@ -603,10 +603,32 @@ function setEvents() {
         showSettingsTab();
     });
 
-    $("#textFrame").on("load", function () {
-        sampleStory = $(this).contents().text();
-    });
+    //$("#textFrame").on("load", function () {
+        //sampleStory = $("#textFrame").contents().text();
+    //});
+//}
+/*
+    let maxRetries = 50; // 50 retries (every 100ms for up to 5 seconds)
+    let retryInterval = 100; // Check every 100ms
+    let attempts = 0;
+  
+    function checkIframeContent() {
+      sampleStory = $("#textFrame").contents().text().trim();
+  
+      if (sampleStory) {
+        console.log("File loaded successfully:", sampleStory);
+      } else if (attempts < maxRetries) {
+        attempts++;
+        setTimeout(checkIframeContent, retryInterval);
+      } else {
+        console.warn("Failed to load content after multiple attempts.");
+      }
+    }
+  
+    checkIframeContent();
+    */
 }
+  
 
 function setTextShadow() {
     if ($shadowToggle.prop('checked')) {
@@ -701,7 +723,11 @@ function setupStory() {
     let story = purifyText($storyInput.val());
 
     if (!story || story === "") {
-        story = sampleStory;
+        story = $("#textFrame").contents().text(); //sample story
+    }
+
+    if (!story || story === "") {
+        story = "whoops, sample story couldn't load, sorry..."
     }
 
     storyObj.title = title;
