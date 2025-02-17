@@ -292,7 +292,7 @@ main {
 }
 
 #addNewStory {
-    visibility: hidden;
+    display: none;
     width: auto;
     height: 100%;
 }
@@ -301,7 +301,7 @@ main {
     cursor: default;
     font-size: 1.1em;
     white-space: pre-wrap;
-    visibility: hidden;
+    display: none;
     color: #e4e4e4;
 }
 

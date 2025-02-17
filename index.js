@@ -3,6 +3,7 @@ let ignoreClicksOnce = true;
 let autoPageMode = false;
 let displayedFullText = false;
 
+let $addNewStory;
 let $display;
 let $pageInput;
 let $main;
@@ -88,6 +89,8 @@ let invisCursorTimer;
 let storyObj = {title: "", story: "", pageNum: 0};
 let sampleStory = "";
 
+const maxStories = 5;
+
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -95,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (cUrlStory) {
         storyObj.story = cUrlStory;
-        localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
+        localStorage.setItem(`TaleTeller_story`, JSON.stringify(storyObj));
         window.location.href = window.location.href.split('?')[0];
         return;
     }
@@ -120,8 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
         sApplyToIndex = savedSettings.sApplyToIndex || sApplyToIndex;
         dynamicPageToggle = Object.hasOwn(savedSettings, 'dynamicPageToggle') ? savedSettings.dynamicPageToggle : dynamicPageToggle;
     }
-
-    sampleStory = 
     
     loadElements();
     setEvents();
@@ -137,8 +138,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2500);
 });
 
+function saveStory(newStoryObj) {
+    for (let i = maxStories - 1; i >= 0; i--) {
+        let existingStory = localStorage.getItem(`TaleTeller_story${i}`);
+
+        if (existingStory) {
+            localStorage.setItem(`TaleTeller_story${i+1}`, existingStory);
+        }
+    }
+
+
+    localStorage.setItem(`TaleTeller_story${0}`, JSON.stringify(newStoryObj));
+}
+
+function loadStory(index) {
+    return JSON.parse(localStorage.getItem(`TaleTeller_story${index}`));
+}
+
 function loadMain() {
-    storyObj = JSON.parse(localStorage.getItem("TaleTeller_story")) || storyObj;
+    storyObj = loadStory(0) || storyObj;
 
     if (storyObj.story) {
         let story = decodeAndDecompress(storyObj.story);
@@ -148,7 +166,7 @@ function loadMain() {
     } else {
         //$storySubmit.css("visibility","visible");
         //$storyInput.css("visibility","visible");
-        $('#addNewStory').css("visibility","visible");
+        $addNewStory.css("display","block");
     }
 }
 
@@ -165,6 +183,7 @@ function getQueryParams(url) {
 }
 
 function loadElements() {
+    $addNewStory = $("#addNewStory");
     $display = $("#display");
     $pageInput = $("#indicator");
     $main = $("main");
@@ -376,12 +395,26 @@ function setColors(colorObj) {
 
 function setEvents() {
     $storySubmit.click(() => {
-        setupStory();
-    });
 
-    $reloadButton.click(() => {
-        localStorage.removeItem("TaleTeller_story");
-        location.reload();
+        let title = purifyText($storyTitle.val());
+        let story = purifyText($storyInput.val());
+    
+        if (!story || story === "") {
+            story = purifyText($("#textFrame").contents().text()); //sample story
+        }
+    
+        if (!story || story === "") {
+            story = "whoops, sample story couldn't load, sorry..."
+        }
+    
+        storyObj.title = title;
+        storyObj.story = compressAndEncode(story);
+        storyObj.pageNum = 0;
+    
+        //localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
+        saveStory(storyObj);
+
+        setupStory();
     });
 
     $closeModalShare.click(() => {
@@ -710,7 +743,7 @@ function showSettingsTab() {
 }
 
 function setupStory() {
-    $display.css("visibility","visible");
+    $display.css("display","block");
     $header.css("visibility","visible");
 
     setTimeout(() => {
@@ -718,12 +751,12 @@ function setupStory() {
     }, 1 * 1000);
 
     playbackMode = true;
-
+/*
     let title = purifyText($storyTitle.val());
     let story = purifyText($storyInput.val());
 
     if (!story || story === "") {
-        story = $("#textFrame").contents().text(); //sample story
+        story = purifyText($("#textFrame").contents().text()); //sample story
     }
 
     if (!story || story === "") {
@@ -734,6 +767,11 @@ function setupStory() {
     storyObj.story = compressAndEncode(story);
 
     localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
+    saveStory(storyObj);
+    */
+
+    storyObj = loadStory(0);
+    let story = decodeAndDecompress(storyObj.story);
 
     let shareLink = "";
 
@@ -745,7 +783,8 @@ function setupStory() {
     shareLink += `?story=${storyObj.story}`;
     $urlInput.val(shareLink);
 
-    $('#addNewStory').remove();
+    //$('#addNewStory').remove();
+    $addNewStory.css("display", "none");
 
     showPage(storyObj.pageNum, story);
 }
@@ -1119,6 +1158,17 @@ function showPage(pageNum, story) {
     }
 
     //EVENTS
+    $reloadButton.click(() => {
+        stopAutoPlay();
+        $display.css("display", "none");
+        $addNewStory.css("display", "block");
+        $header.css("visibility", "hidden");
+        playbackMode = false;
+        ignoreClicksOnce = true;
+        displayedFullText = false;
+        $main.off("click");
+    });
+
     $shareButton.click(() => {
         $modalShare.removeClass("hidden-display");
 
@@ -1165,8 +1215,10 @@ function showPage(pageNum, story) {
         }
     });
 
-    $main.click(function () {
-        if (playbackMode) changePage(1);
+    $main.on('click', function () {
+        if (playbackMode) {
+            changePage(1);
+        }
     });
 
     $("#next").click(function () {
