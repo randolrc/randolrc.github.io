@@ -17,6 +17,8 @@
     <h1 id="product-name">&nbsp;</h1>
   </div>
 
+  <iframe id="textFrame" src="/story.txt" style="display: none;"></iframe>
+
   <header>
     <button id="reloadButton" class="svgHeaderButton">
       <div><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="fill: currentColor;">
@@ -208,6 +210,8 @@ Nothing submitted is uploaded anywhere, it's all saved to your browser's storage
  
  TODO: Finish up Options menu, create a chrome extension to make copying and loading new stories easier.
 
+ MAYBE: Allow for custom user fonts (like from Google fonts), have shared stories links contain custom themes (so like you open a story link for a spooky story, it overrides your settings and makes the loaded story look spooky)
+
  Made by Carter, carter@taleteller.io"></textarea>
     <div class="centeredButtons"><button id="storySubmit">Tell me a Tale</button></div>
     </section>
@@ -217,8 +221,6 @@ Nothing submitted is uploaded anywhere, it's all saved to your browser's storage
   <footer>
     <div id="footerAbout">About / Privacy Policy</div>
   </footer>
-
-  <iframe id="textFrame" src="/story.txt" style="display: none;"></iframe>
 
   <script src="libs/jquery.min.js"></script>
   <script type="text/javascript" src="libs/purify.min.js"></script>
