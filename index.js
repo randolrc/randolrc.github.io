@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (cUrlStory) {
         storyObj.story = cUrlStory;
-        localStorage.setItem(`TaleTeller_story`, JSON.stringify(storyObj));
+        saveStoryNewSlot(storyObj);
         window.location.href = window.location.href.split('?')[0];
         return;
     }
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2500);
 });
 
-function saveStory(newStoryObj) {
+function saveStoryNewSlot(newStoryObj) {
     for (let i = maxStories - 1; i >= 0; i--) {
         let existingStory = localStorage.getItem(`TaleTeller_story${i}`);
 
@@ -412,7 +412,7 @@ function setEvents() {
         storyObj.pageNum = 0;
     
         //localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
-        saveStory(storyObj);
+        saveStoryNewSlot(storyObj);
 
         setupStory();
     });
@@ -727,7 +727,12 @@ function setTrackedTimeout(callback, delay, idArr) {
     return id;
 }
 
-function clearAllTimeouts(idArr) {
+function clearAllTimeouts() {
+    clearTimeouts(timeoutIdsNextPage);
+    clearTimeouts(timeoutIdsNextChar);
+}
+
+function clearTimeouts(idArr) {
     idArr.forEach(clearTimeout); // Clear each timeout
     idArr.length = 0;           // Reset the array
 }
@@ -967,8 +972,8 @@ function showPage(pageNum, story) {
         let index = 0;
         let doQuoteColor = false;
         let doDelayedPause = false;
-        clearAllTimeouts(timeoutIdsNextPage);
-        clearAllTimeouts(timeoutIdsNextChar);
+        clearTimeouts(timeoutIdsNextPage);
+        clearTimeouts(timeoutIdsNextChar);
 
         const titles = ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof.", "Rev.", "Hon.", "Capt.", "Sgt.", "Lt.", "Gen.", "Col.", "Gov.", "Pres.", "Atty."];
 
@@ -1079,8 +1084,8 @@ function showPage(pageNum, story) {
         let wrappedText = wrapText(text); 
         let formattedText = setFullTextEffects(wrappedText);
         $display.append(formattedText);
-        clearAllTimeouts(timeoutIdsNextPage);
-        clearAllTimeouts(timeoutIdsNextChar);
+        clearTimeouts(timeoutIdsNextPage);
+        clearTimeouts(timeoutIdsNextChar);
         checkAutoPlay();
     }
 
@@ -1153,23 +1158,25 @@ function showPage(pageNum, story) {
             updateIndicator();
 
             storyObj.pageNum = currentPage;
-            localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
+            localStorage.setItem("TaleTeller_story0", JSON.stringify(storyObj));
         }
     }
 
     //EVENTS
-    $reloadButton.click(() => {
+    $reloadButton.off('click').on('click', () => {
         stopAutoPlay();
+        clearAllTimeouts();
         $display.css("display", "none");
         $addNewStory.css("display", "block");
         $header.css("visibility", "hidden");
+        printText = false;
         playbackMode = false;
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
     });
 
-    $shareButton.click(() => {
+    $shareButton.off('click').on('click', () => {
         $modalShare.removeClass("hidden-display");
 
         if (playbackMode) {
@@ -1177,7 +1184,7 @@ function showPage(pageNum, story) {
         }
     });
 
-    $optionsButton.click(() => {
+    $optionsButton.off('click').on('click', () => {
         $modalOptions.removeClass("hidden-display");
 
         if (playbackMode) {
@@ -1185,13 +1192,15 @@ function showPage(pageNum, story) {
         }
     });
 
-    $footerAbout.click(() => {
+    $footerAbout.off('click').on('click', () => {
         if (playbackMode) {
             stopPlayBackAndViewFull();
         }
+
+        showSettingsTab();
     });
 
-    $pageInput.click(function () {
+    $pageInput.off('click').on('click', () => {
         if (playbackMode) {
             stopPlayBackAndViewFull();
             $pageInput.val("");
@@ -1204,32 +1213,32 @@ function showPage(pageNum, story) {
         displayFullText(paragraphs[currentPage]);
     }
 
-    $pageInput.on("focus", (event) => {
+    $pageInput.off("focus").on("focus", (event) => {
         if (playbackMode) $("#totalPageContainer").css("visibility","visible");
     });
 
-    $pageInput.blur(() => {
+    $pageInput.off("blur").on("blur", () => {
         if (playbackMode) {
             $("#totalPageContainer").css("visibility","hidden");
             $pageInput.val(currentPage+1);
         }
     });
 
-    $main.on('click', function () {
+    $main.off('click').on('click', () => {
         if (playbackMode) {
             changePage(1);
         }
     });
 
-    $("#next").click(function () {
+    $("#next").off('click').on('click', () => {
         if (playbackMode) changePage(1);
     });
 
-    $("#prev").click(function () {
+    $("#prev").off('click').on('click', () => {
         if (playbackMode) changePage(-1);
     });
 
-    $playPauseButton.click(() => {
+    $playPauseButton.off('click').on('click', () => {
         autoPageMode = !autoPageMode;
 
         if (autoPageMode) {
@@ -1241,7 +1250,7 @@ function showPage(pageNum, story) {
         }
     });
 
-    $fontSelector.on('change', () => {
+    $fontSelector.off('change').on('change', () => {
         font = $fontSelector.val();
 
         $('main').css('font-family', $fontSelector.val());
@@ -1252,7 +1261,7 @@ function showPage(pageNum, story) {
 
     });
 
-    $fontSize.on("change", () => {
+    $fontSize.off('change').on('change', () => {
         fontSize = $fontSize.val();
         $display.css("font-size", `${fontSize}em`);
 
@@ -1261,7 +1270,7 @@ function showPage(pageNum, story) {
         displayFullText(paragraphs[currentPage]);
     });
 
-    $italicsToggle.on("change", () => {
+    $italicsToggle.off('change').on('change', () => {
         if ($italicsToggle.prop('checked')) {
             italicsToggleCSS = 'italic';
         } else {
@@ -1275,7 +1284,7 @@ function showPage(pageNum, story) {
         }, 100);
     });
 
-    $boldToggle.on("change", () => {
+    $boldToggle.off('change').on('change', () => {
         if ($boldToggle.prop('checked')) {
             boldToggleCSS = 'bold';
         } else {
@@ -1293,11 +1302,11 @@ function showPage(pageNum, story) {
         autoPageMode = false;
         $('#playIcon').css('display','inline');
         $('#pauseIcon').css('display','none');
-        clearAllTimeouts(timeoutIdsNextPage);
+        clearTimeouts(timeoutIdsNextPage);
     }
 
     // Handle Enter key for indicator input
-    $pageInput.on("keypress", function (event) {
+    $pageInput.off("keypress").on("keypress", (event) => {
         if (event.key === "Enter") {
             const inputValue = parseInt($pageInput.val(), 10) - 1; // Convert to 0-based index
             if (!isNaN(inputValue)) {
@@ -1309,7 +1318,7 @@ function showPage(pageNum, story) {
         }
     });
 
-    document.addEventListener("keydown", (event) => {
+    function handleKeyDown(event) {
         if (!playbackMode) return;
 
         if (event.key === "ArrowLeft") {
@@ -1319,8 +1328,10 @@ function showPage(pageNum, story) {
         } else if (event.key === " ") { // Space key
             changePage(1);
         }
-    });
-    
+    };
+
+    document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
 
     function changePage(pageMod) {
 
@@ -1335,7 +1346,7 @@ function showPage(pageNum, story) {
         } else {
             
             let allowPageChange = (pageMod === 0 || pageMod > 0 && currentPage < paragraphs.length - 1) || 
-                (pageMod < 0 && currentPage > 0)
+                (pageMod < 0 && currentPage > 0);
 
             if (allowPageChange) {
                 displayedFullText = false;
@@ -1347,7 +1358,7 @@ function showPage(pageNum, story) {
         }
 
         storyObj.pageNum = currentPage;
-        localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
+        localStorage.setItem("TaleTeller_story0", JSON.stringify(storyObj));
     }
 }
       
