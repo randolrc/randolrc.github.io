@@ -2,6 +2,7 @@ let playbackMode = false;
 let ignoreClicksOnce = true;
 let autoPageMode = false;
 let displayedFullText = false;
+let debugMode = false;
 
 let $addNewStory;
 let $display;
@@ -89,7 +90,7 @@ let invisCursorTimer;
 let storyObj = {title: "", story: "", pageNum: 0};
 let sampleStory = "";
 
-const maxStories = 5;
+const maxStories = 10;
 
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
@@ -101,6 +102,15 @@ document.addEventListener("DOMContentLoaded", () => {
         saveStoryNewSlot(storyObj);
         window.location.href = window.location.href.split('?')[0];
         return;
+    }
+
+    if (debugMode) {
+        for (let i = 0; i < maxStories; i++) {
+            console.log(loadStory(i));
+        }
+
+        const storageUsage = getLocalStorageSizeAccurate();
+        console.log(`LocalStorage usage: ${storageUsage.bytes} bytes (${storageUsage.megabytes} MB)`);
     }
 
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
@@ -138,6 +148,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2500);
 });
 
+function getLocalStorageSizeAccurate() {
+    let total = 0;
+    for (let key in localStorage) {
+        if (localStorage.hasOwnProperty(key)) {
+            const value = localStorage.getItem(key);
+            total += new Blob([key]).size + (value ? new Blob([value]).size : 0);
+        }
+    }
+    const sizeInMB = total / (1024 * 1024); // Convert bytes to megabytes
+    return { bytes: total, megabytes: sizeInMB.toFixed(4) };
+}
+
+
 function saveStoryNewSlot(newStoryObj) {
     for (let i = maxStories - 1; i >= 0; i--) {
         let existingStory = localStorage.getItem(`TaleTeller_story${i}`);
@@ -146,7 +169,6 @@ function saveStoryNewSlot(newStoryObj) {
             localStorage.setItem(`TaleTeller_story${i+1}`, existingStory);
         }
     }
-
 
     localStorage.setItem(`TaleTeller_story${0}`, JSON.stringify(newStoryObj));
 }
@@ -400,6 +422,7 @@ function setEvents() {
         let story = purifyText($storyInput.val());
     
         if (!story || story === "") {
+            title = 'sample story';
             story = purifyText($("#textFrame").contents().text()); //sample story
         }
     
