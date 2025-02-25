@@ -1050,7 +1050,8 @@ function showPage(pageNum, story) {
                     case '.' :
                         if (preWordExists(wrappedText, titles, index)) break;
                         doDelayedPause = quoteComesNext(wrappedText, index);
-                        if (!doDelayedPause && (isWhitespaceChar(wrappedText, index)) && index >=  paragraphs.length - 1) {
+                        if (!doDelayedPause && (isWhitespaceChar(wrappedText, index)) && index <  wrappedText.length - 1) {
+                            
                             d = delayFullStop;
                         }
                             
