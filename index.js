@@ -658,31 +658,6 @@ function setEvents() {
     $footerAbout.click(() => {
         showSettingsTab();
     });
-
-    //$("#textFrame").on("load", function () {
-        //sampleStory = $("#textFrame").contents().text();
-    //});
-//}
-/*
-    let maxRetries = 50; // 50 retries (every 100ms for up to 5 seconds)
-    let retryInterval = 100; // Check every 100ms
-    let attempts = 0;
-  
-    function checkIframeContent() {
-      sampleStory = $("#textFrame").contents().text().trim();
-  
-      if (sampleStory) {
-        console.log("File loaded successfully:", sampleStory);
-      } else if (attempts < maxRetries) {
-        attempts++;
-        setTimeout(checkIframeContent, retryInterval);
-      } else {
-        console.warn("Failed to load content after multiple attempts.");
-      }
-    }
-  
-    checkIframeContent();
-    */
 }
   
 
@@ -779,24 +754,6 @@ function setupStory() {
     }, 1 * 1000);
 
     playbackMode = true;
-/*
-    let title = purifyText($storyTitle.val());
-    let story = purifyText($storyInput.val());
-
-    if (!story || story === "") {
-        story = purifyText($("#textFrame").contents().text()); //sample story
-    }
-
-    if (!story || story === "") {
-        story = "whoops, sample story couldn't load, sorry..."
-    }
-
-    storyObj.title = title;
-    storyObj.story = compressAndEncode(story);
-
-    localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
-    saveStory(storyObj);
-    */
 
     storyObj = loadStory(0);
     let story = decodeAndDecompress(storyObj.story);
@@ -811,7 +768,6 @@ function setupStory() {
     shareLink += `?story=${storyObj.story}`;
     $urlInput.val(shareLink);
 
-    //$('#addNewStory').remove();
     $addNewStory.css("display", "none");
 
     showPage(storyObj.pageNum, story);
@@ -972,13 +928,7 @@ function showPage(pageNum, story) {
 
         return !/\s+/.test(text[index - 1]) && /\s+/.test(text[index + 1]);
     }
-/*
-    function isStartEndChar(text, index) {
-        if (index - 1 < 0 || index + 1 >= text.length) return true;
 
-        return /\s+/.test(text[index - 1]) || /\s+/.test(text[index + 1]);
-    }
-*/
     function quoteComesNext(text, index) {
         if (index >= text.length) return false;
 
@@ -1015,7 +965,7 @@ function showPage(pageNum, story) {
                 let doOneMoreQuoteColor = false;
 
                 if (quoteMarksList.includes(t)) {
-                    if (/*isStartEndChar(wrappedText, index) &&*/ (isStartChar(wrappedText, index) && startQuoteChar === "") ||
+                    if ((isStartChar(wrappedText, index) && startQuoteChar === "") ||
                     (isEndChar(wrappedText, index) && ((charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
                     (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t))))
                     )
@@ -1118,16 +1068,12 @@ function showPage(pageNum, story) {
     }
 
     function setFullTextEffects(text) {
-        // Regular expression to match text in double quotes
-        //let updatedString = text.replace(/(?<=\s|^)(["'“”‘’])([^"'“”‘’]+)\1(?=\s|[.,!?;:]|$)/g, `<span class=${classQuoteFormat}>$1$2$1</span>`);
 
         function insertAt(str, index, insertion) {
             return str.slice(0, index) + insertion + str.slice(index);
         }
 
         let startQuoteChar = "";
-        let words = text.split(/\s+/);
-        let updatedText = "";
 
         for (let i = 0; i < text.length; i++) {
 
@@ -1150,55 +1096,6 @@ function showPage(pageNum, story) {
         }
 
         return text;
-/*
-        for (let i = 0; i < words.length; i++) {
-            let word = words[i];
-            let startChar = word[0];
-            let endChar = word[word.length-1];
-
-            if (quoteMarksList.includes(startChar)) {
-                if (startQuoteChar === "") {
-                    startQuoteChar = startChar;
-                    word = `<span class=${classQuoteFormat}>${word}`;
-                }
-            }
-
-            if (quoteMarksList.includes(endChar)) {
-                if ((charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(endChar)) ||
-                (charIsSingleQuote(startChar) && charIsSingleQuote(endChar))) {
-                    startQuoteChar = "";
-                    word = `${word}</span>`;
-                }
-            }
-
-            updatedText += `${word} `;
-        }
-        */
-       
-/*
-        let updatedString = text.replace(
-            /(?<=\s|^)(["“‘'])([^"'“”‘’]+?(?:\b'\b[^"'“”‘’]*)*)(["”’'])(?=\s|[.,!?;:]|$)/g, 
-            (match, openQuote, text, closeQuote) => {
-                // Ensure the opening and closing quotes are a valid pair
-                const quotePairs = {
-                    '"': '"',
-                    '“': '”',
-                    '‘': '’',
-                    "'": "'"  // Normal single quotes, handled separately
-                };
-        
-                // Check if the detected quotes form a valid pair
-                if (quotePairs[openQuote] === closeQuote) {
-                    return `<span class=${classQuoteFormat}>${openQuote}${text}${closeQuote}</span>`;
-                }
-        
-                return match; // If not a valid pair, keep the original text
-            }
-        );
-        */
-       
-
-        //return updatedText;
     }
 
     function updateIndicator() {
