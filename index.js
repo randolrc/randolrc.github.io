@@ -960,21 +960,25 @@ function showPage(pageNum, story) {
     function isStartChar(text, index) {
         if (index + 1 >= text.length) return false;
 
-        return !/\s+/.test(text[index + 1]);
+        if (index - 1 < 0 && !/\s+/.test(text[index + 1])) {
+            return true;
+        }
+
+        return /\s+/.test(text[index - 1]) && !/\s+/.test(text[index + 1]);
     }
 
     function isEndChar(text, index) {
-        if (index - 1 < 0 || index >= text.length) return false;
+        if (index - 1 < 0 || index + 1 >= text.length) return false;
 
         return !/\s+/.test(text[index - 1]) && /\s+/.test(text[index + 1]);
     }
-
+/*
     function isStartEndChar(text, index) {
-        if (index - 1 < 0 || index >= text.length) return true;
+        if (index - 1 < 0 || index + 1 >= text.length) return true;
 
         return /\s+/.test(text[index - 1]) || /\s+/.test(text[index + 1]);
     }
-
+*/
     function quoteComesNext(text, index) {
         if (index >= text.length) return false;
 
@@ -1011,7 +1015,7 @@ function showPage(pageNum, story) {
                 let doOneMoreQuoteColor = false;
 
                 if (quoteMarksList.includes(t)) {
-                    if (isStartEndChar(wrappedText, index) && (isStartChar(wrappedText, index) && startQuoteChar === "") ||
+                    if (/*isStartEndChar(wrappedText, index) &&*/ (isStartChar(wrappedText, index) && startQuoteChar === "") ||
                     (isEndChar(wrappedText, index) && ((charIsSingleQuote(startQuoteChar) && charIsSingleQuote(t)) ||
                     (charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(t))))
                     )
@@ -1117,10 +1121,36 @@ function showPage(pageNum, story) {
         // Regular expression to match text in double quotes
         //let updatedString = text.replace(/(?<=\s|^)(["'“”‘’])([^"'“”‘’]+)\1(?=\s|[.,!?;:]|$)/g, `<span class=${classQuoteFormat}>$1$2$1</span>`);
 
+        function insertAt(str, index, insertion) {
+            return str.slice(0, index) + insertion + str.slice(index);
+        }
+
         let startQuoteChar = "";
         let words = text.split(/\s+/);
         let updatedText = "";
 
+        for (let i = 0; i < text.length; i++) {
+
+            if (quoteMarksList.includes(text[i])) {
+
+                if (startQuoteChar === "" && isStartChar(text, i)) {
+                    startQuoteChar = text[i];
+
+                    let spanStart = `<span class=${classQuoteFormat}>`;
+                    text = insertAt(text, i, spanStart);
+                    i += spanStart.length;
+                } else if (isEndChar(text, i) && ((charIsDoubleQuote(startQuoteChar) && charIsDoubleQuote(text[i])) ||
+                    (charIsSingleQuote(startQuoteChar) && charIsSingleQuote(text[i])))) {
+                    startQuoteChar = "";
+                    
+                    text = insertAt(text, i + 1, "</span>");
+                    i += "</span>".length;
+                }
+            }
+        }
+
+        return text;
+/*
         for (let i = 0; i < words.length; i++) {
             let word = words[i];
             let startChar = word[0];
@@ -1143,6 +1173,8 @@ function showPage(pageNum, story) {
 
             updatedText += `${word} `;
         }
+        */
+       
 /*
         let updatedString = text.replace(
             /(?<=\s|^)(["“‘'])([^"'“”‘’]+?(?:\b'\b[^"'“”‘’]*)*)(["”’'])(?=\s|[.,!?;:]|$)/g, 
@@ -1166,7 +1198,7 @@ function showPage(pageNum, story) {
         */
        
 
-        return updatedText;
+        //return updatedText;
     }
 
     function updateIndicator() {
