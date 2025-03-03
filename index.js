@@ -225,7 +225,7 @@ function populateHistory() {
     const list = document.getElementById("storyList");
     list.innerHTML = "";
 
-    const request = store.openCursor();
+    const request = store.openCursor(null, "prev");
     request.onsuccess = function(event) {
         const cursor = event.target.result;
         if (cursor) {
