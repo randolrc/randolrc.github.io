@@ -94,7 +94,14 @@ const maxStories = 10;
 
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
+const dbName = "TaleTeller";
+const storeName = "StoryStore";
+let db;
+const request = indexedDB.open(dbName, 1);
+
 document.addEventListener("DOMContentLoaded", () => {
+    initDB();
+
     const cUrlStory = purifyText(getQueryParams(window.location.href).story);
 
     if (cUrlStory) {
@@ -105,12 +112,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (debugMode) {
+        /*
         for (let i = 0; i < maxStories; i++) {
             console.log(loadStory(i));
         }
 
         const storageUsage = getLocalStorageSizeAccurate();
         console.log(`LocalStorage usage: ${storageUsage.bytes} bytes (${storageUsage.megabytes} MB)`);
+        */
     }
 
     const savedSettings = JSON.parse(localStorage.getItem("TaleTeller_settings"));
@@ -148,6 +157,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2500);
 });
 
+function initDB() {
+    request.onupgradeneeded = function(event) {
+        db = event.target.result;
+        if (!db.objectStoreNames.contains(storeName)) {
+            db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+        }
+    };
+
+    request.onsuccess = function(event) {
+        db = event.target.result;
+        populateHistory();
+    };
+
+    request.onerror = function(event) {
+        console.error("IndexedDB error:", event.target.error);
+    };
+}
+
 function getLocalStorageSizeAccurate() {
     let total = 0;
     for (let key in localStorage) {
@@ -162,6 +189,7 @@ function getLocalStorageSizeAccurate() {
 
 
 function saveStoryNewSlot(newStoryObj) {
+    /*
     for (let i = maxStories - 1; i >= 0; i--) {
         let existingStory = localStorage.getItem(`TaleTeller_story${i}`);
 
@@ -169,16 +197,71 @@ function saveStoryNewSlot(newStoryObj) {
             localStorage.setItem(`TaleTeller_story${i+1}`, existingStory);
         }
     }
+*/
+    localStorage.setItem(`TaleTeller_story`, JSON.stringify(newStoryObj));
 
-    localStorage.setItem(`TaleTeller_story${0}`, JSON.stringify(newStoryObj));
+    const transaction = db.transaction([storeName], "readwrite");
+    const store = transaction.objectStore(storeName);
+    const request = store.add(newStoryObj);
+
+    request.onsuccess = function() {
+        populateHistory();
+        /*
+        let allRecords = store.getAll();
+        allRecords.onsuccess = function() {
+            console.log(allRecords.result);
+        };
+        */
+    };
+
+    request.onerror = function(event) {
+        console.log(console.error("IndexedDB error:", event.target.error));
+    };
 }
 
-function loadStory(index) {
-    return JSON.parse(localStorage.getItem(`TaleTeller_story${index}`));
+function populateHistory() {
+    const transaction = db.transaction([storeName], "readonly");
+    const store = transaction.objectStore(storeName);
+    const list = document.getElementById("storyList");
+    list.innerHTML = "";
+
+    const request = store.openCursor();
+    request.onsuccess = function(event) {
+        const cursor = event.target.result;
+        if (cursor) {
+            const li = document.createElement("li");
+            li.textContent = cursor.value.title;
+            li.dataset.id = cursor.value.id; // Store ID in dataset
+            li.onclick = function() { getStory(parseInt(this.dataset.id)); };
+            list.appendChild(li);
+            cursor.continue();
+        }
+    };
+}
+
+function getStory(id) {
+    const transaction = db.transaction([storeName], "readonly");
+    const store = transaction.objectStore(storeName);
+    const request = store.get(id);
+    
+    request.onsuccess = function() {
+        //const retrievedDataDiv = document.getElementById("retrievedData");
+        if (request.result) {
+            let newStoryObj = {title: request.result.title, story: request.result.story, pageNum: request.result.pageNum};
+            localStorage.setItem(`TaleTeller_story`, JSON.stringify(newStoryObj));
+            window.location.reload();
+        } else {
+            console.log("oops, couldn't load story");
+        }
+    };
+}
+
+function loadStory() {
+    return JSON.parse(localStorage.getItem(`TaleTeller_story`));
 }
 
 function loadMain() {
-    storyObj = loadStory(0) || storyObj;
+    storyObj = loadStory() || storyObj;
 
     if (storyObj.story) {
         let story = decodeAndDecompress(storyObj.story);
@@ -429,12 +512,15 @@ function setEvents() {
         if (!story || story === "") {
             story = "whoops, sample story couldn't load, sorry..."
         }
+
+        if (!title || title === "") {
+            title = story.substring(0,15) + "...";
+        }
     
         storyObj.title = title;
         storyObj.story = compressAndEncode(story);
         storyObj.pageNum = 0;
     
-        //localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
         saveStoryNewSlot(storyObj);
 
         setupStory();
@@ -652,6 +738,7 @@ function setEvents() {
 
     $clearAllCache.click(() => {
         localStorage.clear();
+        indexedDB.deleteDatabase(dbName);
         window.location.reload();
     });
 
@@ -755,7 +842,7 @@ function setupStory() {
 
     playbackMode = true;
 
-    storyObj = loadStory(0);
+    storyObj = loadStory();
     let story = decodeAndDecompress(storyObj.story);
 
     let shareLink = "";
@@ -1111,7 +1198,7 @@ function showPage(pageNum, story) {
             updateIndicator();
 
             storyObj.pageNum = currentPage;
-            localStorage.setItem("TaleTeller_story0", JSON.stringify(storyObj));
+            localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
         }
     }
 
@@ -1311,7 +1398,7 @@ function showPage(pageNum, story) {
         }
 
         storyObj.pageNum = currentPage;
-        localStorage.setItem("TaleTeller_story0", JSON.stringify(storyObj));
+        localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
     }
 }
       
