@@ -222,18 +222,23 @@ function saveStoryNewSlot(newStoryObj) {
 function populateHistory() {
     const transaction = db.transaction([storeName], "readonly");
     const store = transaction.objectStore(storeName);
-    const list = document.getElementById("storyList");
-    list.innerHTML = "";
+    const $list = $("#storyList");
+    $list.empty();
 
     const request = store.openCursor(null, "prev");
     request.onsuccess = function(event) {
         const cursor = event.target.result;
         if (cursor) {
-            const li = document.createElement("li");
-            li.textContent = cursor.value.title;
-            li.dataset.id = cursor.value.id; // Store ID in dataset
-            li.onclick = function() { getStory(parseInt(this.dataset.id)); };
-            list.appendChild(li);
+            const li = $("<li>", {
+                text: cursor.value.title,
+                attr: { 'data-id': cursor.value.id },
+                class: "savedStoryTitle",
+                click: function() { 
+                    getStory(parseInt($(this).attr('data-id'))); 
+                }
+            });
+            
+            $list.append(li);
             cursor.continue();
         }
     };
@@ -505,7 +510,7 @@ function setEvents() {
         let story = purifyText($storyInput.val());
     
         if (!story || story === "") {
-            title = 'sample story';
+            title = 'Sample Story';
             story = purifyText($("#textFrame").contents().text()); //sample story
         }
     
@@ -514,7 +519,9 @@ function setEvents() {
         }
 
         if (!title || title === "") {
-            title = story.substring(0,15) + "...";
+            title = story.substring(0,20) + "...";
+        } else if (title.length > 20) {
+            title = title.substring(0,20) + "...";
         }
     
         storyObj.title = title;

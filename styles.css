@@ -22,6 +22,10 @@ footer {
     cursor: pointer;
 }
 
+ul {
+    list-style-type: circle;
+}
+
 #splash-screen {
     position: fixed;
     top: 0;
@@ -122,6 +126,16 @@ footer {
     flex: 3;
     padding: 20px;
     color: #000;
+}
+
+.savedStoryTitle {
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.savedStoryTitle:hover {
+    background-color: #A9A9A9;
 }
 
 .settingsRow {
