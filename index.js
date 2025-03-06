@@ -270,7 +270,7 @@ function loadMain() {
 
     if (storyObj.story) {
         let story = decodeAndDecompress(storyObj.story);
-        $storyInput.val(story);
+        //$storyInput.val(story);
         ignoreClicksOnce = false;
         setupStory();
     } else {
@@ -508,6 +508,8 @@ function setEvents() {
 
         let title = purifyText($storyTitle.val());
         let story = purifyText($storyInput.val());
+        $storyTitle.val("");
+        $storyInput.val("");
     
         if (!story || story === "") {
             title = 'Sample Story';
