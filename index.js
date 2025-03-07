@@ -66,6 +66,11 @@ let $setShadowDefaults;
 
 let $clearAllCache;
 
+let $storyListNext;
+let $storyListPrev;
+let storyListPage = 0;
+let $clearHistory;
+
 const delayScroll_default = 45;
 const delayFullStop_default = 850;
 const autoPageTimer_default = 3 * 1000;
@@ -243,10 +248,10 @@ function populateHistory() {
             });
 
             historyList.push(li);
-            
             cursor.continue();
         } else {
             let count = 0;
+            //console.log(historyList);
             for (let item of historyList) {
                 $list.append(item);
                 count++;
@@ -394,6 +399,9 @@ function loadElements() {
 
     $clearAllCache = $('#clearAllCache');
 
+    $storyListNext = $('#storyListNext');
+    $storyListPrev = $('#storyListPrev');
+    $clearHistory = $('#clearHistory');
 }
 
 function setColorDefaults(setBaseColors = true, setShadowColors = true) {
@@ -767,6 +775,44 @@ function setEvents() {
 
     $footerAbout.click(() => {
         showSettingsTab();
+    });
+
+    function changeHistoryPage() {
+        let startIndex = storyListPage * 12;
+        let endIndex = Math.min(startIndex + 12, historyList.length);
+
+        const $list = $("#storyList");
+        $("#storyList li").detach();
+
+        for (let i = startIndex; i < endIndex; i++) {
+            $list.append(historyList[i]);
+        }
+    }
+
+    $storyListNext.click(() => {
+        let totalPages = Math.floor(historyList.length / 12);
+
+        if (totalPages > 0 && storyListPage < totalPages) {
+            storyListPage++;
+
+            changeHistoryPage();
+        }
+    });
+
+    $storyListPrev.click(() => {
+        let totalPages = Math.floor(historyList.length / 12);
+
+        if (totalPages > 0 && storyListPage - 1 >= 0) {
+            storyListPage--;
+
+            changeHistoryPage();
+        }
+    });
+
+    $clearHistory.click(() => {
+        indexedDB.deleteDatabase(dbName);
+        historyList = [];
+        $("#storyList").empty();
     });
 }
   
