@@ -99,6 +99,8 @@ const storeName = "StoryStore";
 let db;
 const request = indexedDB.open(dbName, 1);
 
+let historyList = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     initDB();
 
@@ -225,6 +227,8 @@ function populateHistory() {
     const $list = $("#storyList");
     $list.empty();
 
+    historyList = [];
+
     const request = store.openCursor(null, "prev");
     request.onsuccess = function(event) {
         const cursor = event.target.result;
@@ -237,11 +241,21 @@ function populateHistory() {
                     getStory(parseInt($(this).attr('data-id'))); 
                 }
             });
+
+            historyList.push(li);
             
-            $list.append(li);
             cursor.continue();
+        } else {
+            let count = 0;
+            for (let item of historyList) {
+                $list.append(item);
+                count++;
+
+                if (count >= 12) break;
+            };
         }
     };
+
 }
 
 function getStory(id) {
