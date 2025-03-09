@@ -128,6 +128,21 @@ ul {
     color: #000;
 }
 
+#changeData {
+    height: 100%;
+}
+
+#storyListContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Make sure the container has a defined height */
+}
+
+.buttonContainer {
+    margin-top: auto;
+}
+
 .storyListButtons {
     display: flex;
     justify-content: center;

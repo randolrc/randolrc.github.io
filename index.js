@@ -105,6 +105,7 @@ let db;
 const request = indexedDB.open(dbName, 1);
 
 let historyList = [];
+let historyPerPage = 9;
 
 document.addEventListener("DOMContentLoaded", () => {
     initDB();
@@ -256,7 +257,7 @@ function populateHistory() {
                 $list.append(item);
                 count++;
 
-                if (count >= 12) break;
+                if (count >= historyPerPage) break;
             };
         }
     };
@@ -778,8 +779,8 @@ function setEvents() {
     });
 
     function changeHistoryPage() {
-        let startIndex = storyListPage * 12;
-        let endIndex = Math.min(startIndex + 12, historyList.length);
+        let startIndex = storyListPage * historyPerPage;
+        let endIndex = Math.min(startIndex + historyPerPage, historyList.length);
 
         const $list = $("#storyList");
         $("#storyList li").detach();
@@ -790,7 +791,7 @@ function setEvents() {
     }
 
     $storyListNext.click(() => {
-        let totalPages = Math.floor(historyList.length / 12);
+        let totalPages = Math.floor(historyList.length / historyPerPage);
 
         if (totalPages > 0 && storyListPage < totalPages) {
             storyListPage++;
@@ -800,7 +801,7 @@ function setEvents() {
     });
 
     $storyListPrev.click(() => {
-        let totalPages = Math.floor(historyList.length / 12);
+        let totalPages = Math.floor(historyList.length / historyPerPage);
 
         if (totalPages > 0 && storyListPage - 1 >= 0) {
             storyListPage--;
