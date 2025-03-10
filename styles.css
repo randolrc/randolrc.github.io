@@ -143,6 +143,16 @@ ul {
     margin-top: auto;
 }
 
+.disabledButton {
+    background-color: #e3e3e3;
+    cursor: default;
+}
+
+.disabledButton:hover {
+    background-color: #e3e3e3;
+    cursor: default;
+}
+
 .storyListButtons {
     display: flex;
     justify-content: center;
@@ -228,7 +238,7 @@ label.settingsDesc {
     display: block;
 }
 
-.modal-content button {
+:where(.modal-content button) {
     padding: 8px 10px;
     font-size: 14px;
     border: none;
@@ -238,7 +248,7 @@ label.settingsDesc {
     cursor: pointer;
 }
 
-.modal-content button:hover {
+:where(.modal-content button:hover) {
     background-color: #A9A9A9;
 }
 

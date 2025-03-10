@@ -101,14 +101,18 @@ const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
 const dbName = "TaleTeller";
 const storeName = "StoryStore";
-let db;
-const request = indexedDB.open(dbName, 1);
 
 let historyList = [];
 let historyPerPage = 9;
 
 document.addEventListener("DOMContentLoaded", () => {
-    initDB();
+
+    let onSuccessFunc = function(event) {
+        let db = event.target.result;
+        populateHistory(db);
+    };
+
+    initDB(onSuccessFunc);
 
     const cUrlStory = purifyText(getQueryParams(window.location.href).story);
 
@@ -165,20 +169,19 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 2500);
 });
 
-function initDB() {
-    request.onupgradeneeded = function(event) {
-        db = event.target.result;
+function initDB(onSuccessFunc) {
+    let dbRequest = indexedDB.open(dbName, 1);
+
+    dbRequest.onupgradeneeded = function(event) {
+        let db = event.target.result;
         if (!db.objectStoreNames.contains(storeName)) {
             db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
         }
     };
 
-    request.onsuccess = function(event) {
-        db = event.target.result;
-        populateHistory();
-    };
+    dbRequest.onsuccess = onSuccessFunc;
 
-    request.onerror = function(event) {
+    dbRequest.onerror = function(event) {
         console.error("IndexedDB error:", event.target.error);
     };
 }
@@ -208,26 +211,32 @@ function saveStoryNewSlot(newStoryObj) {
 */
     localStorage.setItem(`TaleTeller_story`, JSON.stringify(newStoryObj));
 
-    const transaction = db.transaction([storeName], "readwrite");
-    const store = transaction.objectStore(storeName);
-    const request = store.add(newStoryObj);
-
-    request.onsuccess = function() {
-        populateHistory();
-        /*
-        let allRecords = store.getAll();
-        allRecords.onsuccess = function() {
-            console.log(allRecords.result);
+    let onSuccessFunc = function(event) {
+        let db = event.target.result;
+        
+        const transaction = db.transaction([storeName], "readwrite");
+        const store = transaction.objectStore(storeName);
+        const request = store.add(newStoryObj);
+    
+        request.onsuccess = function() {
+            populateHistory(db);
+            /*
+            let allRecords = store.getAll();
+            allRecords.onsuccess = function() {
+                console.log(allRecords.result);
+            };
+            */
         };
-        */
+    
+        request.onerror = function(event) {
+            console.log(console.error("IndexedDB error:", event.target.error));
+        };
     };
 
-    request.onerror = function(event) {
-        console.log(console.error("IndexedDB error:", event.target.error));
-    };
+    initDB(onSuccessFunc);
 }
 
-function populateHistory() {
+function populateHistory(db) {
     const transaction = db.transaction([storeName], "readonly");
     const store = transaction.objectStore(storeName);
     const $list = $("#storyList");
@@ -257,28 +266,42 @@ function populateHistory() {
                 $list.append(item);
                 count++;
 
-                if (count >= historyPerPage) break;
-            };
+                if (count >= historyPerPage) {
+                    $storyListNext.removeClass("disabledButton");
+                    break;
+                }
+            };  
+            
+            db.close();
         }
     };
 
 }
 
 function getStory(id) {
-    const transaction = db.transaction([storeName], "readonly");
-    const store = transaction.objectStore(storeName);
-    const request = store.get(id);
+
+    let onSuccessFunc = function(event) {
+        let db = event.target.result;
     
-    request.onsuccess = function() {
-        //const retrievedDataDiv = document.getElementById("retrievedData");
-        if (request.result) {
-            let newStoryObj = {title: request.result.title, story: request.result.story, pageNum: request.result.pageNum};
-            localStorage.setItem(`TaleTeller_story`, JSON.stringify(newStoryObj));
-            window.location.reload();
-        } else {
-            console.log("oops, couldn't load story");
-        }
-    };
+        const transaction = db.transaction([storeName], "readonly");
+        const store = transaction.objectStore(storeName);
+        const request = store.get(id);
+        
+        request.onsuccess = function() {
+            //const retrievedDataDiv = document.getElementById("retrievedData");
+            if (request.result) {
+                let newStoryObj = {title: request.result.title, story: request.result.story, pageNum: request.result.pageNum};
+                localStorage.setItem(`TaleTeller_story`, JSON.stringify(newStoryObj));
+                window.location.reload();
+            } else {
+                console.log("oops, couldn't load story");
+            }
+
+            db.close();
+        };
+    }
+
+    initDB(onSuccessFunc);
 }
 
 function loadStory() {
@@ -770,8 +793,12 @@ function setEvents() {
 
     $clearAllCache.click(() => {
         localStorage.clear();
-        indexedDB.deleteDatabase(dbName);
-        window.location.reload();
+
+        const deleteRequest = indexedDB.deleteDatabase(dbName);
+
+        deleteRequest.onsuccess = () => {
+            window.location.reload();
+        }        
     });
 
     $footerAbout.click(() => {
@@ -791,10 +818,18 @@ function setEvents() {
     }
 
     $storyListNext.click(() => {
-        let totalPages = Math.floor(historyList.length / historyPerPage);
+        let totalPages = Math.floor((historyList.length - 1) / historyPerPage);
 
         if (totalPages > 0 && storyListPage < totalPages) {
             storyListPage++;
+
+            if (storyListPage >= totalPages) {
+                $storyListNext.addClass("disabledButton");
+            } else {
+                $storyListNext.removeClass("disabledButton");
+            }
+
+            $storyListPrev.removeClass("disabledButton");
 
             changeHistoryPage();
         }
@@ -806,14 +841,38 @@ function setEvents() {
         if (totalPages > 0 && storyListPage - 1 >= 0) {
             storyListPage--;
 
+            if (storyListPage === 0) {
+                $storyListPrev.addClass("disabledButton");
+            } else {
+                $storyListPrev.removeClass("disabledButton");
+            }
+
+            $storyListNext.removeClass("disabledButton");
+
             changeHistoryPage();
         }
     });
 
     $clearHistory.click(() => {
-        indexedDB.deleteDatabase(dbName);
-        historyList = [];
-        $("#storyList").empty();
+
+        const deleteRequest = indexedDB.deleteDatabase(dbName);
+
+        deleteRequest.onsuccess = () => {    
+            historyList = [];
+            storyListPage = 0;
+            $("#storyList").empty();
+            $storyListNext.addClass("disabledButton");
+            $storyListPrev.addClass("disabledButton");
+            $clearHistory.addClass("disabledButton");
+        }
+
+        deleteRequest.onerror = (e) => {
+            console.log(e.target.error);
+        }
+
+        deleteRequest.onblocked = () => {
+            console.warn("Database deletion blocked. Close all connections and try again.");
+        };
     });
 }
   
