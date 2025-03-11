@@ -95,15 +95,14 @@ let invisCursorTimer;
 let storyObj = {title: "", story: "", pageNum: 0};
 let sampleStory = "";
 
-const maxStories = 10;
-
 const quoteMarksList = ['\"', "\'", "“", "”", "‘", "’"];
 
 const dbName = "TaleTeller";
 const storeName = "StoryStore";
 
 let historyList = [];
-let historyPerPage = 9;
+const historyPerPage = 9;
+const maxHistoryStories = 100;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -216,9 +215,32 @@ function saveStoryNewSlot(newStoryObj) {
         
         const transaction = db.transaction([storeName], "readwrite");
         const store = transaction.objectStore(storeName);
-        const request = store.add(newStoryObj);
+        const countRequest = store.count();
+
+        countRequest.onsuccess = function() {
+            if (countRequest.result + 1 > maxHistoryStories) {
+                const deleteRequest = store.openCursor();
+                
+                deleteRequest.onsuccess = function (event) {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        cursor.delete();
+                    }
+                };
+            
+                deleteRequest.onerror = function (event) {
+                    console.error("Error opening cursor:", event.target.error);
+                };
+            }
+        };
     
-        request.onsuccess = function() {
+        countRequest.onerror = function() {
+            console.error("Error counting objects:", countRequest.error);
+        };
+
+        const addRequest = store.add(newStoryObj);
+    
+        addRequest.onsuccess = function() {
             populateHistory(db);
             /*
             let allRecords = store.getAll();
@@ -228,9 +250,12 @@ function saveStoryNewSlot(newStoryObj) {
             */
         };
     
-        request.onerror = function(event) {
+        addRequest.onerror = function(event) {
             console.log(console.error("IndexedDB error:", event.target.error));
         };
+
+        
+        
     };
 
     initDB(onSuccessFunc);
