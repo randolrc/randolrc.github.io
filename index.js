@@ -243,6 +243,10 @@ function populateHistory(db) {
     $list.empty();
 
     historyList = [];
+    storyListPage = 0;
+
+    $storyListNext.addClass("disabledButton");
+    $storyListPrev.addClass("disabledButton");
 
     const request = store.openCursor(null, "prev");
     request.onsuccess = function(event) {
@@ -261,16 +265,20 @@ function populateHistory(db) {
             cursor.continue();
         } else {
             let count = 0;
-            //console.log(historyList);
             for (let item of historyList) {
                 $list.append(item);
                 count++;
 
-                if (count >= historyPerPage) {
-                    $storyListNext.removeClass("disabledButton");
+                if (count >= historyPerPage) { 
                     break;
                 }
+
+                $clearHistory.removeClass("disabledButton");
             };  
+
+            if (historyList.length > historyPerPage) {
+                $storyListNext.removeClass("disabledButton"); 
+            }
             
             db.close();
         }
