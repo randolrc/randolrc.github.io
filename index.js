@@ -174,10 +174,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         loadMainTimer = 2500;
     }
+
+    if (!footerToggle) $footerAbout.removeClass('hidden-display');
     
     setTimeout(() => {
         $splash.css("display","none");
-        if (!footerToggle) $footerAbout.removeClass('hidden-display');
+        
         loadMain();
       }, loadMainTimer);
 });
@@ -467,6 +469,7 @@ function loadElements() {
     $fontSelector = $('#font-select');
     $fontSelector.val(font);
     $('main').css('font-family', font);
+    $('footer').css('font-family', $fontSelector.val());
 
     $clearAllCache = $('#clearAllCache');
 
@@ -1493,10 +1496,11 @@ function showPage(pageNum, story) {
         font = $fontSelector.val();
 
         $('main').css('font-family', $fontSelector.val());
+        $('footer').css('font-family', $fontSelector.val());
 
         setTimeout(() => { //wait for browser to load font
             displayFullText(paragraphs[currentPage]);
-        }, 100);
+        }, 500);
 
     });
 
@@ -1520,7 +1524,7 @@ function showPage(pageNum, story) {
 
         setTimeout(() => { //wait for browser to load font
             displayFullText(paragraphs[currentPage]);
-        }, 100);
+        }, 500);
     });
 
     $boldToggle.off('change').on('change', () => {
@@ -1534,7 +1538,7 @@ function showPage(pageNum, story) {
 
         setTimeout(() => { //wait for browser to load font
             displayFullText(paragraphs[currentPage]);
-        }, 100);
+        }, 500);
     });
 
     function stopAutoPlay() {
