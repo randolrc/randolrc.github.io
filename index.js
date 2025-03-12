@@ -104,6 +104,11 @@ let historyList = [];
 const historyPerPage = 9;
 const maxHistoryStories = 100;
 
+let $splashToggle;
+let splashToggle = true;
+let $footerToggle;
+let footerToggle = false;
+
 document.addEventListener("DOMContentLoaded", () => {
 
     let onSuccessFunc = function(event) {
@@ -152,20 +157,29 @@ document.addEventListener("DOMContentLoaded", () => {
         effectSelectIndex = savedSettings.effectSelectIndex || effectSelectIndex;
         sApplyToIndex = savedSettings.sApplyToIndex || sApplyToIndex;
         dynamicPageToggle = Object.hasOwn(savedSettings, 'dynamicPageToggle') ? savedSettings.dynamicPageToggle : dynamicPageToggle;
+        splashToggle = Object.hasOwn(savedSettings, 'splashToggle') ? savedSettings.splashToggle : splashToggle;
+        footerToggle = Object.hasOwn(savedSettings, 'footerToggle') ? savedSettings.footerToggle : footerToggle;
     }
     
     loadElements();
     setEvents();
 
-    setTimeout(() => {
-        $splash.css("display","flex");
-        $("#product-name").text("Tale Teller");
-    }, 500);
+    let loadMainTimer = 500;
+
+    if (splashToggle) {  
+        setTimeout(() => {
+            $splash.css("display","flex");
+            $("#product-name").text("Tale Teller");
+        }, 500);
+
+        loadMainTimer = 2500;
+    }
     
     setTimeout(() => {
         $splash.css("display","none");
+        if (!footerToggle) $footerAbout.removeClass('hidden-display');
         loadMain();
-      }, 2500);
+      }, loadMainTimer);
 });
 
 function initDB(onSuccessFunc) {
@@ -459,6 +473,12 @@ function loadElements() {
     $storyListNext = $('#storyListNext');
     $storyListPrev = $('#storyListPrev');
     $clearHistory = $('#clearHistory');
+
+    $splashToggle = $('#splashToggle');
+    $splashToggle.prop('checked', splashToggle);
+
+    $footerToggle = $('#footerToggle');
+    $footerToggle.prop('checked', footerToggle);
 }
 
 function setColorDefaults(setBaseColors = true, setShadowColors = true) {
@@ -907,6 +927,20 @@ function setEvents() {
             console.warn("Database deletion blocked. Close all connections and try again.");
         };
     });
+
+    $splashToggle.on("change", () => {
+        splashToggle = $splashToggle.prop('checked');
+    });
+
+    $footerToggle.on("change", () => {
+        footerToggle = $footerToggle.prop('checked');
+
+        if (footerToggle)
+            $footerAbout.addClass('hidden-display');
+        else {
+            $footerAbout.removeClass('hidden-display');
+        }
+    });
 }
   
 
@@ -941,13 +975,16 @@ function saveSettings() {
     settingsObj = { delayScroll: delayScroll, delayFullStop: delayFullStop, autoPageTimer: autoPageTimer, dynamicPageToggle: dynamicPageToggle,
     colorSettings: colorSettings, fontSize: fontSize, colorSelectIndex: colorSelectIndex, font: font, italicsToggleCSS: italicsToggleCSS,
     boldToggleCSS: boldToggleCSS, shadowToggleOn: shadowToggleOn, shadowSettings: shadowSettings, effectSelectIndex: effectSelectIndex,
-    sApplyToIndex: sApplyToIndex };
+    sApplyToIndex: sApplyToIndex, splashToggle: splashToggle, footerToggle: footerToggle };
 
     localStorage.setItem("TaleTeller_settings", JSON.stringify(settingsObj));
 }
 
 function purifyText(text) {
     if (text && text !== "") {
+
+        text = text.replaceAll('<', '(').replaceAll('>', ')');
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, 'text/html');
         text = doc.body.textContent || '';
