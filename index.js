@@ -1217,7 +1217,7 @@ function showPage(pageNum, story) {
     function isEndChar(text, index) {
         if (index - 1 < 0 || index + 1 >= text.length) return false;
 
-        return !/\s+/.test(text[index - 1]) && /\s+/.test(text[index + 1]);
+        return !/\s+/.test(text[index - 1]) && !/^[a-zA-Z0-9]$/.test(text[index + 1]);
     }
 
     function quoteComesNext(text, index) {
