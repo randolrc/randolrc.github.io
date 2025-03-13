@@ -946,7 +946,6 @@ function setEvents() {
     });
 }
   
-
 function setTextShadow() {
     if ($shadowToggle.prop('checked')) {
         let shadow = `${shadowSettings[effectSelectIndex].xoff}px ${shadowSettings[effectSelectIndex].yoff}px 
@@ -1115,6 +1114,7 @@ function showPage(pageNum, story) {
      * @returns {number} - The pixel width of the word.
      */
     function measureWordWidth(word, bolded = false, italicized = false) {
+        
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
 
@@ -1156,9 +1156,11 @@ function showPage(pageNum, story) {
                 disableFlagsNewline = false;
             }
 
+            boldFlag = italicFlag;  //extra fudge
+
             const wordWidth = measureWordWidth(word, boldFlag, italicFlag);
             const lineWidth = measureWordWidth(line, boldFlag, italicFlag);
-            const fudge = 20;
+            const fudge = 30;
 
             if (lineWidth + wordWidth + fudge > containerWidth) {
                 wrappedText += line.trim() + "\n"; // Add the current line and start a new one
@@ -1234,6 +1236,7 @@ function showPage(pageNum, story) {
 
     function displayText(text) {
         $display.empty(); // Clear existing content
+
         let wrappedText = wrapText(text); // Approximate line length
         let index = 0;
         let doQuoteColor = false;
