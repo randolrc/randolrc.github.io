@@ -109,6 +109,8 @@ let splashToggle = true;
 let $footerToggle;
 let footerToggle = false;
 
+let hideHeaderToggle = false;
+
 document.addEventListener("DOMContentLoaded", () => {
 
     let onSuccessFunc = function(event) {
@@ -692,9 +694,11 @@ function setEvents() {
     });
 
     $header.on('mouseleave', () => {
-        $header.addClass('hidden');
-        $("#totalPageContainer").css("visibility","hidden");
-        $("#indicator:focus").blur();
+        if (!hideHeaderToggle)  {
+            $header.addClass('hidden');
+            $("#totalPageContainer").css("visibility","hidden");
+            $("#indicator:focus").blur();
+        }
     });
 
     function fullscreenchangeHandler(event) {
@@ -945,8 +949,53 @@ function setEvents() {
         }
     });
 
+    function handleBreakpoint(event) {
+        
+        if (event.matches) {
+            $fullscreenButton.addClass("hidden-display");
+            $shareButton.addClass("hidden-display");
+            $reloadButton.addClass("hidden-display");
+
+            hideHeaderToggle = true;
+
+            if ($splash.css("display") === "none")
+                $header.removeClass("hidden");
+
+            //$header.css("visibility","visible");
+
+            //$('main').css("width", "90%");
+            //displayFullText(paragraphs[currentPage]);
+            //document.body.style.backgroundColor = "#f0f8ff"; // Example action
+        } else {
+            $fullscreenButton.removeClass("hidden-display");
+            $shareButton.removeClass("hidden-display");
+            $reloadButton.removeClass("hidden-display");
+
+            hideHeaderToggle = false;
+
+            //$header.css("visibility","visible");
+
+            setTimeout(() => {
+                $header.addClass('hidden');
+            }, 1 * 1000);
+
+            //document.body.style.backgroundColor = "#ffffff"; // Reset style
+        }
+        
+
+        resizeMainContainer();
+    }
+
+
     
+    // Define the media query
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
     
+    // Run the function once to set the initial state
+    handleBreakpoint(mediaQuery);
+    
+    // Listen for changes in screen width
+    mediaQuery.addEventListener("change", handleBreakpoint);
 }
   
 function setTextShadow() {
@@ -970,6 +1019,22 @@ function setTextShadow() {
         shadowToggleOn = false;
         setColors(colorSettings[colorSelectIndex]);
     }
+}
+
+function resizeMainContainer() {
+    const width = window.innerWidth;
+
+    if (Number(fontSize) >= 1.5) {
+        $main.css("width", "80%");
+    } else if (Number(fontSize) <= 0.8) {
+        $main.css("width", "40%");
+    } else {
+        $main.css("width", "60%");
+    }
+
+    if (width <= 768) {
+        $('main').css("width", "90%");
+    } 
 }
 
 function saveSettings() {
@@ -1000,23 +1065,6 @@ function purifyText(text) {
     return undefined;
 }
 
-function resizeMainContainer() {
-    const width = window.innerWidth;
-
-    if (Number(fontSize) >= 1.5) {
-        $main.css("width", "80%");
-    } else if (Number(fontSize) <= 0.8) {
-        $main.css("width", "40%");
-    } else {
-        $main.css("width", "60%");
-    }
-
-    if (width <= 768) {
-        $('main').css("width", "90%");
-    }
-    
-}
-
 function setTrackedTimeout(callback, delay, idArr) {
     const id = setTimeout(callback, delay);
     idArr.push(id);
@@ -1045,10 +1093,11 @@ function showSettingsTab() {
 
 function setupStory() {
     $display.css("display","block");
-    $header.css("visibility","visible");
+    $header.removeClass("hidden");
+    //$header.css("visibility","visible");
 
     setTimeout(() => {
-        $header.addClass('hidden');
+        if (!hideHeaderToggle) $header.addClass('hidden');
     }, 1 * 1000);
 
     playbackMode = true;
@@ -1624,36 +1673,10 @@ function showPage(pageNum, story) {
         localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
     }
 
-    function handleBreakpoint(event) {
-        /*
-        if (event.matches) {
-            console.log("Screen is now in mobile mode (≤ 768px)");
-            //$('main').css("width", "90%");
-            //displayFullText(paragraphs[currentPage]);
-            //document.body.style.backgroundColor = "#f0f8ff"; // Example action
-        } else {
-            console.log("Screen is in desktop mode (> 768px)");
-            resizeMainContainer();
-
-            //document.body.style.backgroundColor = "#ffffff"; // Reset style
-        }
-        */
-
-        resizeMainContainer();
-    }
-
     function handleResize() {
         displayFullText(paragraphs[currentPage]);
     }
-    
-    // Define the media query
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-    
-    // Run the function once to set the initial state
-    handleBreakpoint(mediaQuery);
-    
-    // Listen for changes in screen width
-    mediaQuery.addEventListener("change", handleBreakpoint);
+
     window.addEventListener("resize", handleResize);
 }
       

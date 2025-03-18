@@ -272,7 +272,7 @@ label.settingsDesc {
 }
 
 header {
-    visibility: hidden;
+    /*visibility: hidden;*/
     transition: opacity 0.3s ease;
     /*position: fixed;*/
     width: 100%;
