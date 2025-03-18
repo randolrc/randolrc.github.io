@@ -468,7 +468,7 @@ function loadElements() {
 
     $fontSelector = $('#font-select');
     $fontSelector.val(font);
-    $('main').css('font-family', font);
+    $main.css('font-family', font);
     $('footer').css('font-family', $fontSelector.val());
 
     $clearAllCache = $('#clearAllCache');
@@ -944,6 +944,9 @@ function setEvents() {
             $footerAbout.removeClass('hidden-display');
         }
     });
+
+    
+    
 }
   
 function setTextShadow() {
@@ -998,13 +1001,20 @@ function purifyText(text) {
 }
 
 function resizeMainContainer() {
+    const width = window.innerWidth;
+
     if (Number(fontSize) >= 1.5) {
-        $('main').css("width", "80%");
+        $main.css("width", "80%");
     } else if (Number(fontSize) <= 0.8) {
-        $('main').css("width", "40%");
+        $main.css("width", "40%");
     } else {
-        $('main').css("width", "60%");
+        $main.css("width", "60%");
     }
+
+    if (width <= 768) {
+        $('main').css("width", "90%");
+    }
+    
 }
 
 function setTrackedTimeout(callback, delay, idArr) {
@@ -1235,6 +1245,13 @@ function showPage(pageNum, story) {
     }
 
     function displayText(text) {
+        
+        if (delayScroll == 0) {
+            printText = false;
+            displayFullText(text);
+            return;
+        }
+
         $display.empty(); // Clear existing content
 
         let wrappedText = wrapText(text); // Approximate line length
@@ -1498,7 +1515,7 @@ function showPage(pageNum, story) {
     $fontSelector.off('change').on('change', () => {
         font = $fontSelector.val();
 
-        $('main').css('font-family', $fontSelector.val());
+        $main.css('font-family', $fontSelector.val());
         $('footer').css('font-family', $fontSelector.val());
 
         setTimeout(() => { //wait for browser to load font
@@ -1606,6 +1623,38 @@ function showPage(pageNum, story) {
         storyObj.pageNum = currentPage;
         localStorage.setItem("TaleTeller_story", JSON.stringify(storyObj));
     }
+
+    function handleBreakpoint(event) {
+        /*
+        if (event.matches) {
+            console.log("Screen is now in mobile mode (≤ 768px)");
+            //$('main').css("width", "90%");
+            //displayFullText(paragraphs[currentPage]);
+            //document.body.style.backgroundColor = "#f0f8ff"; // Example action
+        } else {
+            console.log("Screen is in desktop mode (> 768px)");
+            resizeMainContainer();
+
+            //document.body.style.backgroundColor = "#ffffff"; // Reset style
+        }
+        */
+
+        resizeMainContainer();
+    }
+
+    function handleResize() {
+        displayFullText(paragraphs[currentPage]);
+    }
+    
+    // Define the media query
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    
+    // Run the function once to set the initial state
+    handleBreakpoint(mediaQuery);
+    
+    // Listen for changes in screen width
+    mediaQuery.addEventListener("change", handleBreakpoint);
+    window.addEventListener("resize", handleResize);
 }
       
       
