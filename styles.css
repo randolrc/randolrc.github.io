@@ -432,3 +432,9 @@ main {
     background-color: #f5f5f5;
     color: #000;
 }
+
+.no-hover:hover {
+    background-color: inherit !important;  /* Reset background */
+    color: inherit !important;             /* Reset text color */
+    /* Add other properties you need to reset */
+}

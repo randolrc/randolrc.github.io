@@ -109,7 +109,7 @@ let splashToggle = true;
 let $footerToggle;
 let footerToggle = false;
 
-let hideHeaderToggle = false;
+let mobileMode = false;
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -550,6 +550,29 @@ function setColors(colorObj) {
         ${shadowSettings[effectSelectIndex].blur}px ${shadowSettings[effectSelectIndex].color}`;
     }
 
+    let svgHover = "";
+
+    if (!mobileMode) {
+        svgHover = `.svgHeaderButton:hover {
+            background-color: ${colorObj.baseColor}
+        }
+        
+        .svgHeaderButton:hover div {
+            color: ${colorObj.BGColor};
+        }
+
+        .centeredButtons button:hover {
+            background-color: ${colorObj.baseColor};
+            color: ${colorObj.BGColor};
+        }
+
+        #indicator:hover {
+            background-color: ${colorObj.baseColor};
+            color: ${colorObj.BGColor};
+        }
+        `;
+    }
+
     $splash.css("color", colorObj.baseColor);
     $("body").css("background-color", colorObj.BGColor);
     $BGColor.val(colorObj.BGColor);
@@ -562,17 +585,11 @@ function setColors(colorObj) {
             text-shadow: ${shadow};
         }
 
-        .svgHeaderButton:hover {
-            background-color: ${colorObj.baseColor}
-        }
+        ${svgHover}
 
         .svgHeaderButton div {
             color: ${colorObj.baseColor};
             transition: color 0.3s, color 0.3s;
-        }
-
-        .svgHeaderButton:hover div {
-            color: ${colorObj.BGColor};
         }
 
         .centeredButtons button {
@@ -580,20 +597,14 @@ function setColors(colorObj) {
             color: ${colorObj.baseColor};
         }
 
-        .centeredButtons button:hover {
-            background-color: ${colorObj.baseColor};
-            color: ${colorObj.BGColor};
-        }
+
 
         #indicator {
             background-color: transparent;
             color: ${colorObj.baseColor};
         }
 
-        #indicator:hover {
-            background-color: ${colorObj.baseColor};
-            color: ${colorObj.BGColor};
-        }
+        
     `;
     $('.svgHeaderButton').css('border-color', colorObj.BGColor);
     $('.centeredButtons button').css('border-color', colorObj.BGColor);
@@ -694,7 +705,7 @@ function setEvents() {
     });
 
     $header.on('mouseleave', () => {
-        if (!hideHeaderToggle)  {
+        if (!mobileMode)  {
             $header.addClass('hidden');
             $("#totalPageContainer").css("visibility","hidden");
             $("#indicator:focus").blur();
@@ -955,31 +966,37 @@ function setEvents() {
             $fullscreenButton.addClass("hidden-display");
             $shareButton.addClass("hidden-display");
             $reloadButton.addClass("hidden-display");
+            $optionsButton.addClass("hidden-display");
+            $("#next").addClass("hidden-display");
+            $("#prev").addClass("hidden-display");
+            
+            $playPauseButton.css("right", "0px");
 
-            hideHeaderToggle = true;
+            mobileMode = true;
 
             if ($splash.css("display") === "none")
                 $header.removeClass("hidden");
 
-            //$header.css("visibility","visible");
+            setColors(colorSettings[colorSelectIndex]);
 
-            //$('main').css("width", "90%");
-            //displayFullText(paragraphs[currentPage]);
-            //document.body.style.backgroundColor = "#f0f8ff"; // Example action
         } else {
             $fullscreenButton.removeClass("hidden-display");
             $shareButton.removeClass("hidden-display");
             $reloadButton.removeClass("hidden-display");
+            $optionsButton.removeClass("hidden-display");
+            $("#next").removeClass("hidden-display");
+            $("#prev").removeClass("hidden-display");
 
-            hideHeaderToggle = false;
+            $playPauseButton.css("right", "");
 
-            //$header.css("visibility","visible");
+            mobileMode = false;
+
+            setColors(colorSettings[colorSelectIndex]);
 
             setTimeout(() => {
                 $header.addClass('hidden');
             }, 1 * 1000);
 
-            //document.body.style.backgroundColor = "#ffffff"; // Reset style
         }
         
 
@@ -1097,7 +1114,7 @@ function setupStory() {
     //$header.css("visibility","visible");
 
     setTimeout(() => {
-        if (!hideHeaderToggle) $header.addClass('hidden');
+        if (!mobileMode) $header.addClass('hidden');
     }, 1 * 1000);
 
     playbackMode = true;
@@ -1675,6 +1692,7 @@ function showPage(pageNum, story) {
 
     function handleResize() {
         displayFullText(paragraphs[currentPage]);
+        printText = false;
     }
 
     window.addEventListener("resize", handleResize);
