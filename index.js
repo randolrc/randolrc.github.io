@@ -993,17 +993,11 @@ function setEvents() {
 
             setColors(colorSettings[colorSelectIndex]);
 
-            setTimeout(() => {
-                $header.addClass('hidden');
-            }, 1 * 1000);
-
+            $header.addClass('hidden');
         }
         
-
         resizeMainContainer();
     }
-
-
     
     // Define the media query
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -1050,7 +1044,7 @@ function resizeMainContainer() {
     }
 
     if (width <= 768) {
-        $('main').css("width", "90%");
+        $('main').css("width", "95%");
     } 
 }
 
@@ -1236,7 +1230,11 @@ function showPage(pageNum, story) {
 
             const wordWidth = measureWordWidth(word, boldFlag, italicFlag);
             const lineWidth = measureWordWidth(line, boldFlag, italicFlag);
-            const fudge = 30;
+            let fudge = 30;
+
+            if (mobileMode) {
+                fudge = 20;
+            }
 
             if (lineWidth + wordWidth + fudge > containerWidth) {
                 wrappedText += line.trim() + "\n"; // Add the current line and start a new one
