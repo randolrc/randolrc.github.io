@@ -983,15 +983,10 @@ function setEvents() {
             $shareButton.addClass("hidden-display");
             $reloadButton.addClass("hidden-display");
             $optionsButton.addClass("hidden-display");
-            //$("#next").addClass("hidden-display");
-            //$("#prev").addClass("hidden-display");
             
             $playPauseButton.css("right", "0px");
 
             mobileMode = true;
-
-            //if ($splash.css("display") === "none")
-              //  $header.removeClass("hidden");
 
             setColors(colorSettings[colorSelectIndex]);
 
@@ -1000,16 +995,12 @@ function setEvents() {
             $shareButton.removeClass("hidden-display");
             $reloadButton.removeClass("hidden-display");
             $optionsButton.removeClass("hidden-display");
-            //$("#next").removeClass("hidden-display");
-            //$("#prev").removeClass("hidden-display");
 
             $playPauseButton.css("right", "");
 
             mobileMode = false;
 
             setColors(colorSettings[colorSelectIndex]);
-
-            //$header.addClass('hidden');
         }
         
         resizeMainContainer();
@@ -1576,7 +1567,7 @@ function showPage(pageNum, story) {
 
     $main.off('click').on('click', () => {
         if (playbackMode) {
-            changePage(1);
+            changePage(1, false);
         }
     });
 
@@ -1687,21 +1678,24 @@ function showPage(pageNum, story) {
         } else if (event.key === "ArrowRight") {
             changePage(1);
         } else if (event.key === " ") { // Space key
-            changePage(1);
+            changePage(1, false);
         }
     };
 
     document.removeEventListener("keydown", handleKeyDown);
     document.addEventListener("keydown", handleKeyDown);
 
-    function changePage(pageMod) {
+    function changePage(pageMod, skipFullText = true) {
 
         if (ignoreClicksOnce) {
             ignoreClicksOnce = false;
             return;
         }
 
-        if (printText) {
+        if (skipFullText && currentPage > 0 && currentPage < paragraphs.length - 1)
+            clearAllTimeouts();
+
+        if (printText && (!skipFullText || (pageMod < 0 && currentPage === 0) || (pageMod > 0 && currentPage + pageMod >= paragraphs.length))) {
             printText = false;
             displayFullText(paragraphs[currentPage]);
         } else {
