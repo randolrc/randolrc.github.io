@@ -706,15 +706,16 @@ function setEvents() {
 
         if (mobileMode)  {
             setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
+            $header.trigger("mouseleave");
         }
     });
 
     $header.on('mouseleave', () => {
-        //if (!mobileMode)  {
+        if (!mobileMode)  {
             $header.addClass('hidden');
             $("#totalPageContainer").css("visibility","hidden");
             $("#indicator:focus").blur();
-        //}
+        }
     });
 
     function fullscreenchangeHandler(event) {
