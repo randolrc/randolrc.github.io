@@ -705,6 +705,7 @@ function setEvents() {
         $header.removeClass('hidden');
 
         if (mobileMode)  {
+            clearTimeouts(headerTimeoutIDs);
             setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
         }
     });
@@ -982,8 +983,8 @@ function setEvents() {
             $shareButton.addClass("hidden-display");
             $reloadButton.addClass("hidden-display");
             $optionsButton.addClass("hidden-display");
-            $("#next").addClass("hidden-display");
-            $("#prev").addClass("hidden-display");
+            //$("#next").addClass("hidden-display");
+            //$("#prev").addClass("hidden-display");
             
             $playPauseButton.css("right", "0px");
 
@@ -999,8 +1000,8 @@ function setEvents() {
             $shareButton.removeClass("hidden-display");
             $reloadButton.removeClass("hidden-display");
             $optionsButton.removeClass("hidden-display");
-            $("#next").removeClass("hidden-display");
-            $("#prev").removeClass("hidden-display");
+            //$("#next").removeClass("hidden-display");
+            //$("#prev").removeClass("hidden-display");
 
             $playPauseButton.css("right", "");
 
@@ -1581,10 +1582,20 @@ function showPage(pageNum, story) {
 
     $("#next").off('click').on('click', () => {
         if (playbackMode) changePage(1);
+
+        if (mobileMode) {
+            clearTimeouts(headerTimeoutIDs);
+            setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
+        }
     });
 
     $("#prev").off('click').on('click', () => {
         if (playbackMode) changePage(-1);
+
+        if (mobileMode) {
+            clearTimeouts(headerTimeoutIDs);
+            setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
+        }
     });
 
     $playPauseButton.off('click').on('click', () => {
