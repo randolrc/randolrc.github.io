@@ -110,6 +110,7 @@ let $footerToggle;
 let footerToggle = false;
 
 let mobileMode = false;
+let headerTimeoutIDs = [];
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -702,14 +703,18 @@ function setEvents() {
 
     $header.on('mouseenter', () => {
         $header.removeClass('hidden');
+
+        if (mobileMode)  {
+            setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
+        }
     });
 
     $header.on('mouseleave', () => {
-        if (!mobileMode)  {
+        //if (!mobileMode)  {
             $header.addClass('hidden');
             $("#totalPageContainer").css("visibility","hidden");
             $("#indicator:focus").blur();
-        }
+        //}
     });
 
     function fullscreenchangeHandler(event) {
@@ -974,8 +979,8 @@ function setEvents() {
 
             mobileMode = true;
 
-            if ($splash.css("display") === "none")
-                $header.removeClass("hidden");
+            //if ($splash.css("display") === "none")
+              //  $header.removeClass("hidden");
 
             setColors(colorSettings[colorSelectIndex]);
 
@@ -993,7 +998,7 @@ function setEvents() {
 
             setColors(colorSettings[colorSelectIndex]);
 
-            $header.addClass('hidden');
+            //$header.addClass('hidden');
         }
         
         resizeMainContainer();
@@ -1108,7 +1113,7 @@ function setupStory() {
     //$header.css("visibility","visible");
 
     setTimeout(() => {
-        if (!mobileMode) $header.addClass('hidden');
+        $header.addClass('hidden');
     }, 1 * 1000);
 
     playbackMode = true;
@@ -1530,6 +1535,10 @@ function showPage(pageNum, story) {
         if (playbackMode) {
             stopPlayBackAndViewFull();
             $pageInput.val("");
+
+            if (mobileMode) {
+                clearTimeouts(headerTimeoutIDs);
+            }
         }
     });
 
