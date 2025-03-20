@@ -1566,6 +1566,10 @@ function showPage(pageNum, story) {
         if (playbackMode) {
             $("#totalPageContainer").css("visibility","hidden");
             $pageInput.val(currentPage+1);
+
+            if (mobileMode) {
+                setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
+            }
         }
     });
 
