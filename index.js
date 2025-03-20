@@ -701,14 +701,23 @@ function setEvents() {
         }
     });
 
-    $header.on('mouseenter', () => {
+    $header.on('touchstart', () => {
         $header.removeClass('hidden');
 
         if (mobileMode)  {
             setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
-            $header.trigger("mouseleave");
         }
     });
+
+    if (!("ontouchstart" in window)) {
+        $header.on('mouseenter', () => {
+            $header.removeClass('hidden');
+
+            if (mobileMode)  {
+                setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
+            }
+        });
+    }
 
     $header.on('mouseleave', () => {
         if (!mobileMode)  {
