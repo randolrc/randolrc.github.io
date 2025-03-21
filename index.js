@@ -110,6 +110,7 @@ let $footerToggle;
 let footerToggle = false;
 
 let mobileMode = false;
+let burgerMenuOpen = false;
 let headerTimeoutIDs = [];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -983,6 +984,7 @@ function setEvents() {
             $shareButton.addClass("hidden-display");
             $reloadButton.addClass("hidden-display");
             $optionsButton.addClass("hidden-display");
+            $('#hamburgerButton').removeClass("hidden-display");
             
             $playPauseButton.css("right", "0px");
 
@@ -995,6 +997,7 @@ function setEvents() {
             $shareButton.removeClass("hidden-display");
             $reloadButton.removeClass("hidden-display");
             $optionsButton.removeClass("hidden-display");
+            $('#hamburgerButton').addClass("hidden-display");
 
             $playPauseButton.css("right", "");
 
@@ -1112,7 +1115,6 @@ function showSettingsTab() {
 function setupStory() {
     $display.css("display","block");
     $header.removeClass("hidden");
-    //$header.css("visibility","visible");
 
     setTimeout(() => {
         $header.addClass('hidden');
@@ -1501,7 +1503,7 @@ function showPage(pageNum, story) {
         clearAllTimeouts();
         $display.css("display", "none");
         $addNewStory.css("display", "block");
-        $header.css("visibility", "hidden");
+        $header.addClass("hidden");
         printText = false;
         playbackMode = false;
         ignoreClicksOnce = true;
@@ -1522,6 +1524,25 @@ function showPage(pageNum, story) {
 
         if (playbackMode) {
             stopPlayBackAndViewFull();
+        }
+    });
+
+    $(".menu-icon").off('click').on('click', () => {
+        $(".dropdown-menu").css("display", "block");
+
+        burgerMenuOpen = true;
+
+        if (playbackMode) {
+            clearTimeouts(headerTimeoutIDs);
+            stopPlayBackAndViewFull();
+        }
+    });
+
+    $(document).off('click').on('click', (event) => {
+        if (burgerMenuOpen && !$(event.target).closest(".menu-icon, .dropdown-menu").length) {
+            $(".dropdown-menu").css("display", "none");
+
+            burgerMenuOpen = false;
         }
     });
 
@@ -1686,6 +1707,8 @@ function showPage(pageNum, story) {
     document.addEventListener("keydown", handleKeyDown);
 
     function changePage(pageMod, skipFullText = true) {
+
+        if (burgerMenuOpen) return;
 
         if (ignoreClicksOnce) {
             ignoreClicksOnce = false;

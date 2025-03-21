@@ -438,3 +438,36 @@ main {
     color: inherit !important;             /* Reset text color */
     /* Add other properties you need to reset */
 }
+
+.menu-icon {
+    display: flex;
+    cursor: pointer;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.bar {
+    width: 25px;
+    height: 3px;
+    background-color: white;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    background-color: #444;
+    width: 100%;
+    text-align: center;
+    z-index: 1000;
+}
+.dropdown-menu a {
+    display: block;
+    padding: 10px;
+    color: white;
+    text-decoration: none;
+}
+.dropdown-menu a:hover {
+    background-color: #666;
+}
