@@ -703,6 +703,9 @@ function setEvents() {
     });
 
     $header.on('touchstart', () => {
+
+        if (burgerMenuOpen || !playbackMode) return;
+
         $header.removeClass('hidden');
 
         if (mobileMode)  {
@@ -1511,12 +1514,29 @@ function showPage(pageNum, story) {
         $main.off("click");
     });
 
+    $('#menuNewStory').off('click').on('click', () => {
+        $(".dropdown-menu").css("display", "none");
+        $(".overlay").css("display", "none");
+        burgerMenuOpen = false;
+
+        $reloadButton.trigger("click");
+    });
+
     $shareButton.off('click').on('click', () => {
         $modalShare.removeClass("hidden-display");
 
         if (playbackMode) {
             stopPlayBackAndViewFull();
         }
+    });
+
+    $('#menuShare').off('click').on('click', () => {
+        $(".dropdown-menu").css("display", "none");
+        $(".overlay").css("display", "none");
+        $header.addClass("hidden");
+        burgerMenuOpen = false;
+
+        $shareButton.trigger("click");
     });
 
     $optionsButton.off('click').on('click', () => {
@@ -1527,12 +1547,20 @@ function showPage(pageNum, story) {
         }
     });
 
+    $('#menuOptions').off('click').on('click', () => {
+        $(".dropdown-menu").css("display", "none");
+        $(".overlay").css("display", "none");
+        $header.addClass("hidden");
+        burgerMenuOpen = false;
+
+        $optionsButton.trigger("click");
+    });
+
     $(".menu-icon").off('click').on('click', () => {
-        $(".dropdown-menu").css("display", "block");
-
-        burgerMenuOpen = true;
-
         if (playbackMode) {
+            $(".dropdown-menu").css("display", "block");
+            $(".overlay").css("display", "block");
+            burgerMenuOpen = true;
             clearTimeouts(headerTimeoutIDs);
             stopPlayBackAndViewFull();
         }
@@ -1541,8 +1569,10 @@ function showPage(pageNum, story) {
     $(document).off('click').on('click', (event) => {
         if (burgerMenuOpen && !$(event.target).closest(".menu-icon, .dropdown-menu").length) {
             $(".dropdown-menu").css("display", "none");
-
+            $(".overlay").css("display", "none");
             burgerMenuOpen = false;
+
+            setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
         }
     });
 
