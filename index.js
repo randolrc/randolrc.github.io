@@ -71,7 +71,7 @@ let $storyListPrev;
 let storyListPage = 0;
 let $clearHistory;
 
-const delayScroll_default = 45;
+const delayScroll_default = 75;
 const delayFullStop_default = 850;
 const autoPageTimer_default = 3 * 1000;
 const fontSize_default = 1.1;
@@ -993,7 +993,7 @@ function setEvents() {
 
             mobileMode = true;
 
-            $('#urlInput').css("width", "70%");
+            $('#urlInput').css("width", "60%");
             $('.modal-content').css("font-size", "0.9em");
             $('#settingsDynamicPage').css("font-size", "0.85em");
             $('#storyList').css("font-size", "1.0em");
