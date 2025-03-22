@@ -691,6 +691,7 @@ function setEvents() {
             $copyUrlButton.text("Copied!");
             $copyUrlButton.css("background-color", "#828282");
             $copyUrlButton.css("cursor", "unset");
+            
             setTimeout(() => {
                 $copyUrlButton.text("Copy");
                 $copyUrlButton.css("background-color", "");
@@ -1519,6 +1520,18 @@ function showPage(pageNum, story) {
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
+
+        navigator.clipboard.readText()
+        .then(text => {
+            if (text.length > 0) {
+            console.log("Clipboard has content:", text);
+            } else {
+            console.log("Clipboard is empty.");
+            }
+        })
+        .catch(err => {
+            console.error("Could not read clipboard:", err);
+        });
     });
 
     $('#menuNewStory').off('click').on('click', () => {
