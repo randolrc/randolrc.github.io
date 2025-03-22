@@ -993,9 +993,10 @@ function setEvents() {
 
             mobileMode = true;
 
-            $('#urlInput').css("width", "75%");
+            $('#urlInput').css("width", "70%");
             $('.modal-content').css("font-size", "0.9em");
             $('#settingsDynamicPage').css("font-size", "0.85em");
+            $('#storyList').css("font-size", "1.0em");
 
             setColors(colorSettings[colorSelectIndex]);
 
@@ -1013,6 +1014,7 @@ function setEvents() {
             $('#urlInput').css("width", "");
             $('.modal-content').css("font-size", "");
             $('#settingsDynamicPage').css("font-size", "");
+            $('#storyList').css("font-size", "");
 
             setColors(colorSettings[colorSelectIndex]);
         }
@@ -1492,7 +1494,7 @@ function showPage(pageNum, story) {
         $pageInput.val(currentPage + 1); // Display 1-based index
     }
 
-    function goToParagraph(index) {
+    function goToPage(index) {
         if (index >= 0 && index < paragraphs.length) {
             currentPage = index;
             printText = true;
@@ -1559,6 +1561,15 @@ function showPage(pageNum, story) {
         burgerMenuOpen = false;
 
         $optionsButton.trigger("click");
+    });
+
+    $('#menuRestart').off('click').on('click', () => {
+        $(".dropdown-menu").css("display", "none");
+        $(".overlay").css("display", "none");
+        burgerMenuOpen = false;
+
+        goToPage(0);
+        setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
     });
 
     $(".menu-icon").off('click').on('click', () => {
@@ -1718,7 +1729,7 @@ function showPage(pageNum, story) {
         if (event.key === "Enter") {
             const inputValue = parseInt($pageInput.val(), 10) - 1; // Convert to 0-based index
             if (!isNaN(inputValue)) {
-                goToParagraph(inputValue);
+                goToPage(inputValue);
             }
 
             $pageInput.blur();
