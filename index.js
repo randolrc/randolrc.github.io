@@ -554,7 +554,7 @@ function setColors(colorObj) {
 
     let svgHover = "";
 
-    if (!mobileMode) {
+    if (!mobileMode && !("ontouchstart" in window)) {
         svgHover = `.svgHeaderButton:hover {
             background-color: ${colorObj.baseColor}
         }
@@ -993,6 +993,10 @@ function setEvents() {
 
             mobileMode = true;
 
+            $('#urlInput').css("width", "75%");
+            $('.modal-content').css("font-size", "0.9em");
+            $('#settingsDynamicPage').css("font-size", "0.85em");
+
             setColors(colorSettings[colorSelectIndex]);
 
         } else {
@@ -1004,7 +1008,11 @@ function setEvents() {
 
             $playPauseButton.css("right", "");
 
-            mobileMode = false;
+            mobileMode = "ontouchstart" in window;
+
+            $('#urlInput').css("width", "");
+            $('.modal-content').css("font-size", "");
+            $('#settingsDynamicPage').css("font-size", "");
 
             setColors(colorSettings[colorSelectIndex]);
         }
@@ -1119,10 +1127,7 @@ function setupStory() {
     $display.css("display","block");
     $header.removeClass("hidden");
 
-    setTimeout(() => {
-        $header.addClass('hidden');
-    }, 1 * 1000);
-
+    setTrackedTimeout(() => $header.addClass('hidden'), 1000, headerTimeoutIDs);
     playbackMode = true;
 
     storyObj = loadStory();
