@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (splashToggle) {  
         setTimeout(() => {
             $splash.css("display","flex");
-            $("#product-name").text("Tale Teller");
+            $splashTitle.text("Tale Teller");
         }, 500);
 
         loadMainTimer = 2500;
@@ -599,14 +599,10 @@ function setColors(colorObj) {
             color: ${colorObj.baseColor};
         }
 
-
-
         #indicator {
             background-color: transparent;
             color: ${colorObj.baseColor};
         }
-
-        
     `;
     $('.svgHeaderButton').css('border-color', colorObj.BGColor);
     $('.centeredButtons button').css('border-color', colorObj.BGColor);
@@ -618,6 +614,7 @@ function setColors(colorObj) {
 
     $('#storyTitle').css('color',colorObj.baseColor);
     $('#storyTitle').css('background-color',colorObj.BGColor);
+    $('.bar').css('background-color',colorObj.baseColor);
 }
 
 function setEvents() {
@@ -1001,6 +998,8 @@ function setEvents() {
 
             setColors(colorSettings[colorSelectIndex]);
 
+            $splashTitle.css("font-size", "2rem");
+
         } else {
             $fullscreenButton.removeClass("hidden-display");
             $shareButton.removeClass("hidden-display");
@@ -1018,6 +1017,8 @@ function setEvents() {
             $('#storyList').css("font-size", "");
 
             setColors(colorSettings[colorSelectIndex]);
+
+            $splashTitle.css("font-size", "4rem");
         }
         
         resizeMainContainer();
@@ -1520,18 +1521,6 @@ function showPage(pageNum, story) {
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
-
-        navigator.clipboard.readText()
-        .then(text => {
-            if (text.length > 0) {
-            console.log("Clipboard has content:", text);
-            } else {
-            console.log("Clipboard is empty.");
-            }
-        })
-        .catch(err => {
-            console.error("Could not read clipboard:", err);
-        });
     });
 
     $('#menuNewStory').off('click').on('click', () => {
