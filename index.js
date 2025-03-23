@@ -71,7 +71,7 @@ let $storyListPrev;
 let storyListPage = 0;
 let $clearHistory;
 
-const delayScroll_default = 75;
+const delayScroll_default = 65;
 const delayFullStop_default = 850;
 const autoPageTimer_default = 3 * 1000;
 const fontSize_default = 1.1;
