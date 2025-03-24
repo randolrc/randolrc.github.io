@@ -28,8 +28,6 @@ Nothing submitted is uploaded anywhere, it's all saved to your browser's storage
 
  - Left/right arrow keys should work too, spacebar will go to the next page.
 
- ((Scroll Down))
-
  - Reload button on top left will clear the story to allow you to paste in a new one.
 
  - Play button will toggle auto-advancing to the next page after a delay.
