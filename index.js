@@ -113,7 +113,7 @@ let mobileMode = false;
 let burgerMenuOpen = false;
 let headerTimeoutIDs = [];
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
     let onSuccessFunc = function(event) {
         let db = event.target.result;
@@ -123,10 +123,13 @@ document.addEventListener("DOMContentLoaded", () => {
     initDB(onSuccessFunc);
 
     const cUrlStory = purifyText(getQueryParams(window.location.href).story);
+    const cUrlTitle = purifyText(getQueryParams(window.location.href).title);
 
     if (cUrlStory) {
         storyObj.story = cUrlStory;
-        saveStoryNewSlot(storyObj);
+        storyObj.title = cUrlTitle;
+
+        await saveStoryNewSlot(storyObj);
         window.location.href = window.location.href.split('?')[0];
         return;
     }
@@ -188,21 +191,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }, loadMainTimer);
 });
 
-function initDB(onSuccessFunc) {
-    let dbRequest = indexedDB.open(dbName, 1);
+async function initDB(onSuccessFunc) {
+    return new Promise((resolve, reject) => {
+        let dbRequest = indexedDB.open(dbName, 1);
 
-    dbRequest.onupgradeneeded = function(event) {
-        let db = event.target.result;
-        if (!db.objectStoreNames.contains(storeName)) {
-            db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
-        }
-    };
+        dbRequest.onupgradeneeded = function(event) {
+            let db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+            }
+        };
 
-    dbRequest.onsuccess = onSuccessFunc;
+        dbRequest.onsuccess = async (event) => { await onSuccessFunc(event); resolve("success"); };
 
-    dbRequest.onerror = function(event) {
-        console.error("IndexedDB error:", event.target.error);
-    };
+        dbRequest.onerror = () => reject(function(event) {
+            console.error("IndexedDB error:", event.target.error);
+        });
+    });
 }
 
 function getLocalStorageSizeAccurate() {
@@ -218,7 +223,7 @@ function getLocalStorageSizeAccurate() {
 }
 
 
-function saveStoryNewSlot(newStoryObj) {
+async function saveStoryNewSlot(newStoryObj) {
     /*
     for (let i = maxStories - 1; i >= 0; i--) {
         let existingStory = localStorage.getItem(`TaleTeller_story${i}`);
@@ -231,60 +236,68 @@ function saveStoryNewSlot(newStoryObj) {
     localStorage.setItem(`TaleTeller_story`, JSON.stringify(newStoryObj));
 
     let onSuccessFunc = function(event) {
-        let db = event.target.result;
-        
-        const transaction = db.transaction([storeName], "readwrite");
-        const store = transaction.objectStore(storeName);
-        const countRequest = store.count();
+        return new Promise((resolve, reject) => {
 
-        countRequest.onsuccess = function() {
-            if (countRequest.result + 1 > maxHistoryStories) {
-                const deleteRequest = store.openCursor();
-                
-                deleteRequest.onsuccess = function (event) {
-                    const cursor = event.target.result;
-                    if (cursor) {
-                        cursor.delete();
-                    }
-                };
+            let db = event.target.result;
             
-                deleteRequest.onerror = function (event) {
-                    console.error("Error opening cursor:", event.target.error);
-                };
-            }
-        };
-    
-        countRequest.onerror = function() {
-            console.error("Error counting objects:", countRequest.error);
-        };
+            const transaction = db.transaction([storeName], "readwrite");
+            const store = transaction.objectStore(storeName);
+            const countRequest = store.count();
 
-        const addRequest = store.add(newStoryObj);
-    
-        addRequest.onsuccess = function() {
-            populateHistory(db);
-            /*
-            let allRecords = store.getAll();
-            allRecords.onsuccess = function() {
-                console.log(allRecords.result);
+            countRequest.onsuccess = function() {
+                if (countRequest.result + 1 > maxHistoryStories) {
+                    const deleteRequest = store.openCursor();
+                    
+                    deleteRequest.onsuccess = function (event) {
+                        const cursor = event.target.result;
+                        if (cursor) {
+                            cursor.delete();
+                        }
+                    };
+                
+                    deleteRequest.onerror = function (event) {
+                        console.error("Error opening cursor:", event.target.error);
+                    };
+                }
             };
-            */
-        };
-    
-        addRequest.onerror = function(event) {
-            console.log(console.error("IndexedDB error:", event.target.error));
-        };
+        
+            countRequest.onerror = function() {
+                console.error("Error counting objects:", countRequest.error);
+            };
 
+            const addRequest = store.add(newStoryObj);
+
+            //async (event) => { await onSuccessFunc(event); resolve("success"); };
         
+            addRequest.onsuccess = () => {
+                populateHistory(db);
+                resolve("success"); 
+                /*
+                let allRecords = store.getAll();
+                allRecords.onsuccess = function() {
+                    console.log(allRecords.result);
+                };
+                */
+            };
         
+            addRequest.onerror = () => {
+                reject(function(event) {
+                    console.error("IndexedDB error:", event.target.error);
+                });
+            };
+        });
     };
 
-    initDB(onSuccessFunc);
+    await initDB(onSuccessFunc);
 }
 
 function populateHistory(db) {
     const transaction = db.transaction([storeName], "readonly");
     const store = transaction.objectStore(storeName);
     const $list = $("#storyList");
+    $storyListNext = $('#storyListNext');
+    $storyListPrev = $('#storyListPrev');
+    $clearHistory = $('#clearHistory');
     $list.empty();
 
     historyList = [];
@@ -1144,7 +1157,7 @@ function setupStory() {
     else
         shareLink = "http://127.0.0.1:3000/";
 
-    shareLink += `?story=${storyObj.story}`;
+    shareLink += `?title=${storyObj.title}&story=${storyObj.story}`;
     $urlInput.val(shareLink);
 
     $addNewStory.css("display", "none");
