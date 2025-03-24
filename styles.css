@@ -463,7 +463,7 @@ main {
     z-index: 1000;
 }
 
-.dropdown-menu a {
+.dropdown-menu div {
     display: block;
     padding: 10px;
     color: white;
@@ -471,7 +471,7 @@ main {
     border-bottom: 1px solid #666;
 }
 
-.dropdown-menu a:hover {
+.dropdown-menu div:hover {
     background-color: #666;
 }
 
