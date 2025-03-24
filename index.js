@@ -1152,7 +1152,7 @@ function setupStory() {
 
     let shareLink = "";
 
-    if (window.location.href === "https://taleteller.io/")
+    if (window.location.href.startsWith("https://taleteller.io/")) 
         shareLink = window.location.href;
     else
         shareLink = "http://127.0.0.1:3000/";
