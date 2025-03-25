@@ -1159,6 +1159,7 @@ function showSettingsTab() {
 function setupStory() {
     $display.css("display","block");
     $header.removeClass("hidden");
+    $header.removeClass("hidden-display");
 
     setTrackedTimeout(() => $header.addClass('hidden'), 1000, headerTimeoutIDs);
     playbackMode = true;
@@ -1545,6 +1546,7 @@ function showPage(pageNum, story) {
         $display.css("display", "none");
         $addNewStory.css("display", "block");
         $header.addClass("hidden");
+        $header.addClass("hidden-display");
         printText = false;
         playbackMode = false;
         ignoreClicksOnce = true;
