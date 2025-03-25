@@ -74,7 +74,7 @@ let $clearHistory;
 const delayScroll_default = 65;
 const delayFullStop_default = 850;
 const autoPageTimer_default = 3 * 1000;
-const fontSize_default = 1.1;
+const fontSize_default = 1.0;
 
 let delayScroll = delayScroll_default;
 let delayFullStop = delayFullStop_default;
