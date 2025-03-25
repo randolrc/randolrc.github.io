@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     initDB(onSuccessFunc);
 
     const cUrlStory = purifyText(getQueryParams(window.location.href).story);
-    const cUrlTitle = purifyText(getQueryParams(window.location.href).title);
+    const cUrlTitle = purifyText(decodeURIComponent(getQueryParams(window.location.href).title));
 
     if (cUrlStory) {
         storyObj.story = cUrlStory;
@@ -1157,7 +1157,7 @@ function setupStory() {
     else
         shareLink = "http://127.0.0.1:3000/";
 
-    shareLink += `?title=${storyObj.title}&story=${storyObj.story}`;
+    shareLink += `?title=${encodeURIComponent(storyObj.title)}&story=${storyObj.story}`;
     $urlInput.val(shareLink);
 
     $addNewStory.css("display", "none");
