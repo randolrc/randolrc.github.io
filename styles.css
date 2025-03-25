@@ -363,7 +363,7 @@ main {
 
 #storyInput {
     width: 100%;
-    height: 75%;
+    height: 300px;
 }
 
 .fade-in {
@@ -484,4 +484,24 @@ main {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
+}
+
+.textarea-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.overlay-button {
+    position: absolute;
+    bottom: 0;
+    right: 0%;
+    transform: translate(-20%, 35%);
+    background-color: rgb(0, 0, 0);
+    color: rgb(192, 192, 192);
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    outline: 1px solid rgb(184, 184, 184);
 }

@@ -993,6 +993,19 @@ function setEvents() {
         }
     });
 
+    $('#pasteButton').on('click', () => {
+        navigator.clipboard.readText()
+        .then(text => {
+            if (text.length > 0) {
+                $storyInput.val(text);
+                clipboardContent = text;
+            }
+        })
+        .catch(err => {
+            console.error("Could not read clipboard:", err);
+        });
+    });
+
     function handleBreakpoint(event) {
         
         if (event.matches) {
@@ -1536,7 +1549,7 @@ function showPage(pageNum, story) {
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
-
+/*
         navigator.clipboard.readText()
         .then(text => {
             if (text.length > 0) {
@@ -1547,6 +1560,7 @@ function showPage(pageNum, story) {
         .catch(err => {
             console.error("Could not read clipboard:", err);
         });
+        */
     });
 
     $('#menuNewStory').off('click').on('click', () => {
