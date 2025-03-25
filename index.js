@@ -729,7 +729,8 @@ function setEvents() {
 
     if (!("ontouchstart" in window)) {
         $header.on('mouseenter', () => {
-            $header.removeClass('hidden');
+            if (!mobileMode && playbackMode)
+                $header.removeClass('hidden');
 
             if (mobileMode)  {
                 setTrackedTimeout(() => $header.addClass('hidden'), 3000, headerTimeoutIDs);
@@ -1549,18 +1550,6 @@ function showPage(pageNum, story) {
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
-/*
-        navigator.clipboard.readText()
-        .then(text => {
-            if (text.length > 0) {
-                $storyInput.text(text);
-                clipboardContent = text;
-            }
-        })
-        .catch(err => {
-            console.error("Could not read clipboard:", err);
-        });
-        */
     });
 
     $('#menuNewStory').off('click').on('click', () => {
