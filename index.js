@@ -113,6 +113,8 @@ let mobileMode = false;
 let burgerMenuOpen = false;
 let headerTimeoutIDs = [];
 
+let clipboardContent = "";
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     let onSuccessFunc = function(event) {
@@ -1534,6 +1536,17 @@ function showPage(pageNum, story) {
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
+
+        navigator.clipboard.readText()
+        .then(text => {
+            if (text.length > 0) {
+                $storyInput.text(text);
+                clipboardContent = text;
+            }
+        })
+        .catch(err => {
+            console.error("Could not read clipboard:", err);
+        });
     });
 
     $('#menuNewStory').off('click').on('click', () => {
