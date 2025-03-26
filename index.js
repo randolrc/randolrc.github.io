@@ -1000,11 +1000,25 @@ function setEvents() {
             if (text.length > 0) {
                 $storyInput.val(text);
                 clipboardContent = text;
+                $('#clearButton').prop("disabled", false);
             }
         })
         .catch(err => {
             console.error("Could not read clipboard:", err);
         });
+    });
+
+    $storyInput.on("input", () => {
+        $('#clearButton').prop("disabled", false);
+
+        if ($storyInput.val() === "") {
+            $('#clearButton').prop("disabled", true);
+        }
+    });
+
+    $('#clearButton').on('click', () => {
+        $storyInput.val("");
+        $('#clearButton').prop("disabled", true);
     });
 
     function handleBreakpoint(event) {

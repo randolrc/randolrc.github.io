@@ -512,6 +512,18 @@ main {
 .overlay-button {
     position: absolute;
     bottom: 0;
+}
+
+#pasteButton {
     right: 0%;
     transform: translate(-20%, 35%);
+}
+
+#clearButton {
+    left: 0%;
+    transform: translate(20%, 35%);
+}
+
+button:disabled {
+    background-color: gray;
 }
