@@ -527,3 +527,7 @@ main {
 button:disabled {
     background-color: gray;
 }
+
+#storySubmit {
+    margin-top: 50px;
+}
