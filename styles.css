@@ -334,7 +334,7 @@ header.hidden {
 
 main {
     flex: 1;
-    margin: 50px auto;
+    margin: 0px auto 50px auto;
     width: 60%;
     text-align: left;
     font-family: "Libre Baskerville", serif;
@@ -492,22 +492,6 @@ main {
     display: inline-block;
     width: 100%;
 }
-/*
-.overlay-button {
-    position: absolute;
-    bottom: 0;
-    right: 0%;
-    transform: translate(-20%, 35%);
-
-    color: rgb(192, 192, 192);
-    border: none;
-    padding: 8px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    outline: 1px solid rgb(132, 132, 132);
-    transition: background-color 0.3s, color 0.3s;
-}
-*/
 
 .overlay-button {
     position: absolute;
