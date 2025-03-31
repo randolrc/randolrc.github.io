@@ -316,8 +316,8 @@ function populateHistory(db) {
                 text: cursor.value.title,
                 attr: { 'data-id': cursor.value.id },
                 class: "savedStoryTitle",
-                click: function() { 
-                    getStory(parseInt($(this).attr('data-id'))); 
+                click: async function() { 
+                    await getStory(parseInt($(this).attr('data-id'))); 
                 }
             });
 
@@ -346,7 +346,7 @@ function populateHistory(db) {
 
 }
 
-function getStory(id) {
+async function getStory(id) {
 
     let onSuccessFunc = function(event) {
         let db = event.target.result;
@@ -369,7 +369,7 @@ function getStory(id) {
         };
     }
 
-    initDB(onSuccessFunc);
+    await initDB(onSuccessFunc);
 }
 
 function loadStory() {
@@ -633,7 +633,7 @@ function setColors(colorObj) {
 }
 
 function setEvents() {
-    $storySubmit.click(() => {
+    $storySubmit.click(async () => {
 
         let title = purifyText($storyTitle.val());
         let story = purifyText($storyInput.val());
@@ -659,7 +659,7 @@ function setEvents() {
         storyObj.story = compressAndEncode(story);
         storyObj.pageNum = 0;
     
-        saveStoryNewSlot(storyObj);
+        await saveStoryNewSlot(storyObj);
 
         setupStory();
     });
@@ -1786,7 +1786,7 @@ function showPage(pageNum, story) {
 
     function handleKeyDown(event) {
         if (!playbackMode) return;
-
+    
         if (event.key === "ArrowLeft") {
             changePage(-1);
         } else if (event.key === "ArrowRight") {
@@ -1794,10 +1794,9 @@ function showPage(pageNum, story) {
         } else if (event.key === " ") { // Space key
             changePage(1, false);
         }
-    };
+    }
 
-    document.removeEventListener("keydown", handleKeyDown);
-    document.addEventListener("keydown", handleKeyDown);
+    $(document).off("keydown").on("keydown", handleKeyDown);
 
     function changePage(pageMod, skipFullText = true) {
 
