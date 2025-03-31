@@ -1836,7 +1836,7 @@ function showPage(pageNum, story) {
         printText = false;
     }
 
-    window.addEventListener("resize", handleResize);
+    $(window).off("resize").on("resize", handleResize);
 }
       
       
