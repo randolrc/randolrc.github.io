@@ -1575,7 +1575,7 @@ function showPage(pageNum, story) {
 
         $reloadButton.trigger("click");
     });
-
+/*
     $shareButton.off('click').on('click', () => {
         $modalShare.removeClass("hidden-display");
 
@@ -1592,7 +1592,7 @@ function showPage(pageNum, story) {
 
         $shareButton.trigger("click");
     });
-
+*/
     $optionsButton.off('click').on('click', () => {
         $modalOptions.removeClass("hidden-display");
 
