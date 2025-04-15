@@ -1566,6 +1566,7 @@ function showPage(pageNum, story) {
         ignoreClicksOnce = true;
         displayedFullText = false;
         $main.off("click");
+        $('#clearButton').prop("disabled", true);
     });
 
     $('#menuNewStory').off('click').on('click', () => {
@@ -1792,6 +1793,12 @@ function showPage(pageNum, story) {
         } else if (event.key === "ArrowRight") {
             changePage(1);
         } else if (event.key === " ") { // Space key
+            $("#prev").blur();
+            $("#next").blur();
+            $playPauseButton.blur();
+            $fullscreenButton.blur();
+            $reloadButton.blur();
+            $pageInput.blur();
             changePage(1, false);
         }
     }
